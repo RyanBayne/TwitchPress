@@ -48,23 +48,10 @@ that interact with the Twitch API. Make you responsible in everyway suggested by
 
 You will be reminded to read the Twitch Developer Agreement before completing installation.
 
-## Project Links
-* Text Tutorials: http://twitchpress.wordpress.com
-* Video Tutorials: https://www.youtube.com/channel/UCgavvh_vwRxCtFVSxuDBosw
-* Bugs/Issues: https://github.com/RyanBayne/TwitchPress/issues
-* Updates: http://www.twitter.com/twitchpress
-* Donations:  https://www.patreon.com/zypherevolved
-* Documentation: https://github.com/RyanBayne/TwitchPress/wiki
-* Skype Chat: https://join.skype.com/ni253qlo3cz9
-* Discord Chat: https://discord.gg/NaRB3wE
-* Professional Chat: https://ryanbayne.slack.com/threads/team/squeekycoder/ 
-* Jobs: https://github.com/RyanBayne/TwitchPress/projects
-* Feature Requests: https://wordpress.org/support/plugin/channel-solution-for-twitch
-* Roadmap:  https://github.com/RyanBayne/TwitchPress#boards?repos=89360576
-* Reviews: https://wordpress.org/support/plugin/channel-solution-for-twitch/reviews/
+# License
+The license is decided by the author: Ryan R. Bayne
 
-License
-GNU General Public License v3.0
+### GNU General Public License v3.0
 
 Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications, which include larger works using a licensed work, under the same license. Copyright and license notices must be preserved. Contributors provide an express grant of patent rights.
 
@@ -85,3 +72,17 @@ Permissions of this strong copyleft license are conditioned on making available 
 * Liability
 * Warranty
 
+## Project Links
+* Text Tutorials: http://twitchpress.wordpress.com
+* Video Tutorials: https://www.youtube.com/channel/UCgavvh_vwRxCtFVSxuDBosw
+* Bugs/Issues: https://github.com/RyanBayne/TwitchPress/issues
+* Updates: http://www.twitter.com/twitchpress
+* Donations:  https://www.patreon.com/zypherevolved
+* Documentation: https://github.com/RyanBayne/TwitchPress/wiki
+* Skype Chat: https://join.skype.com/ni253qlo3cz9
+* Discord Chat: https://discord.gg/NaRB3wE
+* Professional Chat: https://ryanbayne.slack.com/threads/team/squeekycoder/ 
+* Jobs: https://github.com/RyanBayne/TwitchPress/projects
+* Feature Requests: https://wordpress.org/support/plugin/channel-solution-for-twitch
+* Roadmap:  https://github.com/RyanBayne/TwitchPress#boards?repos=89360576
+* Reviews: https://wordpress.org/support/plugin/channel-solution-for-twitch/reviews/
