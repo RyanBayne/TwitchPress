@@ -13,19 +13,19 @@ that aims to compete with BraneBot or you can just setup a personal system that 
 together.
 
 ## Project Links
-Text Tutorials: WordPress.com http://twitchpress.wordpress.com
-Video Tutorials: https://www.youtube.com/channel/UCgavvh_vwRxCtFVSxuDBosw
-Bugs: GitHub Issues https://github.com/RyanBayne/TwitchPress/issues
-Updates: Twitter (project specific)  http://www.twitter.com/twitchpress
-Patreon (Ryans WordPress Development)  https://www.patreon.com/zypherevolved
-Documentation: GitHub Wiki https://github.com/RyanBayne/TwitchPress/wiki
-Free Live Discussion: Skype: https://join.skype.com/ni253qlo3cz9
-Discord: https://discord.gg/NaRB3wE
-Professional Collaboration: Slack: https://ryanbayne.slack.com/threads/team/squeekycoder/ 
-GitHub: https://github.com/RyanBayne/TwitchPress/pulls#boards
-Feature Requests: https://wordpress.org/support/plugin/channel-solution-for-twitch
-Roadmap:  https://github.com/RyanBayne/TwitchPress#boards?repos=89360576
-Reviews: https://wordpress.org/support/plugin/channel-solution-for-twitch/reviews/
+* Text Tutorials: http://twitchpress.wordpress.com
+* Video Tutorials: https://www.youtube.com/channel/UCgavvh_vwRxCtFVSxuDBosw
+* Bugs/Issues: https://github.com/RyanBayne/TwitchPress/issues
+* Updates: http://www.twitter.com/twitchpress
+* Donations:  https://www.patreon.com/zypherevolved
+* Documentation: https://github.com/RyanBayne/TwitchPress/wiki
+* Skype Chat: https://join.skype.com/ni253qlo3cz9
+* Discord Chat: https://discord.gg/NaRB3wE
+* Professional Chat: https://ryanbayne.slack.com/threads/team/squeekycoder/ 
+* Jobs: https://github.com/RyanBayne/TwitchPress/projects
+* Feature Requests: https://wordpress.org/support/plugin/channel-solution-for-twitch
+* Roadmap:  https://github.com/RyanBayne/TwitchPress#boards?repos=89360576
+* Reviews: https://wordpress.org/support/plugin/channel-solution-for-twitch/reviews/
 
 
 ## Combine WordPress and Twitch Activity
