@@ -6,7 +6,7 @@ You have found the best Twitch plugin on WordPress. Continue reading to discover
 I really wanted to use TwitchPress as the plugins name but there are certain websites that are cautious about such a name. So the offial
 name is "Channel Solution for Twitch" and TwitchPress is the codename. 
 
-The core plugins focuses on providing a professional and stable foundation for a complex Twitch service. Core features include a custom
+The core WP plugin focuses on providing a professional and stable foundation for anything from a complex Twitch service to just a couple of time saving tools. Core features include a custom
 post type (ID: twitchfeed) for managing a syncronizing service between WordPress blog posts and your Twitch channel feed updates. That 
 isn't all the plugin can do though. It also offers an extension system that has no limits. In theory, you can create a public services
 that aims to compete with BraneBot or you can just setup a personal system that helps to bring your website and Twitch channel activity 
