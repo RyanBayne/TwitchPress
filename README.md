@@ -35,3 +35,51 @@ Combine your WordPress and Twitch activity! That is a massive statement when the
 
 ## Development Standards and Performance
 The performance of the TwitchPress plugin has no drawbacks. The design makes perfect use of the WordPress plugin API. Objects are handled effeciently and future development is structured by GitHub. 
+
+# New README.md 
+From here on is the new content for this readme.md file. I'm appending it temporary while I edit it. 
+
+# TwitchPress WordPress Plugin
+Your blog, your channel, your way! Merge the power of WordPress with Twitch to create a unique experience for your
+viewers. Superbly developed with the highest standards, bringing a free but professional solution to your website.
+
+# Grow Using the Channel Solution for Twitch 
+TwitchPress is a project for everyone. Rising streamers, partnered hosts,
+professional gamers and internet based business owners. All dedicated streamers with WordPress sites will find 
+value in this Channel Solution for WordPress. The element that allows this to be true is the extension system. It
+offers the ability to create custom systems, one extension at a time. If you own a WP site you'll find a way
+to grow your Twitch.tv community by using this plugin.
+
+# Main Features
+* Custom post type for syncronizing WP posts with Twitch channel feeds.
+* Extension system for unlimited upgrades of your Twitch & WordPress marriage. 
+* Setup Wizard helps you connect to the Twitch API straight away. 
+* Developed for public service providers, create the Streamer Soluton you dreamed, for others.
+
+# Installation 
+The plugin is free to download from WordPress.org and you can locate it from your WP admin by searching
+"TwitchPress". The official plugin name on WordPress.org is "Channel Solution for Twitch". The project codename
+is TwitchPress and covers more than just the plugin itself. 
+
+Use the WordPress 'Add New' plugins screen to get the latest stable build using the safest transfer method. 
+
+## Requirement: Twitch Developer Application
+You will need a set of Twitch Developer Application credentials. You can obtain them in your Twitch settings, 
+under Connections. You will need to setup a new application (unless your site already has one) that exists to
+represent your website. 
+
+## Twitch Terms & Conditions
+WP administrators installing the TwitchPress plugin are acting as a Web Developer in the eyes of 
+Twitch Entertainment Incorporated. You do not need to have developer related qualifications or experience. The
+actions of installing the plugin, entering application credentials, completing the Setup Wizard, and using features
+that interact with the Twitch API. Make you responsible in everyway suggested by the Twitch Developer Agreement.
+
+You will be reminded to read the Twitch Developer Agreement before completing installation.
+
+## Setup Wizard
+You must complete the Setup Wizard for the plugin to operate fully and make calls to Kraken (the Twitch API). You can access the Setup Wizard at anytime by opening the Help panel. You will find the applicable Help tab when on one of the plugins administration views i.e. Settings (it currently doesn't appear on the custom post type views). 
+
+Usage (how you use it)
+Building (how you build it from source)
+Contributing (how you contribute your changes)
+License (the license the software is under)
