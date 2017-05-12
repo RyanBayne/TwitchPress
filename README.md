@@ -17,8 +17,5 @@ Individuals, stream teams and businesses will find a use for the TwitchPress pro
 
 Combine your WordPress and Twitch activity! That is a massive statement when the size of the job is known. What makes it possible, is the TwitchPress extension system. The core plugin offers a good place to start but you'll be glad to read that it can be improved with simple or advanced extensions. 
 
-## Performance
-Coming Soon!
-
-## Development Standards
-Coming Soon!
+## Development Standards and Performance
+The performance of the TwitchPress plugin has no drawbacks. The design makes perfect use of the WordPress plugin API. Objects are handled effeciently and future development is structured by GitHub. 
