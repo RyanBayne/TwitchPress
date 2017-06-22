@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
                  
-if ( ! class_exists( 'WordPressPluginSeed' ) ) :
+if ( ! class_exists( 'WordPressTwitchPress' ) ) :
 
 /**
  * Main TwitchPress Class.
