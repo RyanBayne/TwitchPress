@@ -4,26 +4,34 @@ Donate link: https://www.patreon.com/zypherevolved
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: Twitch, Twitch.tv, Unofficial, Twitch Feed, Twitch Channel, Twitch Channel Feeds
-Requires at least: 4.2.0
-Tested up to: 4.7.2
-Stable tag: 1.2.0
+Requires at least: 4.4
+Tested up to: 4.8
+Stable tag: 1.2.1
                         
-TwitchPress is not affiliated or endorsed by Twitch Interactive, Inc.
+Launch your own Twitch services using the TwitchPress plugin for WordPress.
                        
 == Description ==
 
-TwitchPress is not affiliated or endorsed by Twitch Interactive, Inc.
+TwitchPress is an adaptable solution for the creation of a Twitch service. 
+Marry your WordPress gaming site with your Twitch channel in everyway possible using the plugins extension system
+or create a site just to offer channel management services.
 
-The TwitchPress plugin is a new gamers solution for Twitch channels. The TwitchPress goal is to offer WordPress developers a strong start in creating
-Twitch related services for either personal use or as a service for other Twitch.tv users. The initial
-purpose of the free plugin is to share WP posts of a gaming nature, with Twitch channel feeds. The plugin
-can be extended into a broadcasters dashboard. 
+= Core Features =
+The initial purpose of the free plugin is to share WP posts on Twitch channel feeds and collect feed updates
+from Twitch.tv for publishing as new WordPress posts. All updates to the core will focus on improving this feature
+and the plugins extension system. Using the extension system we can make TwitchPress and WP do anything possible
+with the Twitch API. 
 
-= Links = 
-*   <a href="https://github.com/RyanBayne/TwitchPress" title="">GitHub</a>  
-*   <a href="https://trello.com/b/JvIX008K/twitchpress" title="Submit requests on Trello.">Trello (submit requests)</a>     
-*   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">Plugins Twitter (@TwitchPress)</a>     
-*   <a href="https://www.twitch.tv/zypherevolved" title="Follow my Twitch channel.">Authors Twitch (ZypheREvolved)</a>     
+= New for 2017 =
+The plugin is still very new. The core plugin is highly reliable. Free extensions are still being developed and tested.
+Premium extensions are not being developed yet although I have already made two privates ones.
+
+= Links =                                                                
+*   <a href="https://twitchpress.wordpress.com" title="">Blog</a>
+*   <a href="https://github.com/RyanBayne/TwitchPress" title="">GitHub</a>       
+*   <a href="https://twitter.com/zypherevolved" title="Follow the projects Tweets.">Authors Twitter</a>     
+*   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">Plugins Twitter</a>     
+*   <a href="https://www.twitch.tv/zypherevolved" title="Follow my Twitch channel.">Authors Twitch</a>     
 *   <a href="https://discord.gg/NaRB3wE" title="Chat about TwitchPress on Discord.">Discord Chat</a>          
 *   <a href="https://www.patreon.com/zypherevolved" title="">Patreon Donations</a>     
 *   <a href="https://www.paypal.me/zypherevolved" title="">PayPal Donations</a>       
@@ -65,6 +73,9 @@ No special upgrade instructions this time. Just remember to
 backup your site files and database.
 
 == Changelog ==
+= 1.2.1 =
+* FIX - Incorrect class name prevented plugin activation.  
+
 = 1.2.0 =
 * NEW - Setup wizard making installation clearer and more professional.
 * NEW - Extensions system so developers can add features quickly.

@@ -105,7 +105,7 @@ class TwitchPress_Post_types {
             apply_filters( 'twitchpress_taxonomy_objects_twitchfeed_tag', array( 'twitchfeed' ) ),
             apply_filters( 'twitchpress_taxonomy_args_twitchfeed_tag', array(
                 'hierarchical'          => false,
-                'label'                 => __( 'Twitch Feed tags', 'woocommerce' ),
+                'label'                 => __( 'Twitch Feed tags', 'twitchfeed' ),
                 'labels'                => array(
                         'name'                       => __( 'Twitch Feed tags', 'twitchpress' ),
                         'singular_name'              => __( 'Tag', 'twitchpress' ),

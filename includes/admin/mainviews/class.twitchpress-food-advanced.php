@@ -16,7 +16,7 @@ if ( ! class_exists( 'TwitchPress_ListTable_Stock' ) ) {
  *
  * @author      Ryan Bayne
  * @category    Admin
- * @package     TwitchPress/Admin/Reports
+ * @package     TwitchPress/Admin
  * @version     1.0.0
  */
 class TwitchPress_MainView_Food_Advanced extends TwitchPress_ListTable_Demo {

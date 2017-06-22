@@ -567,7 +567,7 @@ class TwitchPress_Admin_Setup_Wizard {
      */
     protected function get_wizard_extensions() {       
         $gateways = array(
-            'paypal-braintree' => array(
+            'csv-2-post' => array(
                 'name'        => __( 'CSV 2 POST', 'twitchpress' ),
                 'description' => __( 'Import data for the purpose of mass publishing posts. Another plugin by Ryan Bayne.', 'twitchpress' ),
                 'repo-slug'   => 'csv-2-post',

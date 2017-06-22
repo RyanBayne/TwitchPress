@@ -95,7 +95,7 @@ class TwitchPress_ListTable_Demo extends WP_List_Table {
 	public function output_result() {
 
 		$this->prepare_items();
-		echo '<div id="poststuff" class="twitchpress-reports-wide">';
+		echo '<div id="poststuff" class="twitchpress-tables-wide">';
         echo '<form id="twitchpress-list-table-form-demo" method="post">';
 		$this->display();
         echo '<form>';

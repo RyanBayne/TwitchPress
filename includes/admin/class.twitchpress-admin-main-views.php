@@ -1,10 +1,10 @@
 <?php
 /**
- * TwitchPress Admin Reports
+ * TwitchPress Admin Table Views
  *
  * @author      TwitchPress
  * @category    Admin
- * @package     TwitchPress/Admin/Reports
+ * @package     TwitchPress/Admin
  * @version     1.0.0
  */
 
@@ -20,7 +20,7 @@ if ( ! class_exists( 'TwitchPress_Admin_Main_Views' ) ) :
 class TwitchPress_Admin_Main_Views {
 
     /**
-     * Handles output of the reports page in admin.
+     * Handles output of the tables page in admin.
      */
     public static function output() {       
         $tabs              = self::get_tabs();
@@ -32,7 +32,7 @@ class TwitchPress_Admin_Main_Views {
     }
 
     /**
-     * Returns the definitions for the reports to show in admin.
+     * Returns the definitions for the tables to show in admin.
      *
      * @return array
      */
@@ -107,7 +107,7 @@ class TwitchPress_Admin_Main_Views {
     }
 
     /**
-     * Get a report from our reports subfolder.
+     * Get a report from our main views (currently tables) subfolder.
      */
     public static function get_maintabview( $name_presan ) {     
         $name  = sanitize_title( str_replace( '_', '-', $name_presan ) );

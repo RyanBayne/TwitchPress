@@ -4,9 +4,9 @@
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add your Twitch.tv channel to WordPress. 
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Ryan Bayne
- * Author URI: https://www.patreon.com/zypherevolved
+ * Author URI: https://ryanbayne.wordpress.com
  * Requires at least: 4.4
  * Tested up to: 4.7
  * License: GPL3
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
                  
-if ( ! class_exists( 'WordPressPluginSeed' ) ) :
+if ( ! class_exists( 'WordPressTwitchPress' ) ) :
 
 /**
  * Main TwitchPress Class.
@@ -39,7 +39,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.2.0';
+    public $version = '1.2.1';
 
     /**
      * Minimum WP version.
@@ -296,8 +296,5 @@ if( !function_exists( 'TwitchPress' ) ) {
     }
 
     // Global for backwards compatibility.
-    $GLOBALS['twitchpress'] = TwitchPress();
-    
-    //$twitchpress_debug = new TwitchPress_Debug();
-    //$twitchpress_debug->debugmode();  
+    $GLOBALS['twitchpress'] = TwitchPress();  
 }

@@ -159,20 +159,6 @@ class TwitchPress_Settings_Feeds extends TwitchPress_Settings_Page {
     }
 
     /**
-     * Output a colour picker input box.
-     *
-     * @param mixed $name
-     * @param string $id
-     * @param mixed $value
-     * @param string $desc (default: '')
-     */
-    public function color_picker( $name, $id, $value, $desc = '' ) {
-        echo '<div class="color_box">' . twitchpress_help_tip( $desc ) . '
-            <input name="' . esc_attr( $id ). '" id="' . esc_attr( $id ) . '" type="text" value="' . esc_attr( $value ) . '" class="colorpick" /> <div id="colorPickerDiv_' . esc_attr( $id ) . '" class="colorpickdiv"></div>
-        </div>';
-    }
-
-    /**
      * Save settings.
      */
     public function save() {

@@ -95,7 +95,7 @@ class TwitchPress_Admin_Help {
                        We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
                 </style>
                 <div id="mc_embed_signup">
-                <form action="//webtechglobal.us9.list-manage.com/subscribe/post?u=99272fe1772de14ff2be02fe6&amp;id=570668cac5" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                <form action="//webtechglobal.us9.list-manage.com/subscribe/post?u=99272fe1772de14ff2be02fe6&amp;id=b9058458e5" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
                     <div id="mc_embed_signup_scroll">
                     <h2>TwitchPress Annual Newsletter</h2>
                 <div class="indicates-required"><span class="asterisk">*</span> indicates required</div>
@@ -117,7 +117,7 @@ class TwitchPress_Admin_Help {
                         <div class="response" id="mce-error-response" style="display:none"></div>
                         <div class="response" id="mce-success-response" style="display:none"></div>
                     </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_99272fe1772de14ff2be02fe6_570668cac5" tabindex="-1" value=""></div>
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_99272fe1772de14ff2be02fe6_b9058458e5" tabindex="-1" value=""></div>
                     <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
                     </div>
                 </form>
@@ -131,7 +131,7 @@ class TwitchPress_Admin_Help {
             'title'     => __( 'Credits', 'twitchpress' ),
             'content'   => '<h2>' . __( 'Credits', 'twitchpress' ) . '</h2>' .
             '<p>Please do not remove credits from the plugin. You may edit them or give credit somewhere else in your project.</p>' . 
-            '<h4>' . __( 'Automattic - they created the best way to create plugins so we can all get more from WP.' ) . '</h4>' .
+            '<h4>' . __( 'Automattic - This plugins core is largely based on their WooCommerce plugin.' ) . '</h4>' .
             '<h4>' . __( 'Brian at WPMUDEV - our discussion led to this project and entirely new approach in my development.' ) . '</h4>' . 
             '<h4>' . __( 'Ignacio Cruz at WPMUDEV - has giving us a good approach to handling shortcodes.' ) . '</h4>' .
             '<h4>' . __( 'Ashley Rich (A5shleyRich) - author of a crucial piece of the puzzle, related to asynchronous background tasks.' ) . '</h4>' .
@@ -157,11 +157,8 @@ class TwitchPress_Admin_Help {
     public function faq() {
         $questions = array(
             0 => __( '-- Select a question --', 'appointments' ),
-            1 => __( "How can I restart the tutorial?", 'appointments' ),
-            2 => __( "What is the importance of Time Base and how should I set it?", 'appointments' ),
-            3 => __( "I don't see the time base that I need. For example I need 240 minutes appointments. How can I do that?", 'appointments' ),
-            4 => __( "What is the complete process for an appointment?", 'appointments' ),
-            5 => __( "Is it necessary to have at least one service?", 'appointments' )
+            1 => __( "Can I create my own extensions?", 'appointments' ),
+            2 => __( "How much would it cost for a custom extension?", 'appointments' ),
         );  
         
         ?>
@@ -184,38 +181,10 @@ class TwitchPress_Admin_Help {
         
         <ul class="faq-answers">
             <li class="faq-answer" id='q1'>
-                <?php _e('To restart tutorial about settings click here:', 'appointments');?>
-                <?php
-                $link = add_query_arg( array( "tutorial"=>"restart1" ), admin_url("admin.php?page=app_settings") );
-                ?>
-                <a href="<?php echo $link ?>" ><?php _e( 'Settings Tutorial Restart', 'appointments' ) ?></a>
-
-                <?php _e('To restart tutorial about entering and editing Appointments click here:', 'appointments');?>
-                <?php
-                $link = add_query_arg( array( "tutorial"=>"restart2" ), admin_url("admin.php?page=app_settings") );
-                ?>
-                <a href="<?php echo $link ?>" ><?php _e( 'Appointments Creation and Editing Tutorial Restart', 'appointments' ) ?></a>
+                <?php _e('Yes, if you have experience with PHP and WordPress you can create an extension for TwitchPress. You can submit your extension to the WordPress.org repository for the community to use or keep it private or sell it as a premium extension. Please invite me to the projects GitHub for support.', 'appointments');?>
             </li>
             <li class="faq-answer" id='q2'>
-                <p> <?php _e('<i>Time Base</i> is the most important parameter of Appointments+. It is the minimum time that you can select for your appointments. If you set it too high then you may not be possible to optimize your appointments. If you set it too low, your schedule will be too crowded and you may have difficulty in managing your appointments. You should enter here the duration of the shortest service you are providing. Please also note that service durations can only be multiples of the time base. So if you need 30 and 45 minutes services, you should select 15 minutes as the time base.', 'appointments');?> </p>
-            </li>
-
-            <li class="faq-answer" id='q3'>
-                <p> <?php _e('You can add one more time base using <i>Additional time base</i> setting. You must select this setting in <i>time base</i> setting to be effective.', 'appointments');?> </p>
-            </li>
-
-            <li class="faq-answer" id='q4'>
-                <p><?php _e('With the widest settings, client will do the followings on the front page:', 'appointments');?></p>
-                <p> <?php _e('Select a service', 'appointments');?> </p>
-                <p> <?php _e('Select a service provider', 'appointments');?> </p>
-                <p> <?php _e('Select a free time on the schedule', 'appointments');?> </p>
-                <p> <?php _e('Login (if required)', 'appointments');?> </p>
-                <p> <?php _e('Enter the required fields (name, email, phone, address, city) and confirm the selected appointment', 'appointments');?> </p>
-                <p> <?php _e('Click Paypal payment button (if required)', 'appointments');?> </p>
-                <p> <?php _e('Redirected to a Thank You page after Paypal payment', 'appointments');?> </p>
-            </li>
-            <li class="faq-answer" id='q5'>
-                <p> <?php _e('Yes. Appointments+ requires at least one service to be defined. Please note that a default service should have been already installed during installation. If you delete it, and no other service remains, then you will get a warning message. In this case plugin may not function properly.', 'appointments');?> </p>
+                <p> <?php _e('You can hire me to create a new extension from as little as $30.00 and if you make the extension available to the WordPress community I will charge 50% less. I will also put from free hours into improving it which I cannot do if you request a private extension.', 'appointments');?> </p>
             </li>        
         </ul>
              
