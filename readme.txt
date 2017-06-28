@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: Twitch, Twitch.tv, Unofficial, Twitch Feed, Twitch Channel, Twitch Channel Feeds
 Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.2.1
+Stable tag: 1.2.2
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
                        
@@ -73,6 +73,20 @@ No special upgrade instructions this time. Just remember to
 backup your site files and database.
 
 == Changelog ==
+= 1.2.2 =
+* DEV - Notices class improved to allow easier creation of all class (color) of notices. 
+* DEV - Changed Senior Developer role (seniordeveloper) to TwitchPress Developer (twitchpressdeveloper)
+* DEV - The code_twitchpress capability is no longer applied to administrators on installation.
+* DEV - New twitchpressdevelopertoolbar capability added and is only assigned to the administrator with ID:1 and TwitchPress Developers.
+* NEW - TwitchPress Developers toolbar now available. It will only show for users with "TwitchPress Developer" role or custom capability applied to an admin account.
+* NEW - Toolbar option for uninstalling all TwitchPress options.
+* DEV - Renamed twitchpress_main_channel to twitchpress_main_channel_name
+* DEV - New option "twitchpress_main_channel_id"
+* FIX - Channel does not exist situation reported 27th June fixed 28th June.
+* DEV - Notice will now appear when API credentials are missing, encouraging user to complete the Setup Wizard. 
+* DEV - Added esc_url() to second_level_configuration_options()
+* DEV - Setup Wizard green styling replaced with purple. 
+
 = 1.2.1 =
 * FIX - Incorrect class name prevented plugin activation.  
 

@@ -2,7 +2,12 @@
 /**
  * TwitchPress - Admin Notices
  *
- * Management of notice data and arguments controlling notice presentation. 
+ * Management of notice data and arguments controlling notice presentation.
+ * 
+ * An array of notice names are stored in option "twitchpress_admin_notices". 
+ * 
+ * Each notice is also stored as an option "'twitchpress_admin_notice_' . $name" where
+ * it can be used as a persistent notice.  
  *
  * @author   Ryan Bayne
  * @category User Interface
@@ -43,7 +48,7 @@ class TwitchPress_Admin_Notices {
         add_action( 'twitchpress_installed', array( __CLASS__, 'reset_admin_notices' ) );
         add_action( 'wp_loaded', array( __CLASS__, 'hide_notices' ) );
         add_action( 'shutdown', array( __CLASS__, 'store_notices' ) );
-
+   
         // Display administrator (staff) only notices.
         if ( current_user_can( 'manage_twitchpress' ) ) {
             add_action( 'admin_print_styles', array( __CLASS__, 'add_notices' ) );
@@ -273,6 +278,29 @@ class TwitchPress_Admin_Notices {
         self::add_notice( $name );
         update_option( 'twitchpress_admin_notice_' . $name, wp_kses_post( $notice_html ) );
     }
+    
+    /**
+    * Create a notice that uses WordPress own basic notice div and styling.
+    * 
+    * @param mixed $name
+    * @param mixed $type
+    * @param mixed $dismissible
+    * @param mixed $title
+    * @param mixed $description
+    */
+    public static function add_wordpress_notice( $name, $type, $dismissible, $title, $description ) {
+        $wordpress_notice_array = array(
+            'type' => $type,
+            'dismissible' => $dismissible,
+            'title' => $title,
+            'description' => wp_kses_post( $description )
+        );
+        
+        // Register the notice as normal, the output process will ensure the correct approach is applied.
+        self::add_notice( $name );
+        
+        update_option( 'twitchpress_admin_notice_' . $name, $wordpress_notice_array );        
+    }
                                         
     /**
      * Output any stored custom notices.
@@ -285,14 +313,25 @@ class TwitchPress_Admin_Notices {
                 if ( empty( self::$core_notices[ $notice ] ) ) {
                     $notice_html = get_option( 'twitchpress_admin_notice_' . $notice );
 
-                    if ( $notice_html ) {
+                    if ( is_string( $notice_html ) ) {
                         include( 'notices/custom.php' );
+                    } elseif( is_array( $notice_html ) ) {
+                        // The notice does not use the default custom.php file.
+                        self::notice( 
+                            $notice_html['type'],
+                            $notice_html['title'], 
+                            $notice_html['description'],
+                            $notice_html['dismissible']
+                        ); 
+                        
+                        // Cleanup none dismissible notices.
+                        self::remove_notice( $notice );  
                     }
                 }
             }
         }
     }                               
-
+ 
     /**
      * If we need to update, include a message with the update button.
      */
@@ -316,25 +355,75 @@ class TwitchPress_Admin_Notices {
         include( 'notices/install.php' );
     }
     
-    public static function success( $text, $dismissible = false ) {
-        $is_dismissible = '';
-        if( $dismissible ) { $is_dismissible = 'is-dismissible'; }
-        ?>
-        <div class="notice notice-success<?php echo ' ' . $is_dismissible; ?>">
-            <p><?php _e( $text, 'sample-text-domain' ); ?></p>
-        </div>
-        <?php
+    /**
+    * Create custom notice without a html file.
+    * 
+    * @param mixed $type error|warning|success|info
+    * @param mixed $title
+    * @param mixed $description
+    * @param mixed $dismissible
+    * 
+    * @version 1.0
+    */
+    public static function notice( $type, $title, $description, $dismissible = false ) {
+        self::$type( $title, $description, $dismissible );    
     }
-        
-    public static function error( $text, $dismissible = false ) {
-        $is_dismissible = '';
-        if( $dismissible ) { $is_dismissible = 'is-dismissible'; }
-        ?>
-        <div class="notice notice-error<?php echo ' ' . $is_dismissible; ?>">
-            <p><?php _e( $text, 'sample-text-domain' ); ?></p>
-        </div>
-        <?php
-    }
+               
+    /**
+    * Instant error notice output.
+    * 
+    * @param mixed $title
+    * @param mixed $desc
+    * @param mixed $dismissible
+    * 
+    * @version 1.0
+    */
+    public static function error( $title, $desc, $dismissible = false ) {
+        $d = ''; if( $dismissible ){ $d = ' is-dismissible'; }
+        ?><div class="notice notice-error<?php echo $d; ?>"><p><?php echo '<strong>' . $title . ': </strong>' . $desc; ?>.</p></div><?php     
+    } 
+    
+    /**
+    * Instant warning notice output.
+    * 
+    * @param mixed $title
+    * @param mixed $desc
+    * @param mixed $dismissible
+    * 
+    * @version 1.0
+    */
+    public static function warning( $title, $desc, $dismissible = false ) {
+        $d = ''; if( $dismissible ){ $d = ' is-dismissible'; }
+        ?><div class="notice notice-warning<?php echo $d; ?>"><p><?php echo '<strong>' . $title . ': </strong>' . $desc; ?>.</p></div><?php     
+    } 
+    
+    /**
+    * Instant success notice output.
+    * 
+    * @param mixed $title
+    * @param mixed $desc
+    * @param mixed $dismissible
+    * 
+    * @version 1.0
+    */
+    public static function success( $title, $desc, $dismissible = false ) {
+        $d = ''; if( $dismissible ){ $d = ' is-dismissible'; }
+        ?><div class="notice notice-success<?php echo $d; ?>"><p><?php echo '<strong>' . $title . ': </strong>' . $desc; ?>.</p></div><?php     
+    } 
+    
+    /**
+    * Instant info notice output.
+    * 
+    * @param mixed $title
+    * @param mixed $desc
+    * @param mixed $dismissible
+    * 
+    * @version 1.0
+    */
+    public static function info( $title, $desc, $dismissible = false ) {
+        $d = ''; if( $dismissible ){ $d = ' is-dismissible'; }
+        ?><div class="notice notice-info<?php echo $d; ?>"><p><?php echo '<strong>' . $title . ': </strong>' . $desc; ?>.</p></div><?php     
+    }    
 }
 
 endif;

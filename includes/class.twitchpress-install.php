@@ -5,7 +5,7 @@
  * Installation of post types, taxonomies, database tables, options etc. 
  *
  * @author   Ryan Bayne
- * @category Installation
+ * @category Configuration
  * @package  TwitchPress/Core
  * @since    1.0.0
  */
@@ -32,6 +32,7 @@ class TwitchPress_Install {
     public static function init() {
         add_action( 'init', array( __CLASS__, 'check_version' ), 5 );
         add_action( 'admin_init', array( __CLASS__, 'install_actions' ) );    
+        add_action( 'admin_init', array( __CLASS__, 'offer_wizard' ) );    
         add_action( 'in_plugin_update_message-twitchpress/twitchpress.php', array( __CLASS__, 'in_plugin_update_message' ) );
         add_filter( 'plugin_action_links_' . TWITCHPRESS_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );    
         add_filter( 'plugin_row_meta', array( __CLASS__, 'plugin_row_meta' ), 10, 2 );
@@ -49,7 +50,7 @@ class TwitchPress_Install {
      * Check package version against installed version on every request.
      * Run installation to apply updates if different.
      */
-    public static function check_version() {           
+    public static function check_version() {         
         if ( ! defined( 'IFRAME_REQUEST' ) && get_option( 'twitchpress_version' ) !== TwitchPress()->version ) {
             self::install();
         }
@@ -61,6 +62,65 @@ class TwitchPress_Install {
     public static function install_actions() {
         self::install_action_do_update();
         self::install_action_updater_cron();
+    }
+    
+    /**
+    * If key values are missing we will offer the wizard.
+    * 
+    * @version 1.0
+    */
+    public static function offer_wizard() {
+        $offer_wizard = false;
+        
+        if( !current_user_can( 'manage_twitchpress') ) {
+            return;    
+        }
+        
+        if( isset( $_GET['page']) && $_GET['page'] == 'twitchpress-setup' ) {
+            return;    
+        }
+        
+        if( !get_option( 'twitchpress_version' ) ) {
+            
+            $offer_wizard = 'twitchpress_version';
+            
+        } elseif( !get_option( 'twitchpress_main_channel_name' ) ) {
+            
+            $offer_wizard = 'twitchpress_main_channel_name';
+            
+        } elseif( !get_option( 'twitchpress_main_channel_id' ) ) {
+            
+            $offer_wizard = 'twitchpress_main_channel_id';
+            
+        } elseif( !get_option( 'twitchpress_main_client_id' ) ) {
+            
+            $offer_wizard = 'twitchpress_main_client_id';
+            
+        } elseif( !get_option( 'twitchpress_main_client_secret' ) ) {
+            
+            $offer_wizard = 'twitchpress_main_client_secret';
+            
+        } elseif( !get_option( 'twitchpress_main_code' ) ) {
+            
+            $offer_wizard = 'twitchpress_main_code';
+            
+        } elseif( !get_option( 'twitchpress_main_token' ) ) {
+            
+            $offer_wizard = 'twitchpress_main_token';
+            
+        }     
+        
+        if( $offer_wizard === false ) { return; }
+        
+        $wizard_link = '<p><a href="' . esc_url( admin_url( 'index.php?page=twitchpress-setup' ) ) . '" class="button button-primary">' . __( 'Setup wizard', 'twitchpress' ) . '</a></p>';
+        
+        TwitchPress_Admin_Notices::add_wordpress_notice(
+            'missingvaluesofferwizard',
+            'info',
+            false,
+            __( 'Twitch API Credentials Missing', 'twitchpress' ),
+            sprintf( __( 'TwitchPress is not ready because the %s option is missing. If you have already been using the plugin and this notice suddenly appears then it suggests important options have been deleted or renamed. You can go through the Setup Wizard again to correct this problem. You should also report it. %s', 'twitchpress'), $offer_wizard, $wizard_link )    
+        );           
     }
     
     /**
@@ -225,8 +285,8 @@ class TwitchPress_Install {
             $wp_roles = new WP_Roles();
         }
 
-        // Developer role
-        add_role( 'seniordeveloper', __( 'Senior Developer', 'twitchpress' ), array(
+        // TwitchPress Developer role
+        add_role( 'twitchpressdeveloper', __( 'TwitchPress Developer', 'twitchpress' ), array(
             'level_9'                => true,
             'level_8'                => true,
             'level_7'                => true,
@@ -269,13 +329,23 @@ class TwitchPress_Install {
             'list_users'             => true
         ) );
 
+        // Add custom capabilities to our new TwitchPress Developers role. 
+        $new_admin_capabilities = self::get_developer_capabilities();
+        foreach ( $new_admin_capabilities as $cap_group ) {
+            foreach ( $cap_group as $cap ) {
+                $wp_roles->add_cap( 'twitchpressdeveloper', $cap );
+                // Ensure the first administration account has all capabilities.
+                if( get_current_user_id() == 1 ) {
+                    $wp_roles->add_cap( 'administrator', $cap );    
+                }                 
+            }
+        }        
+        
         // Add the plugins custom capabilities to administrators. 
-        $capabilities = self::get_core_capabilities();
-
-        foreach ( $capabilities as $cap_group ) {
+        $new_admin_capabilities = self::get_core_capabilities();
+        foreach ( $new_admin_capabilities as $cap_group ) {
             foreach ( $cap_group as $cap ) {
                 $wp_roles->add_cap( 'administrator', $cap );                 
-                $wp_roles->add_cap( 'seniordeveloper', $cap );
             }
         }
     }
@@ -296,34 +366,54 @@ class TwitchPress_Install {
         }
 
         $capabilities = self::get_core_capabilities();
-
+        $capabilities = array_merge( $capabilities, self::get_developer_capabilities() );
+        
         foreach ( $capabilities as $cap_group ) {
             foreach ( $cap_group as $cap ) {
-                $wp_roles->remove_cap( 'seniordeveloper', $cap );
+                $wp_roles->remove_cap( 'twitchpressdeveloper', $cap );
                 $wp_roles->remove_cap( 'administrator', $cap );
             }
         }
 
-        remove_role( 'seniordeveloper' );
+        remove_role( 'twitchpressdeveloper' );
     }    
         
     /**
-     * Get custom capabilities for this package. 
+     * Get custom capabilities for this package. These are assigned to
+     * all administrators and are available for applying to moderator
+     * level users.
      * 
      * Caps are assigned during installation or reset.
      *
      * @return array
+     * 
+     * @version 1.0
      */
     private static function get_core_capabilities() {
         $capabilities = array();
 
         $capabilities['core'] = array(
             'manage_twitchpress',
-            'code_twitchpress',
         );
 
         return $capabilities;
     } 
+    
+    /**
+    * Very strict capabilities for professional developers only.
+    * 
+    * @version 1.0
+    */
+    private static function get_developer_capabilities() {
+        $capabilities = array();
+
+        $capabilities['core'] = array(
+            'code_twitchpress',
+            'twitchpressdevelopertoolbar'
+        );
+
+        return $capabilities;        
+    }
                                       
     /**
      * Create files/directories with .htaccess and index files added by default.
@@ -396,23 +486,14 @@ class TwitchPress_Install {
             }
         }
     }
-    
+        
     /**
      * Update DB version to current.
      */
     public static function update_db_version( $version = null ) {
         delete_option( 'twitchpress_db_version' );
         add_option( 'twitchpress_db_version', is_null( $version ) ? TwitchPress()->version : $version );
-    }     
-    
-    /**
-    * Called when Deactive is clicked on the Plugins view. 
-    * 
-    * This is not the uninstallation but some level of cleanup can be run here. 
-    */
-    public static function deactivate() {
-        
-    } 
+    }      
     
     /**
      * Add the default terms for WC taxonomies - product types and order statuses. Modify this at your own risk.

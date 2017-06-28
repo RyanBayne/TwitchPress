@@ -248,10 +248,10 @@ class TwitchPress_Admin_Setup_Wizard {
         <form method="post">
             <table class="form-table">
                 <tr>
-                    <th scope="row"><label for="twitchpress_main_channel"><?php _e( 'Channel Name', 'twitchpress' ); ?></label></th>
+                    <th scope="row"><label for="twitchpress_main_channel_name"><?php _e( 'Channel Name', 'twitchpress' ); ?></label></th>
                     <td>
-                        <input type="text" id="twitchpress_main_channel" name="twitchpress_main_channel" class="input-text" value="<?php echo get_option( 'twitchpress_main_channel' );?>" />
-                        <label for="twitchpress_main_channel"><?php _e( 'example: ZypheREvolved, StarCitizen, TESTSquadron', 'twitchpress' ); ?></label>
+                        <input type="text" id="twitchpress_main_channel_name" name="twitchpress_main_channel_name" class="input-text" value="<?php echo get_option( 'twitchpress_main_channel_name' );?>" />
+                        <label for="twitchpress_main_channel_name"><?php _e( 'example: ZypheREvolved, StarCitizen, TESTSquadron', 'twitchpress' ); ?></label>
                     </td>
                 </tr>               
                 <tr>
@@ -427,7 +427,7 @@ class TwitchPress_Admin_Setup_Wizard {
         check_admin_referer( 'twitchpress-setup' );
         
         // Sanitize $_POST values.
-        $main_channel = sanitize_text_field( $_POST['twitchpress_main_channel'] );
+        $main_channel = sanitize_text_field( $_POST['twitchpress_main_channel_name'] );
         $redirect_uri = sanitize_text_field( $_POST['twitchpress_main_redirect_uri'] );
         $client_id = sanitize_text_field( $_POST['twitchpress_main_client_id'] );
         $client_secret = sanitize_text_field( $_POST['twitchpress_main_client_secret'] );
@@ -444,8 +444,8 @@ class TwitchPress_Admin_Setup_Wizard {
         }
    
         // Delete options for scopes that are not in $_POST (not checked) and add those that are.
-        $kraken = new TWITCHPRESS_Kraken5_Interface();
-        $all_scopes = $kraken->scopes();
+        $pre_credentials_kraken = new TWITCHPRESS_Kraken5_Interface();
+        $all_scopes = $pre_credentials_kraken->scopes();
         foreach( $all_scopes as $scope => $scope_info ) {  
             if( in_array( $scope, $_POST['twitchpress_scopes'] ) ) {     
                 update_option( 'twitchpress_scope_' . $scope, 'yes' );
@@ -454,27 +454,29 @@ class TwitchPress_Admin_Setup_Wizard {
             }
         }
  
-        // Confirm the giving main channel is real. 
-        $headers = @get_headers( 'https://www.twitch.tv/' . $main_channel );
-        if( !$headers ) {
-            TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist', sprintf( __( 'The channel you entered was not found. You entered %s. Please check the spelling and try again.'), esc_html( $main_channel ) ) );
-            return;
-        } elseif( isset( $headers[19] ) && $headers[19] == 'HTTP/1.0 404 Not Found' ) {
-            TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist404', sprintf( __( 'Twitch returned a "404 Not Found" status for the channel you submitted. You typed %s. Please check the spelling and try again.'), esc_html( $main_channel ) ) );
-            return;
-        }
-
-        update_option( 'twitchpress_main_channel', $main_channel, true );
+        // Store the credentials.
         update_option( 'twitchpress_main_redirect_uri', $redirect_uri, true );
         update_option( 'twitchpress_main_client_id', $client_id, true );
         update_option( 'twitchpress_main_client_secret', $client_secret, true );
+        update_option( 'twitchpress_main_channel_name', $main_channel, true );
+                                        
+        // Confirm the giving main channel is valid. 
+        $kraken_calls_obj = new TWITCHPRESS_Kraken5_Calls();
+        $user_objects = $kraken_calls_obj->get_users( $main_channel );
+        
+        if( !isset( $user_objects['users'][0]['_id'] ) ) {
+            TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist', __( '<strong>Channel Not Found:</strong> TwitchPress wants to avoid errors in future by ensuring what you typed is correct. So far it could not confirm your entered channel is correct. Please check the spelling of your channel and the status of Twitch. If your entered channel name is correct and Twitch is online, please report this message.', 'twitchpress' ) );      
+            return;                         
+        } 
 
-        TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored. TwitchPress will now attempt to contact Kraken for longterm access to the Twitch.tv API.' ) );
+        update_option( 'twitchpress_main_channel_id', $user_objects['users'][0]['_id'], true );
+                
+        TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored. TwitchPress will now send you to Twitch.tv to authorize your account.' ) );
         
         // Send user to oAuth2 URL (they will be returned to the next step in the setup process)
-        $kraken = new TWITCHPRESS_Kraken5_Interface();
+        $post_credentials_kraken = new TWITCHPRESS_Kraken5_Interface();
         $state = array( 'redirectto' => '/wp-admin/index.php?page=twitchpress-setup&step=folders' );
-        $oAuth2_URL = $kraken->generate_authorization_url_admin( $_POST['twitchpress_scopes'], $state );
+        $oAuth2_URL = $post_credentials_kraken->generate_authorization_url_admin( $_POST['twitchpress_scopes'], $state );
         wp_redirect( $oAuth2_URL );
         exit;
     }

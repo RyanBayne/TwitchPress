@@ -49,7 +49,7 @@ class TwitchPress_Admin_Help {
             '<p><a href="https://github.com/ryanbayne/twitchpress/wiki" target="_blank">' . __( 'About TwitchPress', 'twitchpress' ) . '</a></p>' .
             '<p><a href="https://github.com/ryanbayne/twitchpress" target="_blank">' . __( 'Github project', 'twitchpress' ) . '</a></p>' .
             '<p><a href="https://github.com/ryanbayne/twitchpress/blob/master/CHANGELOG.txt" target="_blank">' . __( 'Change Log', 'twitchpress' ) . '</a></p>' .
-            '<p><a href="https://pluginseed.wordpress.com" target="_blank">' . __( 'Blog', 'twitchpress' ) . '</a></p>'
+            '<p><a href="https://twitchpress.wordpress.com" target="_blank">' . __( 'Blog', 'twitchpress' ) . '</a></p>'
         );
                 
         $screen->add_help_tab( array(
@@ -260,9 +260,13 @@ class TwitchPress_Admin_Help {
     * This focuses on the services main Twitch application credentials only.
     * 
     * @author Ryan Bayne
-    * @version 1.0
+    * @version 2.0
     */
     public function status() {
+        $channel_display_name = __( 'Not Found', 'twitchpress' );
+        $channel_status = __( 'Not Found', 'twitchpress' );
+        $channel_game = __( 'Not Found', 'twitchpress' );
+        
         // Check for existing cache.
         $cache = get_transient( 'twitchpresshelptabstatus' );
         if( $cache ) {
@@ -291,11 +295,16 @@ class TwitchPress_Admin_Help {
         if( !$channel ) {
             $output .= __( 'Attempt failed, there might be a fault or Twitch.tv is hungover today! Refresh the page and if this message continues please let Ryan know.', 'twitchpress' );    
         } else {
+            
+            if( isset( $channel['display_name'] ) ) { $channel_display_name = $channel['display_name']; }
+            if( isset( $channel['status'] ) ) { $channel_status = $channel['status']; }
+            if( isset( $channel['game'] ) ) { $channel_game = $channel['game']; }
+            
             $output .= __( 'Great news! TwitchPress is communicating with Twitch.tv. Here\'s some of your main channels information...to prove it!', 'twitchpress' );    
             $output .= '<ul>';
-            $output .= '<li><strong>Display Name: </strong>' . $channel['display_name'] . '</li>';
-            $output .= '<li><strong>Status: </strong>' . $channel['status'] . '</li>';
-            $output .= '<li><strong>Game: </strong>' . $channel['game'] . '</li>';
+            $output .= '<li><strong>Display Name: </strong>' . $channel_display_name . '</li>';
+            $output .= '<li><strong>Status: </strong>' . $channel_status . '</li>';
+            $output .= '<li><strong>Game: </strong>' . $channel_game . '</li>';
             $output .= '</ul>';
         }
         

@@ -42,7 +42,7 @@ class TwitchPress_Settings_Permissions extends TwitchPress_Settings_Page {
 
         $sections = array(
             ''              => __( 'Permissions Scope', 'twitchpress' ),
-            'maincredentials'       => __( 'Main Credentials', 'twitchpress' ),
+            'entermaincredentials'       => __( 'Enter Main Credentials', 'twitchpress' ),
         );
 
         return apply_filters( 'twitchpress_get_sections_' . $this->id, $sections );
@@ -66,7 +66,7 @@ class TwitchPress_Settings_Permissions extends TwitchPress_Settings_Page {
         global $current_section;
         $settings = $this->get_settings( $current_section );
         TwitchPress_Admin_Settings::save_fields( $settings );
-        // Attempt to create a Twitch session on the assumpetion all credentials are ready.
+        // Attempt to create a Twitch session on the assumption all credentials are ready.
         $kraken = new TWITCHPRESS_Kraken5_Interface();
         $kraken->start_twitch_session_admin( 'main' );
     }
@@ -77,21 +77,22 @@ class TwitchPress_Settings_Permissions extends TwitchPress_Settings_Page {
      * @return array
      */
     public function get_settings( $current_section = '' ) {
-        if ( 'maincredentials' == $current_section ) {
+             
+        if ( 'entermaincredentials' == $current_section ) {
 
-            $settings = apply_filters( 'twitchpress_sectionb_settings', array(
+            $settings = apply_filters( 'twitchpress_entermaincredentials_settings', array(
             
                 array(
-                    'title' => __( 'Main Twitch API Application', 'twitchpress' ),
+                    'title' => __( 'Enter Main Twitch API Application', 'twitchpress' ),
                     'type'     => 'title',
-                    'desc'     => __( 'This is the form for entering your main developer application. When you submit the form, you will go through the oAuth2 procedure. If a code already exists and it is still valid, the procedure will be shorter. When you arrive back on this screen, the token field should be populated and you should be able to make calls to Kraken.', 'twitchpress' ),
+                    'desc'     => __( 'This is the form for entering your main developer application. When you submit the form for the first time, you will go through the oAuth2 procedure. If a code already exists and it is still valid, the procedure will be shorter. When you arrive back on this screen, the token field should be populated and you should be able to make calls to Kraken.', 'twitchpress' ),
                     'id'     => 'mainapplicationcredentials'
                 ),
 
                 array(
                     'title'           => __( 'Main Channel', 'twitchpress' ),
                     'desc'            => __( 'Add the channel that the developer application has been created in.', 'twitchpress' ),
-                    'id'              => 'twitchpress_main_channel',
+                    'id'              => 'twitchpress_main_channel_name',
                     'default'         => '',
                     'type'            => 'text',
                 ),

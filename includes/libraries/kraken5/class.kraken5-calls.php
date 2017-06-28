@@ -67,6 +67,40 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     }
     
     /**
+    * Gets objects for multiple users.
+    * 
+    * @param mixed $users
+    * 
+    * @version 5.0
+    */
+    public function get_users( $users ) {
+        $functionName = 'GET_USERS';
+        
+        // We need a string.
+        if( is_array( $users ) ) {
+            $users_string = implode( ',', $users );
+        } else {
+            $users_string = $users;
+        }
+        
+        $this->generateOutput($functionName, 'Attempting to get objects for the following users: ' . $users_string, 1);
+        
+        $url = 'https://api.twitch.tv/kraken/users?login=' . $users_string . '';
+        $options = array();
+        $get = array();
+        
+        // Build our cURL query and store the array
+        $usersObject = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $this->generateOutput($functionName, 'Raw return: ' . json_encode( $usersObject ), 4);
+        
+        //clean up
+        $this->generateOutput($functionName, 'Cleaning Memory', 3);
+        unset( $users_string, $url, $options, $get, $functionName );
+        
+        return $usersObject;        
+    }
+    
+    /**
      * Gets the current authenticated users Twitch user object.
      * 
      * @param $user - [string] Username to grab the object for
@@ -157,7 +191,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     public function getChannelObject_Authd( $token = null, $code = null ){                                     
         $functionName = 'GET_CHANNEL_AUTHED';
         $requiredAuth = 'channel_read';
-        $this->generateOutput($functionName, 'Grabbing authenticated channel object', 1);
+        $this->generateOutput( $functionName, 'Grabbing authenticated channel object', 1 );
         
         if( !$token ) {
             $token = $this->twitch_client_token;
@@ -178,7 +212,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
                     if ($code != null || ''){
                         $auth = $this->generateToken($code); // Assume generation and check later for failure
                     } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
+                        $this->generateError( 400, 'Existing token expired and no code available for generation.' );
                         return array();
                     }
                 }
@@ -188,7 +222,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             
             // check to see if we recieved a token after all of that checking
             if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
+                $this->generateError( 400, 'Auth key not returned, exiting function: ' . $functionName );
                 return array(); // return out after the error is passed
             }
             
@@ -631,22 +665,22 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     /**
      * Grabs a full channel object of all publically available data for the channel
      * 
-     * @param $chan - [string] Name of the channel to grab the object for
+     * @param $channel_id - [string] ID of the channel to grab the object for
      * @param $clientid - [string]
      * 
      * @return $object - [array] Keyed array of all publically available channel data
      * 
-     * @version 1.2
+     * @version 5.0
      */
-    public function getChannelObject($chan,$clientid){
+    public function getChannelObject( $channel_id ){
         $functionName = 'GET_CHANNEL';
-        $this->generateOutput($functionName, 'Grabbing channel object for channel: ' . $chan, 1);
+        $this->generateOutput($functionName, 'Grabbing channel object for channel: ' . $channel_id, 1);
         
-        $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '?client_id=' . $clientid;
+        $url = 'https://api.twitch.tv/kraken/channels/' . $channel_id . '?client_id=' . $this->twitch_client_id;
         $get = array();
         $options = array();
         
-        $this->generateOutput($functionName, 'Grabbing channel object for ' . $chan, 3);
+        $this->generateOutput($functionName, 'Grabbing channel object for ' . $channel_id, 3);
         
         $object = json_decode($this->cURL_get($url, $get, $options, false), true);
         
@@ -654,7 +688,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         
         // Clean up
         $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $functionName, $url, $get, $options);
+        unset( $channel_id, $functionName, $url, $get, $options );
         
         if (!is_array($object)){
             $object = array(); // Catch to make sure that an array is returned no matter what, technically our fail state
@@ -2579,7 +2613,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * 
      * @return $teamObject - [array] Object returned for the team queried
      */ 
-    public function getTeam($team){
+    public function getTeam( $team ){
         $functionName = 'GET_USEROBJECT';
         $this->generateOutput($functionName, 'Attempting to get the team object for user: ' . $team, 1);
         
@@ -2595,6 +2629,30 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         unset($team, $url, $options, $get, $functionName);
         
         return $teamObject;
+    }    
+    
+    /**
+     * Revoke access token for account. 
+     * 
+     * @todo This function now requires clientid appended to URL ?client_id=' . $client_id
+     */ 
+    public function revoke_access_tokens(){
+        $functionName = 'GET_USEROBJECT';
+        $this->generateOutput($functionName, 'Attempting to revoke access token for this client!', 1);
+        
+        $url = 'https://api.twitch.tv/kraken/oauth2/revoke?client_id=' . $this->twitch_client_id . '&token=' . $this->twitch_client_token;
+        $options = array();
+        $get = array();
+        
+        // Build our cURL query and store the array
+        $userObject = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $this->generateOutput($functionName, 'Raw return: ' . json_encode($userObject), 4);
+        
+        //clean up
+        $this->generateOutput($functionName, 'Cleaning Memory', 3);
+        unset($user, $url, $options, $get, $functionName);
+        
+        return $userObject;          
     }    
 }
 

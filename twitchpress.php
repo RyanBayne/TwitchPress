@@ -4,11 +4,11 @@
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add your Twitch.tv channel to WordPress. 
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com
  * Requires at least: 4.4
- * Tested up to: 4.7
+ * Tested up to: 4.8
  * License: GPL3
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Domain Path: /i18n/languages/
@@ -39,7 +39,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.2.1';
+    public $version = '1.2.2';
 
     /**
      * Minimum WP version.
@@ -125,7 +125,7 @@ final class WordPressTwitchPress {
     private function init_hooks() {
         register_activation_hook( __FILE__, array( 'TwitchPress_Install', 'install' ) );
         // Do not confuse deactivation of a plugin with deletion of a plugin - two very different requests.
-        register_deactivation_hook( __FILE__, array( 'TwitchPress_Install', 'deactivate' ) );
+        register_deactivation_hook( __FILE__, array( 'TwitchPress_Uninstall', 'deactivate' ) );
         add_action( 'init', array( $this, 'init' ), 0 );
     }
 
@@ -202,10 +202,13 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-ajax.php' );
         include_once( 'includes/libraries/kraken5/class.kraken5-interface.php' );
         include_once( 'includes/libraries/kraken5/class.kraken5-calls.php' );        
+        include_once( 'includes/toolbars/class.twitchpress-toolbars.php' );        
+        include_once( 'includes/class.twitchpress-listener.php' );
              
         if ( $this->is_request( 'admin' ) ) {
             include_once( 'includes/admin/class.twitchpress-admin.php' );
             include_once( 'includes/admin/class.twitchpress-admin-twitchfeed-posts.php' );
+            include_once( 'includes/admin/class.twitchpress-admin-uninstall.php' );
         }
 
         if ( $this->is_request( 'frontend' ) ) {

@@ -177,11 +177,10 @@ function twitchpress_get_permalink_structure() {
 * @param mixed $class
 * @param mixed $time
 */
-function twitchpress_error( $message, $message_type = 0, $destination = null, $extra_headers = null, $line = null, $function = null, $class = null, $time = null ) 
-{
+function twitchpress_error( $message, $message_type = 0, $destination = null, $extra_headers = null, $line = null, $function = null, $class = null, $time = null ) {
     $error = 'TwitchPress Plugin: ';
     $error .= $message;
-    $error .= ' (get help@webtechglobal.co.uk)';
+    $error .= ' (get squeekycoder@gmail.com)';
     
     // Add extra information. 
     if( $line != null || $function != null || $class != null || $time != null )
@@ -209,3 +208,18 @@ function twitchpress_error( $message, $message_type = 0, $destination = null, $e
 
     return error_log( $error, $message_type, $destination, $extra_headers );
 }
+
+/**
+* Create a nonced URL for returning to the current page.
+* 
+* @param mixed $new_parameters_array
+* 
+* @version 1.0
+*/
+function twitchpress_returning_url_nonced( $new_parameters_array, $action, $specified_url = null  ) {
+    return esc_url( 
+                wp_nonce_url( 
+                        add_query_arg( $new_parameters_array, $specified_url ) 
+                ), $action 
+           );
+}                          

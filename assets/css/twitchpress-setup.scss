@@ -39,7 +39,7 @@ body {
         color: #666;
     }
     a {
-        color: #1ca50e;
+        color: #472F75;
         &:hover, &:focus {
             color: #111;
         }
@@ -236,11 +236,11 @@ body {
             }
             .setup-thing {
                 a {
-                    background-color: #1ca50e;
-                    border-color: #138008;
-                    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
-                    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
-                    text-shadow: 0px -1px 1px #138008, 1px 0px 1px #138008, 0px 1px 1px #138008, -1px 0px 1px #138008;
+                    background-color: #472F75;
+                    border-color: #472F75;
+                    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
+                    text-shadow: 0px -1px 1px #472F75, 1px 0px 1px #472F75, 0px 1px 1px #472F75, -1px 0px 1px #472F75;
                     font-size: 1em;
                     height: auto;
                     line-height: 1.75em;
@@ -250,10 +250,10 @@ body {
                     text-align: center;
                     
                     &:hover, &:focus, &:active {
-                        background: #138008;
-                        border-color: #138008;
-                        -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
-                        box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
+                        background: #472F75;
+                        border-color: #472F75;
+                        -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
+                        box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
                     }
                 }
             }
@@ -329,18 +329,18 @@ body {
         background: #fff;
     }
     li.active {
-        border-color: #1ca50e;
-        color: #1ca50e;
+        border-color: #472F75;
+        color: #472F75;
         &:before {
-            border-color: #1ca50e;
+            border-color: #472F75;
         }
     }
     li.done {
-        border-color: #1ca50e;
-        color: #1ca50e;
+        border-color: #472F75;
+        color: #472F75;
         &:before {
-            border-color: #1ca50e;
-            background: #1ca50e;
+            border-color: #472F75;
+            background: #472F75;
         }
     }
 }
@@ -357,20 +357,20 @@ body {
         border-radius: 4px;
     }
     .button-primary {
-        background-color: #1ca50e;
-        border-color: #138008;
-        -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
-        text-shadow: 0px -1px 1px #138008, 1px 0px 1px #138008, 0px 1px 1px #138008, -1px 0px 1px #138008;
+        background-color: #472F75;
+        border-color: #472F75;
+        -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
+        text-shadow: 0px -1px 1px #472F75, 1px 0px 1px #472F75, 0px 1px 1px #472F75, -1px 0px 1px #472F75;
         float: right;
         margin: 0;
         opacity: 1;
 
         &:hover, &:focus, &:active {
-            background: #138008;
-            border-color: #138008;
-            -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #138008;
+            background: #472F75;
+            border-color: #472F75;
+            -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 #472F75;
         }
     }
 }
@@ -475,8 +475,8 @@ ul.twitchpress-wizard-plugin-extensions {
                     content: "\f147";
                     font-family: 'dashicons';
                     color: #fff;
-                    border-color: #1ca50e;
-                    background: #1ca50e;
+                    border-color: #472F75;
+                    background: #472F75;
                 }
 
                 &:focus + label {
