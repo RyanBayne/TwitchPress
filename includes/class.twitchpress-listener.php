@@ -1,8 +1,6 @@
 <?php
 /**
- * TwitchPress Listener
- * 
- * 
+ * TwitchPress Listener for $_GET requests.
  * 
  * @author   Ryan Bayne
  * @category Admin
@@ -28,6 +26,10 @@ class TwitchPress_Listener {
     * @version 1.0
     */
     public function GET_requests_listener() {
+        if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
+            return;
+        }
+        
         if( !isset( $_GET['twitchpressaction'] ) ) {
             return;    
         }
@@ -65,7 +67,17 @@ class TwitchPress_Listener {
         // End of TwitchPress adminstrator only requests.            
     } 
     
+    /**
+    * Remove all settings from the Developer Toolbar.
+    * 
+    * @version 1.1
+    */
     public static function developertoolbar_uninstall_settings() {
+        // Security is done already but we need safeguards should the method be called elsewhere.
+        if( !user_can( TWITCHPRESS_CURRENTUSERID, 'activate_plugins' ) ) {  
+            return;    
+        }
+        
         $nonce = $_REQUEST['_wpnonce'];
         if ( wp_verify_nonce( $nonce, 'twitchpressuninstalloptions' ) ) {
             $user_has_permission = TwitchPress_Uninstall::uninstall_options(); 

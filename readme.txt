@@ -1,18 +1,18 @@
 === Plugin Name ===
 Contributors: Ryan Bayne
 Donate link: https://www.patreon.com/zypherevolved
-License: GPLv2 or later
+License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: Twitch, Twitch.tv, Unofficial, Twitch Feed, Twitch Channel, Twitch Channel Feeds
+Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.2.2
+Stable tag: 1.2.3
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
                        
 == Description ==
 
-TwitchPress is an adaptable solution for the creation of a Twitch service. 
+TwitchPress is an adaptable solution for the creation of a Twitch service that can do anything Kraken allows. 
 Marry your WordPress gaming site with your Twitch channel in everyway possible using the plugins extension system
 or create a site just to offer channel management services.
 
@@ -28,9 +28,9 @@ Premium extensions are not being developed yet although I have already made two 
 
 = Links =                                                                
 *   <a href="https://twitchpress.wordpress.com" title="">Blog</a>
-*   <a href="https://github.com/RyanBayne/TwitchPress" title="">GitHub</a>       
-*   <a href="https://twitter.com/zypherevolved" title="Follow the projects Tweets.">Authors Twitter</a>     
-*   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">Plugins Twitter</a>     
+*   <a href="https://github.com/RyanBayne/TwitchPress-Login-Extension" title="">GitHub</a>       
+*   <a href="https://twitter.com/ryan_r_bayne" title="Follow the projects Tweets.">Developers Twitter</a>     
+*   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">TwitchPress Twitter</a>     
 *   <a href="https://www.twitch.tv/zypherevolved" title="Follow my Twitch channel.">Authors Twitch</a>     
 *   <a href="https://discord.gg/NaRB3wE" title="Chat about TwitchPress on Discord.">Discord Chat</a>          
 *   <a href="https://www.patreon.com/zypherevolved" title="">Patreon Donations</a>     
@@ -38,12 +38,12 @@ Premium extensions are not being developed yet although I have already made two 
 
 = Features List = 
 
-1. Twitch API - Authorization Code Flow
-1. Authorize a main Twitch account to handle schedule events.
-1. Smart shortcodes that find live streams and embedding them.
-1. Schedule system for automating API and IRC actions while you sleep.
-1. Post content from WordPress to Twitch channel feed.
-1. Coming Next: Import feed posts from Twitch into WordPress!
+* Post content to Twitch feed.
+* Get content from Twitch feed.
+* Extension system to build Twitch suites. 
+* Custom post type for Twitch posts. 
+* Fully supported. 
+* Free and Premium levels of service. 
 
 == Installation ==
 
@@ -73,6 +73,22 @@ No special upgrade instructions this time. Just remember to
 backup your site files and database.
 
 == Changelog ==
+= 1.2.3 =
+* DEV - TwitchPress_Settings_Permissions renamed to TwitchPress_Settings_Permissions
+* DEV - Default footer message will no longer be displayed. 
+* DEV - New settings views are being added, they will be hidden until active extensions require them. 
+* DEV - Internationalizing (i18n) files added for the first time. 
+* DEV - Updated scopes description to insist on strict selection of required scopes only.
+* DEV - get_global_accepted_scopes() had a "twitch_scope" string changed to "twitchpress_scope".
+* DEV - CSV 2 POST plugin removed from extensions list. 
+* DEV - The first official extension "TwitchPress Login Extension" added to extensions list. 
+* DEV - New function twitchpress_validate_code() applied to administrator_main_account_listener().
+* DEV - Applied "$_SERVER['REQUEST_METHOD'] !== 'GET'" to $_GET listeners.
+* DEV - Updated user-friendly descriptions in scopes(). 
+* DEV - added "openid" scope to the scopes() function. 
+* DEV - The $twitch_scopes variable has been updated with openid in TWITCHPRESS_Kraken5_Interface()
+* DEV - Removed the getUserObject() function which has never been used and is no longer usable.
+
 = 1.2.2 =
 * DEV - Notices class improved to allow easier creation of all class (color) of notices. 
 * DEV - Changed Senior Developer role (seniordeveloper) to TwitchPress Developer (twitchpressdeveloper)

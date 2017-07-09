@@ -237,6 +237,8 @@ class TwitchPress_Admin_Setup_Wizard {
     /**
      * Step requesting the user to accept the Twitch Developer Services Agreement
      * or avoid using the plugin.
+     * 
+     * @version 5.0
      */
     public function twitchpress_setup_application() {?>
         <h1><?php _e( 'Enter Twitch Application Credentials', 'twitchpress' ); ?></h1>
@@ -407,6 +409,16 @@ class TwitchPress_Admin_Setup_Wizard {
                         <label for="twitchpress_scope_viewing_activity_read"><?php _e( 'Turn on Viewer Heartbeat Service ability to record user data.', 'twitchpress' ); ?></label>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row"><label for="twitchpress_scope_openid"><?php _e( 'openid', 'twitchpress' ); ?></label></th>
+                    <td>
+                        <input type="checkbox" id="twitchpress_scope_openid" name="twitchpress_scopes[]" class="input-checkbox" value="openid" <?php checked( get_option( 'twitchpress_scope_openid' ), 'yes', true ); ?> />
+                        <label for="twitchpress_scope_openid"><?php _e( 'Give permission  for the site to use OpenID Connect authentication.', 'twitchpress' ); ?></label>
+                    </td>
+                </tr>
+                
+                
+                openid
             </table>        
             <p class="twitchpress-setup-actions step">
                 <input type="submit" class="button-primary button button-large button-next" value="<?php esc_attr_e( 'Continue', 'twitchpress' ); ?>" name="save_step" />
@@ -566,13 +578,15 @@ class TwitchPress_Admin_Setup_Wizard {
      * Array of official and endorsed extensions.
      * 
      * @return array
+     * 
+     * @version 1.1
      */
     protected function get_wizard_extensions() {       
         $gateways = array(
-            'csv-2-post' => array(
-                'name'        => __( 'CSV 2 POST', 'twitchpress' ),
-                'description' => __( 'Import data for the purpose of mass publishing posts. Another plugin by Ryan Bayne.', 'twitchpress' ),
-                'repo-slug'   => 'csv-2-post',
+            'twitchpress-login-extension' => array(
+                'name'        => __( 'TwitchPress Login Extension', 'twitchpress' ),
+                'description' => __( 'Official login extension by Ryan Bayne. Allow your visitors to login and register using their Twitch account.', 'twitchpress' ),
+                'repo-slug'   => 'twitchpress-login-extension',
                 'source'        => 'remote'
             ),  /*
             'stripe' => array(

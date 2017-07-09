@@ -2,10 +2,7 @@
 /**
  * The main Twitch API interface updated for Kraken version after it's original
  * download from GitHub.
- * 
- * @author Ryan R. Bayne
- * Original Author: Anthony 'IBurn36360' Diaz - 2013 (class twitch)
- * 
+
  * Do not use this class unless you accept the Twitch Developer Services Agreement
  * @link https://www.twitch.tv/p/developer-agreement
  * 
@@ -13,7 +10,7 @@
  * @author   Ryan Bayne
  * @category Admin
  * @package  TwitchPress/Core
- * @version  1.0.0
+ * @version  5.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,6 +24,7 @@ if (!extension_loaded('json')) trigger_error('PECL JSON or pear JSON is not inst
 if( !class_exists( 'TWITCHPRESS_Kraken5_Interface' ) ) :
 
 class TWITCHPRESS_Kraken5_Interface {
+    
     protected $twitch_wperror = null;
     protected $twitch_default_channel = null;// Services own channel name, not ID.
     protected $twitch_channel_id = null;
@@ -55,7 +53,8 @@ class TWITCHPRESS_Kraken5_Interface {
             'user_follows_edit',
             'user_read',
             'user_subscriptions',
-            'viewing_activity_read'
+            'viewing_activity_read',
+            'openid'
     );
   
     /**
@@ -65,21 +64,21 @@ class TWITCHPRESS_Kraken5_Interface {
     * @var mixed
     */
     public $twitchchannels_endorsed = array(
-        'zypherevolved' => array( 'display_name' => 'ZypheREvolved' ),
+        'zypherevolved'        => array( 'display_name' => 'ZypheREvolved' ),
         'starcitizengiveaways' => array( 'display_name' => 'StarCitizenGiveaways' ),        
-        'testgaming' => array( 'display_name' => 'TESTGaming' ),
-        'capn_flint' => array( 'display_name' => 'capn_flint' ),
-        'wtfosaurus' => array( 'display_name' => 'WTFOSAURUS' ),
-        'starcitizen' => array( 'display_name' => 'StarCitizen' ),
-        'cigcommunity' => array( 'display_name' => 'CIGCommunity' ),
-        'dtox_tv' => array( 'display_name' => 'DTOX_TV' ),
-        'sgt_gamble' => array( 'display_name' => 'SGT_Gamble' ),
-        'baiorofred' => array( 'display_name' => 'BaiorOfRed' ),
-        'bristolboy88' => array( 'display_name' => 'BristolBoy88' ),
-        'mzhartz' => array( 'display_name' => 'MzHartz' ),
-        'boredgameruk' => array( 'display_name' => 'BoredGamerUK' ),
-        'thenoobifier1337' => array( 'display_name' => 'TheNOOBIFIER1337' ),
-        'tacticaladvance' => array( 'display_name' => 'TacticalAdvance' ),
+        'testgaming'           => array( 'display_name' => 'TESTGaming' ),
+        'capn_flint'           => array( 'display_name' => 'capn_flint' ),
+        'wtfosaurus'           => array( 'display_name' => 'WTFOSAURUS' ),
+        'starcitizen'          => array( 'display_name' => 'StarCitizen' ),
+        'cigcommunity'         => array( 'display_name' => 'CIGCommunity' ),
+        'dtox_tv'              => array( 'display_name' => 'DTOX_TV' ),
+        'sgt_gamble'           => array( 'display_name' => 'SGT_Gamble' ),
+        'baiorofred'           => array( 'display_name' => 'BaiorOfRed' ),
+        'bristolboy88'         => array( 'display_name' => 'BristolBoy88' ),
+        'mzhartz'              => array( 'display_name' => 'MzHartz' ),
+        'boredgameruk'         => array( 'display_name' => 'BoredGamerUK' ),
+        'thenoobifier1337'     => array( 'display_name' => 'TheNOOBIFIER1337' ),
+        'tacticaladvance'      => array( 'display_name' => 'TacticalAdvance' ),
     );
         
     /**
@@ -99,13 +98,54 @@ class TWITCHPRESS_Kraken5_Interface {
     * @param mixed $app
     */
     public function set_application_credentials( $app = 'main' ) {
-        $this->twitch_default_channel  = get_option( 'twitchpress_' . $app . '_channel_name' );   
-        $this->twitch_channel_id       = get_option( 'twitchpress_' . $app . '_channel_id' );   
-        $this->twitch_client_url       = get_option( 'twitchpress_' . $app . '_redirect_uri' );   
-        $this->twitch_client_id        = get_option( 'twitchpress_' . $app . '_client_id' ); 
-        $this->twitch_client_secret    = get_option( 'twitchpress_' . $app . '_client_secret' );                           
-        $this->twitch_client_code      = get_option( 'twitchpress_' . $app . '_code' );                           
-        $this->twitch_client_token     = get_option( 'twitchpress_' . $app . '_token' );                           
+        $this->twitch_default_channel = get_option( 'twitchpress_' . $app . '_channel_name' );   
+        $this->twitch_channel_id      = get_option( 'twitchpress_' . $app . '_channel_id' );   
+        $this->twitch_client_url      = get_option( 'twitchpress_' . $app . '_redirect_uri' );   
+        $this->twitch_client_id       = get_option( 'twitchpress_' . $app . '_client_id' ); 
+        $this->twitch_client_secret   = get_option( 'twitchpress_' . $app . '_client_secret' );                           
+        $this->twitch_client_code     = get_option( 'twitchpress_' . $app . '_code' );                           
+        $this->twitch_client_token    = get_option( 'twitchpress_' . $app . '_token' );                           
+    }
+    
+    /**
+    * Checks if application credentials are set.
+    * 
+    * @returns boolean true if set else an array of all the missing credentials.
+    * 
+    * @version 1.0
+    */
+    public function is_app_set() {
+        $missing = array();
+        
+        if( !$this->twitch_channel_id ) {
+            $missing[] = __( 'Channel ID', 'twitchpress' );        
+        }    
+        
+        if( !$this->twitch_client_url ) {
+            $missing[] = __( 'Client URL', 'twitchpress' );        
+        }    
+        
+        if( !$this->twitch_client_id ) {
+            $missing[] = __( 'Client ID', 'twitchpress' );        
+        }    
+        
+        if( !$this->twitch_client_secret ) {
+            $missing[] = __( 'Client Secret', 'twitchpress' );        
+        }    
+        
+        if( !$this->twitch_client_code ) {
+            $missing[] = __( 'Client Code', 'twitchpress' );        
+        }    
+        
+        if( !$this->twitch_client_token ) {
+            $missing[] = __( 'Client Token', 'twitchpress' );        
+        }       
+        
+        if( $missing ) {
+            return $missing;
+        }
+        
+        return true;
     }
     
     /**
@@ -127,10 +167,14 @@ class TWITCHPRESS_Kraken5_Interface {
     * 
     * Add methods between returns, where arguments satisfy minimum security. 
     * 
-    * @version 1.2
+    * @version 1.4
     */
     public static function administrator_main_account_listener() {
         
+        if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
+            return;
+        }
+                
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {    
             return;
         }
@@ -164,10 +208,11 @@ class TWITCHPRESS_Kraken5_Interface {
             return;
         } 
         
-        if( !isset( $_GET['code'] ) ) {        
+        // Do not trust the $_GET! 
+        if( !isset( $_GET['code'] ) || !twitchpress_validate_code( $_GET['code'] ) ) {        
             return;
         } else {
-            $twitch_code = esc_html( $_GET['code'] );
+            $twitch_code = $_GET['code'];
             update_option( 'twitchpress_main_code', $twitch_code );
         }          
         
@@ -214,7 +259,6 @@ class TWITCHPRESS_Kraken5_Interface {
 
         update_option( 'twitchpress_main_channel_id', $user_objects['users'][0]['_id'], true );        
         
-        
         // Forward user to the custom destinaton i.e. where they were before oAuth2. 
         wp_redirect( get_site_url() . $oauth_transient['redirectto'] );
         exit;
@@ -224,89 +268,96 @@ class TWITCHPRESS_Kraken5_Interface {
     * Returns an array of scopes with user-friendly form input labels and descriptions.
     * 
     * @author Ryan R. Bayne
-    * @version 1.1
+    * @version 1.2
     */
-    public function scopes() {      
+    public function scopes( $scopes_only = false) {
+        // We can return scopes without additional information.
+        if( $scopes_only ) { return $this->twitch_scopes; }
+              
         $scope = array(
             'channel_check_subscription' => array(),
-            'channel_commercial' => array(),
-            'channel_editor' => array(),
-            'channel_feed_edit' => array(),
-            'channel_feed_read' => array(),
-            'channel_read' => array(),
-            'channel_stream' => array(),
-            'channel_subscriptions' => array(),
-            'chat_login' => array(),
-            'collections_edit' => array(),
-            'communities_edit => array()',
-            'communities_moderate' => array(),
-            'user_blocks_edit' => array(),
-            'user_blocks_read' => array(),
-            'user_follows_edit' => array(),
-            'user_read' => array(),
-            'user_subscriptions' => array(),
-            'viewing_activity_read' => array()        
+            'channel_commercial'         => array(),
+            'channel_editor'             => array(),
+            'channel_feed_edit'          => array(),
+            'channel_feed_read'          => array(),
+            'channel_read'               => array(),
+            'channel_stream'             => array(),
+            'channel_subscriptions'      => array(),
+            'chat_login'                 => array(),
+            'collections_edit'           => array(),
+            'communities_edit'           => array(),
+            'communities_moderate'       => array(),
+            'user_blocks_edit'           => array(),
+            'user_blocks_read'           => array(),
+            'user_follows_edit'          => array(),
+            'user_read'                  => array(),
+            'user_subscriptions'         => array(),
+            'viewing_activity_read'      => array(),
+            'openid'                     => array()        
         );
         
         // Add form input labels for use in form input labels. 
-        $scope['user_read']['label'] = __( 'General Account Details', 'twitchpress' );
-        $scope['user_blocks_edit']['label'] = __( 'Ignore Users', 'twitchpress' );
-        $scope['user_blocks_read']['label'] = __( 'Get Ignored Users', 'twitchpress' );
-        $scope['user_follows_edit']['label'] = __( 'Follow Users', 'twitchpress' );
-        $scope['channel_read']['label'] = __( 'Get Channel Data', 'twitchpress' );
-        $scope['channel_editor']['label'] = __( 'Edit Channel', 'twitchpress' );
-        $scope['channel_commercial']['label'] = __( 'Trigger Commercials', 'twitchpress' );
-        $scope['channel_stream']['label'] = __( 'Reset Stream Key', 'twitchpress' );
-        $scope['channel_subscriptions']['label'] = __( 'Get Your Subscribers', 'twitchpress' );
-        $scope['user_subscriptions']['label'] = __( 'Get Your Subscriptions', 'twitchpress' );
+        $scope['user_read']['label']                  = __( 'General Account Details', 'twitchpress' );
+        $scope['user_blocks_edit']['label']           = __( 'Ignore Users', 'twitchpress' );
+        $scope['user_blocks_read']['label']           = __( 'Get Ignored Users', 'twitchpress' );
+        $scope['user_follows_edit']['label']          = __( 'Follow Users', 'twitchpress' );
+        $scope['channel_read']['label']               = __( 'Get Channel Data', 'twitchpress' );
+        $scope['channel_editor']['label']             = __( 'Edit Channel', 'twitchpress' );
+        $scope['channel_commercial']['label']         = __( 'Trigger Commercials', 'twitchpress' );
+        $scope['channel_stream']['label']             = __( 'Reset Stream Key', 'twitchpress' );
+        $scope['channel_subscriptions']['label']      = __( 'Get Your Subscribers', 'twitchpress' );
+        $scope['user_subscriptions']['label']         = __( 'Get Your Subscriptions', 'twitchpress' );
         $scope['channel_check_subscription']['label'] = __( 'Check Viewers Subscription', 'twitchpress' );
-        $scope['chat_login']['label'] = __( 'Chat Permission', 'twitchpress' );
-        $scope['channel_feed_read']['label'] = __( 'Get Channel Feed', 'twitchpress' );
-        $scope['channel_feed_edit']['label'] = __( 'Post To Channels Feed', 'twitchpress' );
-        $scope['communities_edit']['label'] = __( 'Manage Users Communities', 'twitchpress' );
-        $scope['communities_moderate']['label'] = __( 'Manage Community Moderators', 'twitchpress' );
-        $scope['collections_edit']['label'] = __( 'Manage Video Collections', 'twitchpress' );
-        $scope['viewing_activity_read']['label'] = __( 'Viewer Heartbeat Service', 'twitchpress' );
+        $scope['chat_login']['label']                 = __( 'Chat Permission', 'twitchpress' );
+        $scope['channel_feed_read']['label']          = __( 'Get Channel Feed', 'twitchpress' );
+        $scope['channel_feed_edit']['label']          = __( 'Post To Channels Feed', 'twitchpress' );
+        $scope['communities_edit']['label']           = __( 'Manage Users Communities', 'twitchpress' );
+        $scope['communities_moderate']['label']       = __( 'Manage Community Moderators', 'twitchpress' );
+        $scope['collections_edit']['label']           = __( 'Manage Video Collections', 'twitchpress' );
+        $scope['viewing_activity_read']['label']      = __( 'Viewer Heartbeat Service', 'twitchpress' );
+        $scope['openid']['label']                     = __( 'OpenID Connect Service', 'twitchpress' );
                 
         // Add official api descriptions - copied from official API documention.
-        $scope['user_read']['apidesc'] = __( 'Read access to non-public user information, such as email address.', 'twitchpress' );
-        $scope['user_blocks_edit']['apidesc'] = __( 'Ability to ignore or unignore on behalf of a user.', 'twitchpress' );
-        $scope['user_blocks_read']['apidesc'] = __( "Read access to a user's list of ignored users.", 'twitchpress' );
-        $scope['user_follows_edit']['apidesc'] = __( "Access to manage a user's followed channels.", 'twitchpress' );
-        $scope['channel_read']['apidesc'] = __( 'Read access to non-public channel information, including email address and stream key.', 'twitchpress' );
-        $scope['channel_editor']['apidesc'] = __( 'Write access to channel metadata (game, status, etc).', 'twitchpress' );
-        $scope['channel_commercial']['apidesc'] = __( 'Access to trigger commercials on channel.', 'twitchpress' );
-        $scope['channel_stream']['apidesc'] = __( "Ability to reset a channel's stream key.", 'twitchpress' );
-        $scope['channel_subscriptions']['apidesc'] = __( 'Read access to all subscribers to your channel.', 'twitchpress' );
-        $scope['user_subscriptions']['apidesc'] = __( 'Read access to subscriptions of a user.', 'twitchpress' );
+        $scope['user_read']['apidesc']                  = __( 'Read access to non-public user information, such as email address.', 'twitchpress' );
+        $scope['user_blocks_edit']['apidesc']           = __( 'Ability to ignore or unignore on behalf of a user.', 'twitchpress' );
+        $scope['user_blocks_read']['apidesc']           = __( 'Read access to a user’s list of ignored users.', 'twitchpress' );
+        $scope['user_follows_edit']['apidesc']          = __( 'Access to manage a user’s followed channels.', 'twitchpress' );
+        $scope['channel_read']['apidesc']               = __( 'Read access to non-public channel information, including email address and stream key.', 'twitchpress' );
+        $scope['channel_editor']['apidesc']             = __( 'Write access to channel metadata (game, status, etc).', 'twitchpress' );
+        $scope['channel_commercial']['apidesc']         = __( 'Access to trigger commercials on channel.', 'twitchpress' );
+        $scope['channel_stream']['apidesc']             = __( 'Ability to reset a channel’s stream key.', 'twitchpress' );
+        $scope['channel_subscriptions']['apidesc']      = __( 'Read access to all subscribers to your channel.', 'twitchpress' );
+        $scope['user_subscriptions']['apidesc']         = __( 'Read access to subscriptions of a user.', 'twitchpress' );
         $scope['channel_check_subscription']['apidesc'] = __( 'Read access to check if a user is subscribed to your channel.', 'twitchpress' );
-        $scope['chat_login']['apidesc'] = __( 'Ability to log into chat and send messages', 'twitchpress' );
-        $scope['channel_feed_read']['apidesc'] = __( 'Ability to view to a channel feed.', 'twitchpress' );
-        $scope['channel_feed_edit']['apidesc'] = __( 'Ability to add posts and reactions to a channel feed.', 'twitchpress' );
-        $scope['communities_edit']['apidesc'] = __( 'Manage a user’s communities.', 'twitchpress' );
-        $scope['communities_moderate']['apidesc'] = __( 'Manage community moderators.', 'twitchpress' );
-        $scope['collections_edit']['apidesc'] = __( 'Manage a user’s collections (of videos).', 'twitchpress' );
-        $scope['viewing_activity_read']['apidesc'] = __( 'Turn on Viewer Heartbeat Service ability to record user data.', 'twitchpress' );
+        $scope['chat_login']['apidesc']                 = __( 'Ability to log into chat and send messages', 'twitchpress' );
+        $scope['channel_feed_read']['apidesc']          = __( 'Ability to view to a channel feed.', 'twitchpress' );
+        $scope['channel_feed_edit']['apidesc']          = __( 'Ability to add posts and reactions to a channel feed.', 'twitchpress' );
+        $scope['communities_edit']['apidesc']           = __( 'Manage a user’s communities.', 'twitchpress' );
+        $scope['communities_moderate']['apidesc']       = __( 'Manage community moderators.', 'twitchpress' );
+        $scope['collections_edit']['apidesc']           = __( 'Manage a user’s collections (of videos).', 'twitchpress' );
+        $scope['viewing_activity_read']['apidesc']      = __( 'Turn on Viewer Heartbeat Service ability to record user data.', 'twitchpress' );
+        $scope['openid']['apidesc']                     = __( 'Use OpenID Connect authentication.', 'twitchpress' );
                 
         // Add user-friendly descriptions.
-        $scope['user_read']['userdesc'] = __( 'Read qemail address.', 'twitchpress' );
-        $scope['user_blocks_edit']['userdesc'] = __( 'Ability to ignore or unignore on behalf of a user.', 'twitchpress' );
-        $scope['user_blocks_read']['userdesc'] = __( "Read access to a user's list of ignored users.", 'twitchpress' );
-        $scope['user_follows_edit']['userdesc'] = __( "Access to manage a user's followed channels.", 'twitchpress' );
-        $scope['channel_read']['userdesc'] = __( 'Read access to non-public channel information, including email address and stream key.', 'twitchpress' );
-        $scope['channel_editor']['userdesc'] = __( 'Write access to channel metadata (game, status, etc).', 'twitchpress' );
-        $scope['channel_commercial']['userdesc'] = __( 'Access to trigger commercials on channel.', 'twitchpress' );
-        $scope['channel_stream']['userdesc'] = __( "Ability to reset a channel's stream key.", 'twitchpress' );
-        $scope['channel_subscriptions']['userdesc'] = __( 'Read access to all subscribers to your channel.', 'twitchpress' );
-        $scope['user_subscriptions']['userdesc'] = __( 'Read access to subscriptions of a user.', 'twitchpress' );
+        $scope['user_read']['userdesc']                  = __( 'Get email address.', 'twitchpress' );
+        $scope['user_blocks_edit']['userdesc']           = __( 'Ability to ignore or unignore other users.', 'twitchpress' );
+        $scope['user_blocks_read']['userdesc']           = __( 'Access to your list of ignored users.', 'twitchpress' );
+        $scope['user_follows_edit']['userdesc']          = __( 'Permission to manage your followed channels.', 'twitchpress' );
+        $scope['channel_read']['userdesc']               = __( 'Read your non-public channel information., including email address and stream key.', 'twitchpress' );
+        $scope['channel_editor']['userdesc']             = __( 'Ability to update meta data like game, status, etc.', 'twitchpress' );
+        $scope['channel_commercial']['userdesc']         = __( 'Access to trigger commercials on channel.', 'twitchpress' );
+        $scope['channel_stream']['userdesc']             = __( 'Ability to reset your channel’s stream key.', 'twitchpress' );
+        $scope['channel_subscriptions']['userdesc']      = __( 'Read access to all subscribers to your channel.', 'twitchpress' );
+        $scope['user_subscriptions']['userdesc']         = __( 'Permission to get your subscriptions.', 'twitchpress' );
         $scope['channel_check_subscription']['userdesc'] = __( 'Read access to check if a user is subscribed to your channel.', 'twitchpress' );
-        $scope['chat_login']['userdesc'] = __( 'Ability to log into chat and send messages', 'twitchpress' );
-        $scope['channel_feed_read']['userdesc'] = __( 'Ability to view to a channel feed.', 'twitchpress' );
-        $scope['channel_feed_edit']['userdesc'] = __( 'Ability to add posts and reactions to a channel feed.', 'twitchpress' );
-        $scope['communities_edit']['label'] = __( 'Manage a user’s communities.', 'twitchpress' );
-        $scope['communities_moderate']['label'] = __( 'Manage community moderators.', 'twitchpress' );
-        $scope['collections_edit']['label'] = __( 'Manage a user’s collections (of videos).', 'twitchpress' );
-        $scope['viewing_activity_read']['label'] = __( 'Turn on Viewer Heartbeat Service ability to record user data.', 'twitchpress' );
+        $scope['chat_login']['userdesc']                 = __( 'Ability to log into your chat and send messages', 'twitchpress' );
+        $scope['channel_feed_read']['userdesc']          = __( 'Ability to import your channel feed.', 'twitchpress' );
+        $scope['channel_feed_edit']['userdesc']          = __( 'Ability to add posts and reactions to your channel feed.', 'twitchpress' );
+        $scope['communities_edit']['label']              = __( 'Manage your user’s communities.', 'twitchpress' );
+        $scope['communities_moderate']['label']          = __( 'Manage your community moderators.', 'twitchpress' );
+        $scope['collections_edit']['label']              = __( 'Manage your collections (of videos).', 'twitchpress' );
+        $scope['viewing_activity_read']['label']         = __( 'Turn on Viewer Heartbeat Service to record your user data.', 'twitchpress' );
+        $scope['openid']['label']                        = __( 'Allow your OpenID Connect for authentication on this site.', 'twitchpress' );
         
         return $scope;  
     }   
@@ -325,7 +376,8 @@ class TWITCHPRESS_Kraken5_Interface {
     }
     
     /**
-     * This allows users to bind into their output systems, here for compatability, defaults to echo's for testing
+     * This allows developers to bind into their output systems, 
+     * here for compatability, defaults to echo's for testing
      * 
      * @param $function - [string] String name of the function or alias being called
      * @param $errStr - [string] debug output to be passed
@@ -369,7 +421,11 @@ class TWITCHPRESS_Kraken5_Interface {
         
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
-        $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) || (array_key_exists('oauth_token', $get) === true))) ? array_merge($header, array('Authorization: OAuth ' . $get['oauth_token'])) : $header ;
+        
+        $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) 
+                        || (array_key_exists('oauth_token', $get) === true))) 
+                                ? array_merge($header, array('Authorization: OAuth ' . $get['oauth_token'])) : $header ;
+                                
         $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
 
         if (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) || (array_key_exists('oauth_token', $get) === true))) {
@@ -1334,7 +1390,7 @@ class TWITCHPRESS_Kraken5_Interface {
     }
             
     /**
-     * Generate an Auth key for our session to use if we don't have one, requires a client key and secret for auth
+     * Generate an Auth key (token) for our session to use if we don't have one.
      * 
      * @param $code - [string] String of auth code used to grant authorization
      * 
@@ -1364,7 +1420,7 @@ class TWITCHPRESS_Kraken5_Interface {
                     
         $result = json_decode($this->cURL_post($url, $post, $options, false), true);
  
-        if (array_key_exists('access_token', $result)){
+        if ( array_key_exists( 'access_token', $result ) ){
             $token['token'] = $result['access_token'];
             $token['scopes'] = $result['scope'];
             $this->generateOutput($functionName, 'Access token returned: ' . $token['token'], 3);            
@@ -1428,16 +1484,16 @@ class TWITCHPRESS_Kraken5_Interface {
     /**
     * Generate an oAuth2 Twitch API URL for an administrator only. The procedure
     * for public visitors will use different methods for total clarity when it comes to
-    * security.
+    * security. 
     * 
     * @author Ryan Bayne
-    * @version 1.0
+    * @version 1.1
     * 
     * @param mixed $permitted_scopes
     * @param mixed $state_array
     */
     public function generate_authorization_url_admin( $permitted_scopes, $state_array ) {
-        $this->generateOutput( __FUNCTION__, 'Generating redirect URL', 1 );
+        $this->generateOutput( __FUNCTION__, 'Generating private redirect URL', 1 );
         
         // Default $state array is stored in current users meta, sent to Kraken, returned and compared.
         // It's a WP level of security to ensure the same account making the request is the one processing it. 
@@ -1449,6 +1505,7 @@ class TWITCHPRESS_Kraken5_Interface {
             $state_array
         ); 
         
+        // More security - a transient based on current user ID which is checked on return from Twitch.tv
         delete_transient( TWITCHPRESS_CURRENTUSERID . '_twitchpress_oauth_mainrequest_states' );
         set_transient( TWITCHPRESS_CURRENTUSERID . '_twitchpress_oauth_mainrequest_states', $state_array, 900 );
 
@@ -1473,6 +1530,54 @@ class TWITCHPRESS_Kraken5_Interface {
     
         // Clean up
         $this->generateOutput( __FUNCTION__, 'Cleaning URL builder memory', 3 );
+        unset( $s, $scopes_rtrimmed, $grantType, $scopes_urlencoded, $functionName, $acceptedscopes, $state_imploded, $state_urlencoded, $state_array );
+
+        return $urlRedirect;       
+    }
+    
+    /**
+    * Generate an oAuth2 Twitch API URL for public visitors.
+    * 
+    * @author Ryan Bayne
+    * @version 1.0
+    * 
+    * @param mixed $permitted_scopes
+    * @param mixed $state_array
+    */
+    public function generate_authorization_url_public( $permitted_scopes, $state_array ) {
+        $this->generateOutput( __FUNCTION__, 'Generating public redirect URL', 1 );
+        
+        // Default $state array is stored in current users meta, sent to Kraken, returned and compared.
+        // It's a WP level of security to ensure the same account making the request is the one processing it. 
+        $state_array = shortcode_atts(
+                array( 
+                        'granttype' => 'twitchpresspublic',
+                        'redirectto' => ''// Use to send users to somewhere different. 
+                ), 
+            $state_array
+        ); 
+
+        $state_imploded = implode( ',', $state_array );
+        $state_urlencoded = urlencode( $state_imploded );        
+ 
+        // Create, clean and encode a string from $permitted_scopes array for adding to URL. 
+        $scopes_string = '';
+        foreach ( $permitted_scopes as $s ){
+            $scopes_string .= $s . ' ';
+        }
+        $scopes_rtrimmed = rtrim( $scopes_string, ' ' );
+        $scopes_urlencoded = urlencode( $scopes_rtrimmed );
+
+        // Build oauth2 URL.
+        $urlRedirect = 'https://api.twitch.tv/kraken/oauth2/authorize?' .
+            'response_type=code' . '&' .
+            'client_id=' . $this->twitch_client_id . '&' .
+            'redirect_uri=' . $this->twitch_client_url . '&' .
+            'scope=' . $scopes_urlencoded . '&' .
+            'state=' . $state_urlencoded;
+
+        // Clean up
+        $this->generateOutput( __FUNCTION__, 'Cleaning public URL builder memory', 3 );
         unset( $s, $scopes_rtrimmed, $grantType, $scopes_urlencoded, $functionName, $acceptedscopes, $state_imploded, $state_urlencoded, $state_array );
 
         return $urlRedirect;       
@@ -1553,16 +1658,22 @@ class TWITCHPRESS_Kraken5_Interface {
     * 
     * Usually when a scope name exists in options, it is an accepted scope. We will
     * not assume it though. 
+    * 
+    * @version 2.0
     */
     public function get_global_accepted_scopes() {
         $global_accepted_scopes = array();
+ 
         foreach( $this->twitch_scopes as $scope ) {
-            if( get_option( 'twitch_scope_' . $scope ) == 'yes' ) {
+            if( get_option( 'twitchpress_scope_' . $scope ) == 'yes' ) {
                 $global_accepted_scopes[] = $scope;
             }
         }       
+        
         return $global_accepted_scopes;
     }
+        
 }
+
 endif;
 TWITCHPRESS_Kraken5_Interface::init();

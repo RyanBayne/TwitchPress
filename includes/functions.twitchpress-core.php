@@ -222,4 +222,91 @@ function twitchpress_returning_url_nonced( $new_parameters_array, $action, $spec
                         add_query_arg( $new_parameters_array, $specified_url ) 
                 ), $action 
            );
-}                          
+} 
+
+/**
+ * What type of request is this?
+ *
+ * Functions and constants are WordPress core. This function will allow
+ * you to avoid large operations or output at the wrong time.
+ * 
+ * @param  string $type admin, ajax, cron or frontend.
+ * @return bool
+ */
+function twitchpress_is_request( $type ) {
+    switch ( $type ) {
+        case 'admin' :
+            return is_admin();
+        case 'ajax' :
+            return defined( 'DOING_AJAX' );
+        case 'cron' :
+            return defined( 'DOING_CRON' );
+        case 'frontend' :
+            return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
+    }
+} 
+
+/**
+* Validate the value passed as a $_GET['code'] prior to using it.
+* 
+* @return boolean false if not valid else true
+* 
+* @version 1.0
+*/
+function twitchpress_validate_code( $code ) {
+    if( strlen ( $code ) !== 30  ) {
+        return false;
+    }           
+    
+    if( !ctype_alnum( $code ) ) {
+        return false;
+    }
+    
+    return true;
+}      
+
+/**
+* Validate a token value.
+* 
+* @return boolean false if not valid else true
+* 
+* @version 1.0
+*/
+function twitchpress_validate_token( $token ) {
+    if( strlen ( $token ) !== 30  ) {
+        return false;
+    }           
+    
+    if( !ctype_alnum( $token ) ) {
+        return false;
+    }
+    
+    return true;
+}    
+
+/**
+* Determines if the value returned by generateToken() is a token or not.
+* 
+* Does not check if the token is valid as this is intended for use straight
+* after a token is generated. 
+* 
+* @returns boolean true if the value appears normal.
+* 
+* @version 1.0
+*/
+function twitchpress_was_valid_token_returned( $returned_value ){
+    
+    if( !array( $returned_value ) ) {
+        return false;
+    }
+    
+    if( !isset( $returned_value['token'] ) ) {
+        return false;
+    }
+
+    if( !twitchpress_validate_token( $returned_value['token'] ) ) {
+        return false;
+    }
+    
+    return true;
+}                     

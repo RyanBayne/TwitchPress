@@ -496,7 +496,7 @@ class TwitchPress_Install {
     }      
     
     /**
-     * Add the default terms for WC taxonomies - product types and order statuses. Modify this at your own risk.
+     * Add the default terms for TwitchPress taxonomies - product types and order statuses. Modify this at your own risk.
      */
     public static function create_terms() {
         $taxonomies = array();

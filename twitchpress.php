@@ -3,8 +3,8 @@
  * Plugin Name: TwitchPress
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
- * Description: Add your Twitch.tv channel to WordPress. 
- * Version: 1.2.2
+ * Description: Add Twitch.tv services to WordPress. 
+ * Version: 1.2.3
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com
  * Requires at least: 4.4
@@ -20,9 +20,8 @@
  * @copyright 2016-2017 Ryan R. Bayne (SqueekyCoder@Gmail.com)
  */
  
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly.
-}
+// Exit if accessed directly. 
+if ( ! defined( 'ABSPATH' ) ) { exit; }
                  
 if ( ! class_exists( 'WordPressTwitchPress' ) ) :
 
@@ -30,7 +29,6 @@ if ( ! class_exists( 'WordPressTwitchPress' ) ) :
  * Main TwitchPress Class.
  *
  * @class TwitchPress
- * @version 1.0.0
  */
 final class WordPressTwitchPress {
     
@@ -39,7 +37,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.2.2';
+    public $version = '1.2.3';
 
     /**
      * Minimum WP version.
@@ -119,17 +117,6 @@ final class WordPressTwitchPress {
     }
 
     /**
-     * Hook into actions and filters.
-     * @since  1.0
-     */
-    private function init_hooks() {
-        register_activation_hook( __FILE__, array( 'TwitchPress_Install', 'install' ) );
-        // Do not confuse deactivation of a plugin with deletion of a plugin - two very different requests.
-        register_deactivation_hook( __FILE__, array( 'TwitchPress_Uninstall', 'deactivate' ) );
-        add_action( 'init', array( $this, 'init' ), 0 );
-    }
-
-    /**
      * Define TwitchPress Constants.
      */
     private function define_constants() {
@@ -189,7 +176,7 @@ final class WordPressTwitchPress {
     }
 
     /**
-     * Include required core files used in admin and on the frontend.
+     * Include required core files.
      */
     public function includes() {
      
@@ -205,17 +192,27 @@ final class WordPressTwitchPress {
         include_once( 'includes/toolbars/class.twitchpress-toolbars.php' );        
         include_once( 'includes/class.twitchpress-listener.php' );
              
-        if ( $this->is_request( 'admin' ) ) {
+        if ( twitchpress_is_request( 'admin' ) ) {
             include_once( 'includes/admin/class.twitchpress-admin.php' );
             include_once( 'includes/admin/class.twitchpress-admin-twitchfeed-posts.php' );
             include_once( 'includes/admin/class.twitchpress-admin-uninstall.php' );
         }
 
-        if ( $this->is_request( 'frontend' ) ) {
+        if ( twitchpress_is_request( 'frontend' ) ) {
             $this->frontend_includes();
         }
     }
 
+    /**
+     * Hook into actions and filters.
+     */
+    private function init_hooks() {
+        register_activation_hook( __FILE__, array( 'TwitchPress_Install', 'install' ) );
+        // Do not confuse deactivation of a plugin with deletion of a plugin - two very different requests.
+        register_deactivation_hook( __FILE__, array( 'TwitchPress_Uninstall', 'deactivate' ) );
+        add_action( 'init', array( $this, 'init' ), 0 );
+    }
+    
     /**
      * Include required frontend files.
      */
@@ -258,29 +255,7 @@ final class WordPressTwitchPress {
      */
     public function ajax_url() {                
         return admin_url( 'admin-ajax.php', 'relative' );
-    }
-
-    /**
-     * What type of request is this?
-     *
-     * Functions and constants are WordPress core. This function will allow
-     * you to avoid large operations or output at the wrong time.
-     * 
-     * @param  string $type admin, ajax, cron or frontend.
-     * @return bool
-     */
-    private function is_request( $type ) {
-        switch ( $type ) {
-            case 'admin' :
-                return is_admin();
-            case 'ajax' :
-                return defined( 'DOING_AJAX' );
-            case 'cron' :
-                return defined( 'DOING_CRON' );
-            case 'frontend' :
-                return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
-        }
-    }    
+    }   
 }
 
 endif;

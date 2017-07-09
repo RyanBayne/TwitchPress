@@ -58,7 +58,38 @@ class TwitchPress_Admin_Settings {
 
             $settings[] = include( 'settings/class.twitchpress-settings-feeds.php' );
             $settings[] = include( 'settings/class.twitchpress-settings-kraken.php' ); 
-
+            
+            // These core views are only displayed when needed.
+            // These default views encourage extensions to keep within expected categories.
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_USERS' ) ) {
+                $settings[] = include( 'settings/class.twitchpress-settings-users.php' );    
+            }                                 
+            
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_BOT' ) ) {
+                    
+            }
+            
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_CHAT' ) ) {
+                    
+            }
+            
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_JUKEBOX' ) ) {
+                    
+            }
+            
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_GAMES' ) ) {
+                    
+            }
+            
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_COMMANDS' ) ) {
+                    
+            }
+            
+            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_CONTENT' ) ) {
+                    
+            }
+            
+            // If the core does not have a tab an extension can still add it.
             self::$settings = apply_filters( 'twitchpress_get_settings_pages', $settings );
         }
 
@@ -553,10 +584,11 @@ class TwitchPress_Admin_Settings {
      * @return bool
      */
     public static function save_fields( $options ) {
-        if ( empty( $_POST ) ) {
+        
+        if ( empty( $_POST ) ) {      
             return false;
         }
-
+        
         // Options to update will be stored here and saved later.
         $update_options = array();
 
@@ -619,13 +651,11 @@ class TwitchPress_Admin_Settings {
 
             /**
              * Sanitize the value of an option.
-             * @since 2.4.0
              */
             $value = apply_filters( 'twitchpress_admin_settings_sanitize_option', $value, $option, $raw_value );
 
             /**
              * Sanitize the value of an option by option name.
-             * @since 2.4.0
              */
             $value = apply_filters( "twitchpress_admin_settings_sanitize_option_$option_name", $value, $option, $raw_value );
 

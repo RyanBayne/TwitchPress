@@ -148,7 +148,7 @@ class TwitchPress_Admin {
 
         // Check to make sure we're on a TwitchPress admin page
         if ( isset( $current_screen->id ) && apply_filters( 'twitchpress_display_admin_footer_text', in_array( $current_screen->id, $twitchpress_pages ) ) ) {
-            $footer_text = __( 'Thank you for planting a WordPress TwitchPress. I recommend removing this footer message. This text is an example only.', 'twitchpress' );
+            //$footer_text = __( 'Thank you for planting a WordPress TwitchPress. I recommend removing this footer message. This text is an example only.', 'twitchpress' );
         }
 
         return $footer_text;

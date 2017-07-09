@@ -37,34 +37,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     public static function init() {              
         //add_action( 'shutdown', array( __CLASS__, 'store_notices' ) );
     }
-        
-    /**
-     * Gets an un-authenticated user object for the specified user
-     * 
-     * @param $user - [string] Username to grab the object for
-     * 
-     * @return $userObject - [array] Returned object for the query
-     * 
-     * @todo This function now requires clientid appended to URL ?client_id=' . $client_id
-     */ 
-    public function getUserObject( $user ){
-        $functionName = 'GET_USEROBJECT';
-        $this->generateOutput($functionName, 'Attempting to get the user object for user: ' . $user, 1);
-        
-        $url = 'https://api.twitch.tv/kraken/users/' . $user . '';
-        $options = array();
-        $get = array();
-        
-        // Build our cURL query and store the array
-        $userObject = json_decode($this->cURL_get($url, $get, $options, false), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($userObject), 4);
-        
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning Memory', 3);
-        unset($user, $url, $options, $get, $functionName);
-        
-        return $userObject;          
-    }
     
     /**
     * Gets objects for multiple users.
@@ -109,19 +81,19 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * 
      * @return $userObject - [array] Returned object for the query
      * 
-     * @version 1.3
+     * @version 5.0
      */ 
     public function getUserObject_Authd( $token, $code ){
         $functionName = 'GET_USEROBJECT-AUTH';
         $requiredAuth = 'user_read';
-        
+
         $this->generateOutput($functionName, 'Attempting to get the authenticated user object for the current user.', 1);
         
         // We were supplied an OAuth token. check it for validity and scopes
         if ( ( $token != null || '') || ( $code != null || false ) ){
             if ( $token != null || ''){
                 $check = $this->checkToken( $token );
-                
+              
                 if ($check["token"] != false){
                     $auth = $check;
                 } else { // attempt to generate one
@@ -144,7 +116,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             }
             
             $authSuccessful = false;
-            
+
             // Check the array of scopes
             foreach ($auth['scopes'] as $type) {
                 if ($type == $requiredAuth) {
@@ -168,15 +140,15 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $url = 'https://api.twitch.tv/kraken/user?client_id=' . $this->twitch_client_id;
         $options = array();
         $get = array('oauth_token' => $token );
-                                              
+                          
         // Build our cURL query and store the array
-        $userObject = json_decode($this->cURL_get($url, $get, $options, false), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($userObject), 4);
-        
+        $userObject = json_decode( $this->cURL_get( $url, $get, $options, false ), true );
+        $this->generateOutput( $functionName, 'Raw return: ' . json_encode( $userObject ), 4 );
+       
         //clean up
         $this->generateOutput($functionName, 'Cleaning Memory', 3);
         unset($url, $options, $get, $token, $auth, $authSuccessful, $type, $functionName, $code);
-        
+
         return $userObject;
     }
     
@@ -249,7 +221,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         }
         
         $url = 'https://api.twitch.tv/kraken/channel';
-        $get = array('oauth_token' => $token);
+        $get = array( 'oauth_token' => $token );
         $options = array();
 
         $object = json_decode($this->cURL_get($url, $get, $options, false), true);

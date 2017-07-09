@@ -5,19 +5,18 @@
  * @author   Ryan Bayne
  * @category Admin
  * @package  TwitchPress/Admin/Settings
- * @version  1.0.0
+ * @version  1.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
 
-if ( ! class_exists( 'TwitchPress_Settings_Permissions' ) ) :
+if ( ! class_exists( 'TwitchPress_Settings_Kraken' ) ) :
 
 /**
  * TwitchPress_Settings_Sections.
  */
-class TwitchPress_Settings_Permissions extends TwitchPress_Settings_Page {
+class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
 
     /**
      * Constructor.
@@ -167,7 +166,7 @@ class TwitchPress_Settings_Permissions extends TwitchPress_Settings_Page {
                 array(
                     'title' => __( 'Global Scope', 'twitchpress' ),
                     'type'     => 'title',
-                    'desc'     => 'The Twitch API offers us the ability to set the scope of access that allow a service to have. This works on an individual basis when authorization a service to access our channel. The options below allow you to reduce the possible scope offered to your users. This allows you to prevent users giving your site permissions that your service will never require. This is just a small security step. If in doubt please leave all boxes checked and do not be concerned.',
+                    'desc'     => __( 'Scopes act like permissions. You set the scope of required permissions for a visitor to fully use your service. The visitor will see the list of scopes when they are sent to Twitch.tv (through oAuth2) to give your site permissions. Please learn and understand all scopes. You should only select the ones your service requires.', 'twitchpress' ),
                     'id'     => 'global_scope_options',
                 ),
 
@@ -365,4 +364,4 @@ class TwitchPress_Settings_Permissions extends TwitchPress_Settings_Page {
 
 endif;
 
-return new TwitchPress_Settings_Permissions();
+return new TwitchPress_Settings_Kraken();
