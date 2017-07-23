@@ -13,3 +13,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 global $wpdb, $wp_version;
+
+if( get_option( 'twitchpress_removeall' ) == 'yes' ) {
+    
+}

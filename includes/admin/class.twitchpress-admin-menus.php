@@ -20,49 +20,35 @@ if ( ! class_exists( 'TwitchPress_Admin_Menus' ) ) :
  * TwitchPress_Admin_Menus Class.
  */
 class TwitchPress_Admin_Menus {
-
+    
     /**
      * Hook in tabs.
      */
     public function __construct() {
-        //add_action( 'admin_menu', array( $this, 'data_menu' ), 9 );
-        add_action( 'admin_menu', array( $this, 'settings_menu' ), 100 );
+        $this->slug = 'twitchpress';
+        
+        add_action('admin_menu', array( &$this, 'primary_admin_menu'), 0);
+        add_action('admin_menu', array( &$this, 'secondary_menu_items'), 1000);        
+    }
+    
+    function primary_admin_menu() {
+        $this->pagehook = add_menu_page( __('TwitchPress', $this->slug), __('TwitchPress', $this->slug), 'manage_options', $this->slug, array(&$this, 'settings_page'), 'dashicons-admin-users', '42.78578');
+        add_submenu_page( $this->slug, __('Settings', $this->slug), __('Settings', $this->slug), 'manage_options', $this->slug, array(&$this, 'settings_page') );
+
+    }
+    
+    function secondary_menu_items() {
+        
+        add_submenu_page( $this->slug, __('Feed Posts', $this->slug), __('Feed Posts', $this->slug), 'manage_options', 'edit.php?post_type=twitchfeed', '', '' );
+        add_submenu_page( $this->slug, __('Channels',   $this->slug), __('Channels',   $this->slug), 'manage_options', 'edit.php?post_type=twitchchannels', '', '' );
+   
     }
 
-    /**
-     * Add menu items.
-     */
-    public function data_menu() {
-        $settings_page = add_submenu_page( 'edit.php?post_type=twitchfeed', __( 'TwitchPress Data Views', 'twitchpress' ),  __( 'Data Views', 'twitchpress' ) , 'activate_plugins', 'twitchpress-data', array( $this, 'data_page' ) ); 
-    }
-
-    /**
-     * Add settings menu item to the existing Settings menu.
-     */
-    public function settings_menu() {
-        $settings_page = add_submenu_page( 'edit.php?post_type=twitchfeed', __( 'TwitchPress Settings', 'twitchpress' ),  __( 'Settings', 'twitchpress' ) , 'activate_plugins', 'twitchpress-settings', array( $this, 'settings_page' ) ); 
-        add_action( 'load-' . $settings_page, array( $this, 'settings_page_init' ) );
-    }
-        
-    /**
-    * Init the main page. 
-    */
-    public function data_page() { 
-        TwitchPress_Admin_Main_Views::output(); 
-    }
-        
     /**
      * Init the settings page.
      */
     public function settings_page() {    
         TwitchPress_Admin_Settings::output();
-    }
-    
-    /**
-     * Loads settings into memory for use within this view.
-     */
-    public function settings_page_init() {
-
     }
       
 }

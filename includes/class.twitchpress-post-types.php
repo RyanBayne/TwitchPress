@@ -154,7 +154,7 @@ class TwitchPress_Post_types {
                             'singular_name'         => __( 'TwitchPress Post', 'twitchpress' ),
                             'menu_name'             => _x( 'TwitchPress', 'Admin menu name', 'twitchpress' ),
                             'add_new'               => __( 'Create a post', 'twitchpress' ),
-                            'add_new_item'          => __( 'Create New Twitch.tv Post', 'twitchpress' ),
+                            'add_new_item'          => __( 'Create Twitch Feed Post', 'twitchpress' ),
                             'edit'                  => __( 'Edit', 'twitchpress' ),
                             'edit_item'             => __( 'Edit TwitchPress post', 'twitchpress' ),
                             'new_item'              => __( 'New post', 'twitchpress' ),
@@ -184,8 +184,54 @@ class TwitchPress_Post_types {
                     'query_var'           => true,
                     'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'custom-fields', 'publicize', 'wpcom-markdown' ),
                     'has_archive'         => true,
-                    'show_in_nav_menus'   => true,
+                    'show_in_nav_menus'   => false,
                     'show_in_rest'        => true,
+                    'show_in_menu'        => false,
+                )
+            )
+        );        
+        
+        register_post_type( 'twitchchannels',
+            apply_filters( 'twitchpress_register_post_type_twitchchannels',
+                array(
+                    'labels'              => array(
+                            'name'                  => __( 'TwitchPress Channels', 'twitchpress' ),
+                            'singular_name'         => __( 'TwitchPress Channels', 'twitchpress' ),
+                            'menu_name'             => _x( 'Channels', 'Admin menu name', 'twitchpress' ),
+                            'add_new'               => __( 'Add a channel', 'twitchpress' ),
+                            'add_new_item'          => __( 'Add New Twitch.tv channel', 'twitchpress' ),
+                            'edit'                  => __( 'Edit', 'twitchpress' ),
+                            'edit_item'             => __( 'Edit TwitchPress channel', 'twitchpress' ),
+                            'new_item'              => __( 'New channel', 'twitchpress' ),
+                            'view'                  => __( 'View channel', 'twitchpress' ),
+                            'view_item'             => __( 'View channel', 'twitchpress' ),
+                            'search_items'          => __( 'Search channels', 'twitchpress' ),
+                            'not_found'             => __( 'No channels found', 'twitchpress' ),
+                            'not_found_in_trash'    => __( 'No channels found in trash', 'twitchpress' ),
+                            'parent'                => __( 'Parent channel', 'twitchpress' ),
+                            'featured_image'        => __( 'Channel image', 'twitchpress' ),
+                            'set_featured_image'    => __( 'Set channel image', 'twitchpress' ),
+                            'remove_featured_image' => __( 'Remove channel image', 'twitchpress' ),
+                            'use_featured_image'    => __( 'Use as channel image', 'twitchpress' ),
+                            'insert_into_item'      => __( 'Insert into content', 'twitchpress' ),
+                            'uploaded_to_this_item' => __( 'Uploaded to this channel post', 'twitchpress' ),
+                            'filter_items_list'     => __( 'Filter channels', 'twitchpress' ),
+                            'items_list_navigation' => __( 'Twitch channel navigation', 'twitchpress' ),
+                            'items_list'            => __( 'Feed channels list', 'twitchpress' ),
+                        ),
+                    'description'         => __( 'This is where you can add channel posts.', 'twitchpress' ),
+                    'public'              => false,
+                    'show_ui'             => true,
+                    'publicly_queryable'  => false,
+                    'exclude_from_search' => false,
+                    'hierarchical'        => false, 
+                    'rewrite'             => $permalinks['twitchfeed_rewrite_slug'] ? array( 'slug' => $permalinks['twitchfeed_rewrite_slug'], 'with_front' => false, 'feeds' => true ) : false,
+                    'query_var'           => true,
+                    'supports'            => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'custom-fields', 'wpcom-markdown' ),
+                    'has_archive'         => true,
+                    'show_in_nav_menus'   => false,
+                    'show_in_rest'        => true,
+                    'show_in_menu'        => false,
                 )
             )
         );
@@ -193,6 +239,8 @@ class TwitchPress_Post_types {
 
     /**
      * Register our custom post statuses, used for order status.
+     * 
+     * @version 1.0
      */
     public static function register_post_status() {
 

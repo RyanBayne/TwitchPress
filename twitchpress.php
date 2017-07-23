@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: TwitchPress
+ * Plugin Name: TwitchPress BETA
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch.tv services to WordPress. 
- * Version: 1.2.3
+ * Version: 1.2.4
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com
  * Requires at least: 4.4
@@ -37,7 +37,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.2.3';
+    public $version = '1.2.4';
 
     /**
      * Minimum WP version.
@@ -112,7 +112,7 @@ final class WordPressTwitchPress {
         $this->define_constants();
         $this->includes();
         $this->init_hooks();
-
+            
         do_action( 'twitchpress_loaded' );
     }
 
@@ -147,6 +147,7 @@ final class WordPressTwitchPress {
         if ( ! defined( 'TWITCHPRESS_SLACK' ) ) {             define( 'TWITCHPRESS_SLACK', false ); }
         if ( ! defined( 'TWITCHPRESS_DOCS' ) ) {              define( 'TWITCHPRESS_DOCS', false ); }
         if ( ! defined( 'TWITCHPRESS_FACEBOOK' ) ) {          define( 'TWITCHPRESS_FACEBOOK', false ); }
+        if ( ! defined( 'TWITCHPRESS_DISCORD' ) ) {           define( 'TWITCHPRESS_DISCORD', 'https://discord.gg/NaRB3wE' ); }
        
         // Author (social) constants - can act as default when support constants are false.                                                                                                              
         if ( ! defined( 'TWITCHPRESS_AUTHOR_HOME' ) ) {       define( 'TWITCHPRESS_AUTHOR_HOME', 'https://www.linkedin.com/in/ryanrbayne/' ); }
@@ -177,13 +178,22 @@ final class WordPressTwitchPress {
 
     /**
      * Include required core files.
+     * 
+     * @version 1.2
      */
     public function includes() {
-     
+
+        // Core unctions
         include_once( 'includes/functions.twitchpress-core.php' );
-        include_once( 'includes/class.twitchpress-debug.php' );    
-        include_once( 'includes/class.twitchpress-autoloader.php' );
         include_once( 'includes/functions.twitchpress-validate.php' );
+        
+        // SPL Autoloader Class
+        include_once( 'includes/class.twitchpress-autoloader.php' );
+                
+        // Classes
+        include_once( 'includes/libraries/library.async-request.php' );
+        include_once( 'includes/libraries/library.background-process.php' );        
+        include_once( 'includes/class.twitchpress-debug.php' );    
         include_once( 'includes/class.twitchpress-post-types.php' );                
         include_once( 'includes/class.twitchpress-install.php' );
         include_once( 'includes/class.twitchpress-ajax.php' );
@@ -219,9 +229,9 @@ final class WordPressTwitchPress {
     public function frontend_includes() {
         include_once( 'includes/class.twitchpress-frontend-scripts.php' );  
     }
-
+            
     /**
-     * Initialise WordPress Plugin Seed when WordPress Initialises.
+     * Initialise TwitchPress when WordPress Initialises.
      */
     public function init() {                     
         // Before init action.
@@ -262,17 +272,17 @@ endif;
 
 if( !function_exists( 'TwitchPress' ) ) {
     /**
-     * Main instance of WordPress Plugin Seed.
+     * Main instance of TwitchPress.
      *
      * Returns the main instance of TwitchPress to prevent the need to use globals.
      *
      * @since  1.0
      * @return TwitchPress
      */
-    function TwitchPress() {
+    function TwitchPress() {        
         return WordPressTwitchPress::instance();
     }
 
     // Global for backwards compatibility.
-    $GLOBALS['twitchpress'] = TwitchPress();  
+    $GLOBALS['twitchpress'] = TwitchPress(); 
 }

@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <nav class="nav-tab-wrapper woo-nav-tab-wrapper">
             <?php
                 foreach ( $tabs as $name => $label ) {
-                    echo '<a href="' . admin_url( 'admin.php?page=twitchpress-settings&tab=' . $name ) . '" class="nav-tab ' . ( $current_tab == $name ? 'nav-tab-active' : '' ) . '">' . $label . '</a>';
+                    echo '<a href="' . admin_url( 'admin.php?page=twitchpress&tab=' . $name ) . '" class="nav-tab ' . ( $current_tab == $name ? 'nav-tab-active' : '' ) . '">' . $label . '</a>';
                 }
                 do_action( 'twitchpress_settings_tabs' );
             ?>

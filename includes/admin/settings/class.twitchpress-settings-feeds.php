@@ -36,6 +36,8 @@ class TwitchPress_Settings_Feeds extends TwitchPress_Settings_Page {
      * Get settings array.
      *
      * @return array
+     * 
+     * @version 1.2
      */
     public function get_settings() {
 
@@ -59,21 +61,21 @@ class TwitchPress_Settings_Feeds extends TwitchPress_Settings_Page {
                 'type'    => 'checkbox'
             ),
             
-            array(
+            /* array(
                 'title'   => __( 'Update WP Posts', 'twitchpress' ),
                 'desc'    => __( 'Detect changes to Twitch posts and update their matching WP post.', 'twitchpress' ),
                 'id'      => 'twitchpress_update_channeltowp',
                 'default' => 'no',
                 'type'    => 'checkbox'
-            ),
+            ),*/
             
-            array(
+            /* array(
                 'title'   => __( 'Update Twitch Posts', 'twitchpress' ),
                 'desc'    => __( 'Update a channels posts when their matching WP post changes.', 'twitchpress' ),
                 'id'      => 'twitchpress_update_wptochannel',
                 'default' => 'no',
                 'type'    => 'checkbox'
-            ),
+            ),*/
     
             array(
                 'title'   => __( 'Apply Prepend Value', 'twitchpress' ),
@@ -160,10 +162,25 @@ class TwitchPress_Settings_Feeds extends TwitchPress_Settings_Page {
 
     /**
      * Save settings.
+     * 
+     * Nonce check is performed in class.twitchpress-admin-settings.php.
+     * 
+     * @version 1.0
      */
     public function save() {
         $settings = $this->get_settings();
 
+        // Schedule channel to wp feed sync. 
+        if( $_POST['twitchpress_new_channeltowp'] ) {
+            
+            // Add the CRON job for processing this specific task. 
+            twitchpress_schedule_sync_channel_to_wp();   
+            
+            // Add meta value to the main channel post for syncing feed to wp.
+            $channel_post_id = twitchpress_get_main_channels_postid();
+            twitchpress_activate_channel_feedtowp_sync( $channel_post_id );
+        }
+               
         TwitchPress_Admin_Settings::save_fields( $settings );
     }
 

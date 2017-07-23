@@ -250,7 +250,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     * @return $feedpostsObjects - [array] array of all returned video objects, Key is ID
     * 
     * @author Ryan R. Bayne
-    * @version 1.2
+    * @version 1.3
     */ 
     public function getFeedPosts( $chan, $limit = -1, $offset = 0, $returnTotal = false ) {
         $functionName = 'GET_FEEDPOSTS-CHANNEL';
@@ -276,21 +276,21 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         }
 
         // Key the data
-        foreach ( $feedposts as $k => $video ){
+        foreach ( $feedposts as $k => $post ){
             if ( $k == '_total' ){
                 $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
-                $feedpostsObjects[$k] = $video;
+                $feedpostsObjects[$k] = $post;
                 continue;
             }
             
-            $key = $video['id'];
-            $feedpostsObjects[$key] = $video;
+            $key = $post['id'];
+            $feedpostsObjects[$key] = $post;
             $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
 
         // Clean up quickly
         $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $limit, $offset, $functionName, $video, $feedposts, $key, $options, $url, $k, $returnTotal, $returningTotal);
+        unset($chan, $limit, $offset, $functionName, $post, $feedposts, $key, $options, $url, $k, $returnTotal, $returningTotal);
         
         return $feedpostsObjects;                  
     }
@@ -2355,7 +2355,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * 
      * @return $subscribed - [bool] the status of the user subscription
      */ 
-    public function checkChannelSubscription($user, $chan, $token, $code){
+    public function checkChannelSubscription( $user, $chan, $token, $code ){
         $requiredAuth = 'channel_subscriptions';
         $functionName = 'CHECK_CHANNEL_SUBSCRIPTION';
         
@@ -2437,35 +2437,65 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     }
     
     /**
+    * Users a users own Twitch code and token to get their subscription
+    * status for th sites main/default channel.
+    * 
+    * @param mixed $user_id
+    * 
+    * @version 1.2
+    */
+    public function get_user_subscription_main_channel( $user_id ) {
+        if( !$credentials = twitchpress_get_user_twitch_credentials( $user_id ) ) {
+            return false;    
+        }        
+            
+        return $this->checkUserSubscription( 
+            $user_id, 
+            $this->twitch_default_channel, 
+            $credentials['token'], 
+            $credentials['code'] 
+        );    
+    }
+    
+    /**
      * Checks to see if a user is subscribed to a specified channel from the user side
      * 
-     * @param $user - [string] Username of the user check against
+     * @param $user_id - [string] User ID of the user check against
      * @param $chan - [string] Channel name of the channel to check against
      * @param $token - [string] Authentication key used for the session
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $subscribed - [bool] the status of the user subscription
+     * 
+     * @version 5.0
      */ 
-    public function checkUserSubscription($user, $chan, $token, $code){
+    public function checkUserSubscription( $user_id, $chan, $token, $code ){
         $requiredAuth = 'channel_check_subscription';
-        $functionName = 'CHECK_USER_SUBSCRIPTION';
-        
-        $this->generateOutput($functionName, 'Checking to see if user ' . $user . ' is subscribed to channel ' . $chan, 1);
+        $functionName = 'CHECK_USER_SUBSCRIPTION';       
+                
+        $this->generateOutput($functionName, 'Checking to see if user ' . $user_id . ' is subscribed to channel ' . $chan, 1);
         
         // We were supplied an OAuth token. check it for validity and scopes
         if (($token != null || '') || ($code != null || false)){
+            
             if ($token != null || ''){
-                $check = $this->checkToken($token);
                 
+                $check = $this->checkToken($token);
+
                 if ($check["token"] != false){
+                    
                     $auth = $check;
+                    
                 } else { // attempt to generate one
+                
                     if ($code != null || ''){
                         $auth = $this->generateToken($code); // Assume generation and check later for failure
                     } else {
                         $this->generateError(400, 'Existing token expired and no code available for generation.');
                     }
+                    
                 }
+                
             } else { // Assume the code was given instead and generate if we can
                 $auth = $this->generateToken($code); // Assume generation and check later for failure
             }
@@ -2498,10 +2528,10 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $token = $auth['token'];
         }
         
-        $url = 'https://api.twitch.tv/kraken/users/' . $user . '/subscriptions/' . $chan;
+        $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan;
         $options = array();
-        $get = array('oauth_token' => $token);
-        
+        $get = array( 'oauth_token' => $token );   
+
         // Build our cURL query and store the array
         $subscribed = json_decode($this->cURL_get($url, $get, $options, true), true);
         
@@ -2513,16 +2543,16 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $this->generateOutput($functionName, 'Channel ' . $chan . ' does not have subscription program available', 3);
             $subscribed = false;
         } elseif ($subscribed == 404) {
-            $this->generateOutput($functionName, 'User ' . $user . ' is not subscribed to channel ' . $chan, 3);
+            $this->generateOutput($functionName, 'User ' . $user_id . ' is not subscribed to channel ' . $chan, 3);
             $subscribed = false;
         } else {
-            $this->generateOutput($functionName, 'User ' . $user . ' is subscribed to channel ' . $chan, 3);
+            $this->generateOutput($functionName, 'User ' . $user_id . ' is subscribed to channel ' . $chan, 3);
             $subscribed = true;
         }
         
         // Clean up quickly
         $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($user, $chan, $token, $code, $requiredAuth, $functionName, $auth, $authSuccessful, $token, $type, $url, $options, $get);
+        unset( $user_id, $chan, $token, $code, $requiredAuth, $functionName, $auth, $authSuccessful, $token, $type, $url, $options, $get);
         
         return $subscribed;
     }

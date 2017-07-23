@@ -433,15 +433,17 @@ class TwitchPress_Admin_Setup_Wizard {
     }
 
     /**
-     * Save Page Settings.
+     * Save application settings and then forwards user to kraken oauth2.
+     * 
+     * @version 1.0
      */
     public function twitchpress_setup_application_save() {          
         check_admin_referer( 'twitchpress-setup' );
         
         // Sanitize $_POST values.
-        $main_channel = sanitize_text_field( $_POST['twitchpress_main_channel_name'] );
-        $redirect_uri = sanitize_text_field( $_POST['twitchpress_main_redirect_uri'] );
-        $client_id = sanitize_text_field( $_POST['twitchpress_main_client_id'] );
+        $main_channel  = sanitize_text_field( $_POST['twitchpress_main_channel_name'] );
+        $redirect_uri  = sanitize_text_field( $_POST['twitchpress_main_redirect_uri'] );
+        $client_id     = sanitize_text_field( $_POST['twitchpress_main_client_id'] );
         $client_secret = sanitize_text_field( $_POST['twitchpress_main_client_secret'] );
 
         if( empty( $main_channel ) || empty( $redirect_uri ) || empty( $client_id ) || empty( $client_secret ) ) {
@@ -467,10 +469,10 @@ class TwitchPress_Admin_Setup_Wizard {
         }
  
         // Store the credentials.
-        update_option( 'twitchpress_main_redirect_uri', $redirect_uri, true );
-        update_option( 'twitchpress_main_client_id', $client_id, true );
+        update_option( 'twitchpress_main_redirect_uri',  $redirect_uri,  true );
+        update_option( 'twitchpress_main_client_id',     $client_id,     true );
         update_option( 'twitchpress_main_client_secret', $client_secret, true );
-        update_option( 'twitchpress_main_channel_name', $main_channel, true );
+        update_option( 'twitchpress_main_channel_name',  $main_channel,  true );
                                         
         // Confirm the giving main channel is valid. 
         $kraken_calls_obj = new TWITCHPRESS_Kraken5_Calls();
@@ -480,15 +482,32 @@ class TwitchPress_Admin_Setup_Wizard {
             TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist', __( '<strong>Channel Not Found:</strong> TwitchPress wants to avoid errors in future by ensuring what you typed is correct. So far it could not confirm your entered channel is correct. Please check the spelling of your channel and the status of Twitch. If your entered channel name is correct and Twitch is online, please report this message.', 'twitchpress' ) );      
             return;                         
         } 
-
+        
         update_option( 'twitchpress_main_channel_id', $user_objects['users'][0]['_id'], true );
-                
+
+        // Insert a new twitchchannel post. 
+        $post_id = twitchpress_insert_channel( 
+            $user_objects['users'][0]['_id'], 
+            $main_channel, 
+            true 
+        );
+        
+        if( !$post_id ) {
+            TwitchPress_Admin_Notices::add_custom_notice( 'mainpostfailedtoinsert', __( 'TwitchPress needs to create a custom post to hold your channel information, but could not. Please try again and seek support if you see this notice again.' ) );      
+            return;
+        }
+        
+        update_option( 'twitchpress_main_channel_postid', $post_id, true );
+        
+        // Confirm storage of application and that oAuth2 is next.        
         TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored. TwitchPress will now send you to Twitch.tv to authorize your account.' ) );
         
-        // Send user to oAuth2 URL (they will be returned to the next step in the setup process)
+        // Create a Twitch API oAuth2 URL
         $post_credentials_kraken = new TWITCHPRESS_Kraken5_Interface();
         $state = array( 'redirectto' => '/wp-admin/index.php?page=twitchpress-setup&step=folders' );
         $oAuth2_URL = $post_credentials_kraken->generate_authorization_url_admin( $_POST['twitchpress_scopes'], $state );
+        
+        // Send administrator to Twitch.tv to authorize an account.
         wp_redirect( $oAuth2_URL );
         exit;
     }
@@ -584,11 +603,19 @@ class TwitchPress_Admin_Setup_Wizard {
     protected function get_wizard_extensions() {       
         $gateways = array(
             'twitchpress-login-extension' => array(
-                'name'        => __( 'TwitchPress Login Extension', 'twitchpress' ),
-                'description' => __( 'Official login extension by Ryan Bayne. Allow your visitors to login and register using their Twitch account.', 'twitchpress' ),
+                'name'        => __( 'TwitchPress Login Extension BETA', 'twitchpress' ),
+                'description' => __( 'Allow your visitors to login and register using their Twitch account.', 'twitchpress' ),
                 'repo-slug'   => 'twitchpress-login-extension',
                 'source'        => 'remote'
-            ),  /*
+            ),  
+            'twitchpress-sync-extension' => array(
+                'name'        => __( 'TwitchPress Sync Extension BETA', 'twitchpress' ),
+                'description' => __( 'Required for building an advanced Twitch suite that needs to get data from Twitch.tv regularly.', 'twitchpress' ),
+                'repo-slug'   => 'twitchpress-sync-extension',
+                'source'        => 'remote'
+            ),  
+            
+            /*
             'stripe' => array(
                 'name'        => __( 'Channel Solution for Twitch', 'twitchpress' ),
                 'description' => __( 'A modern and robust wa.', 'twitchpress' ),
@@ -791,10 +818,11 @@ class TwitchPress_Admin_Setup_Wizard {
             <div class="twitchpress-setup-next-steps-last">
             
                 <h2><?php _e( 'Contact Ryan', 'twitchpress' ); ?></h2>
-                
+                                                           
+                <a href="<?php echo TWITCHPRESS_GITHUB; ?>"><?php _e( 'GitHub', 'twitchpress' ); ?></a>
                 <a href="https://ryanbayne.slack.com/threads/team/squeekycoder/"><?php _e( 'Slack', 'twitchpress' ); ?></a>
                 <a href="https://join.skype.com/pJAjfxcbfHPN"><?php _e( 'Skype', 'twitchpress' ); ?></a>
-                <a href="https://discord.gg/PcqNqNh"><?php _e( 'Discord', 'twitchpress' ); ?></a>
+                <a href="<?php echo TWITCHPRESS_DISCORD; ?>"><?php _e( 'Discord', 'twitchpress' ); ?></a>
                 <a href="https://twitter.com/Ryan_R_Bayne"><?php _e( 'Twitter', 'twitchpress' ); ?></a>
                 <a href="https://plus.google.com/u/0/collection/oA85PE"><?php _e( 'Google+', 'twitchpress' ); ?></a>
   

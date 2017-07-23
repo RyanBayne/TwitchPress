@@ -9,7 +9,7 @@
  */
           
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+    exit; 
 }
 
 if ( ! class_exists( 'TwitchPress_Admin_Help', false ) ) :
@@ -28,6 +28,8 @@ class TwitchPress_Admin_Help {
 
     /**
      * Add Contextual help tabs.
+     * 
+     * @version 1.0
      */
     public function add_tabs() {
         $screen = get_current_screen();
@@ -36,8 +38,8 @@ class TwitchPress_Admin_Help {
             return;
         }
         
-        $page      = empty( $_GET['page'] ) ? '' : sanitize_title( $_GET['page'] );
-        $tab       = empty( $_GET['tab'] ) ? '' : sanitize_title( $_GET['tab'] );
+        $page = empty( $_GET['page'] ) ? '' : sanitize_title( $_GET['page'] );
+        $tab  = empty( $_GET['tab'] )  ? '' : sanitize_title( $_GET['tab'] );
 
         /**
         * This is the right side sidebar, usually displaying a list of links. 

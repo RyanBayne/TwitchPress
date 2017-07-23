@@ -135,11 +135,13 @@ class TwitchPress_Install {
     
     /**
     * Forced plugin updating (twitchpress do_action) 
+    * 
+    * @version 1.2
     */
     public static function install_action_updater_cron() {
         if ( ! empty( $_GET['force_update_twitchpress'] ) ) {
             do_action( 'wp_twitchpress_updater_cron' );
-            wp_safe_redirect( admin_url( 'admin.php?page=twitchpress-settings' ) );
+            wp_safe_redirect( admin_url( 'admin.php?page=twitchpress' ) );
         }        
     }
     
@@ -240,10 +242,12 @@ class TwitchPress_Install {
      *
      * @param    mixed $links Plugin Action links
      * @return    array
+     * 
+     * @version 1.2
      */
     public static function plugin_action_links( $links ) {
         $action_links = array(
-            'settings' => '<a href="' . admin_url( 'admin.php?page=twitchpress-settings' ) . '" title="' . esc_attr( __( 'View TwitchPress Settings', 'twitchpress' ) ) . '">' . __( 'Settings', 'twitchpress' ) . '</a>',
+            'settings' => '<a href="' . admin_url( 'admin.php?page=twitchpress' ) . '" title="' . esc_attr( __( 'View TwitchPress Settings', 'twitchpress' ) ) . '">' . __( 'Settings', 'twitchpress' ) . '</a>',
         );
 
         return array_merge( $action_links, $links );

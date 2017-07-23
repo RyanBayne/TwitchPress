@@ -23,17 +23,17 @@ class TwitchPress_Listener {
     * Call methods for processing requests after all of the common
     * security checks have been done for the request your making.
     * 
-    * @version 1.0
+    * @version 1.2
     */
     public function GET_requests_listener() {
         if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
             return;
         }
-        
+
         if( !isset( $_GET['twitchpressaction'] ) ) {
             return;    
         }
-        
+
         if( !isset( $_REQUEST['_wpnonce'] ) ) {
             return;    
         }
@@ -61,11 +61,32 @@ class TwitchPress_Listener {
         if( !user_can( TWITCHPRESS_CURRENTUSERID, 'activate_plugins' ) ) {  
             return;    
         }
-        
+
         // Start of TwitchPress administrator only requests.
-        self::developertoolbar_uninstall_settings();        
-        // End of TwitchPress adminstrator only requests.            
+        self::developertoolbar_admin_actions();                   
     } 
+    
+    /**
+    * Runs method called by a request made using the Developer Toolbar.
+    * 
+    * @version 1.0
+    */
+    private static function developertoolbar_admin_actions() {
+        
+        if( !isset( $_GET['twitchpressaction'] ) ) { 
+            return; 
+        }
+
+        switch ( $_GET['twitchpressaction'] ) {
+            
+           case 'twitchpressuninstalloptions':
+                self::developertoolbar_uninstall_settings();
+             break;
+           case 'twitchpresssyncmainfeedtowp':
+                self::developertoolbar_sync_main_channel_feed_to_wp();
+             break;
+        }       
+    }
     
     /**
     * Remove all settings from the Developer Toolbar.
@@ -77,22 +98,11 @@ class TwitchPress_Listener {
         if( !user_can( TWITCHPRESS_CURRENTUSERID, 'activate_plugins' ) ) {  
             return;    
         }
-        
+                               
         $nonce = $_REQUEST['_wpnonce'];
         if ( wp_verify_nonce( $nonce, 'twitchpressuninstalloptions' ) ) {
-            $user_has_permission = TwitchPress_Uninstall::uninstall_options(); 
-                   
-            if( !$user_has_permission ) {
-                TwitchPress_Admin_Notices::add_wordpress_notice(
-                    'devtoolbaruninstallednotices',
-                    'error',
-                    true,
-                    __( 'No Permission', 'twitchpress' ),
-                    __( 'You do not have the permissions (WP capabilities) required to uninstall all options.', 'twitchpress' ) 
-                );
-                return false;                
-            }  
-            
+            //TwitchPress_Uninstall::uninstall_options(); 
+   
             TwitchPress_Admin_Notices::add_wordpress_notice(
                 'devtoolbaruninstallednotices',
                 'success',
@@ -101,7 +111,41 @@ class TwitchPress_Listener {
                 __( 'TwitchPress options have been deleted and the plugin will need some configuration to begin using it.', 'twitchpress' ) 
             );
         }  
-    }       
+    }      
+    
+    /**
+    * Handles request from Developer Toolbar to sync the main channels
+    * feed into WP.
+    * 
+    * @version 1.0
+    */
+    private static function developertoolbar_sync_main_channel_feed_to_wp() {
+
+        // Security is done already but we need safeguards should the method be called elsewhere.
+        if( !user_can( TWITCHPRESS_CURRENTUSERID, 'activate_plugins' ) ) {  
+            return;    
+        }
+
+        $verify_nonce = wp_verify_nonce( $_REQUEST['_wpnonce'], 'twitchpresssyncmainfeedtowp' );
+               
+        if ( $verify_nonce ) {
+  
+            $result = twitchpress_sync_feed_to_wp();
+          
+            $total = 0;
+            if( is_array( $result ) ) {       
+                $total = count( $result );
+            }
+                                       
+            TwitchPress_Admin_Notices::add_wordpress_notice(
+                'devtoolbarnotice-syncmainfeedtowp',
+                'success',
+                true,
+                __( 'Feed Posts Imported', 'twitchpress' ),
+                sprintf( __( 'TwitchPress imported %s channel feed entries.', 'twitchpress' ), $total ) 
+            );
+        }        
+    }     
 }   
 
 endif;

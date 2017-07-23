@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div id="message" class="updated twitchpress-message twitchpress-connect">
     <p><strong><?php _e( 'TwitchPress Data Update', 'twitchpress' ); ?></strong> &#8211; <?php _e( 'We need to update your store\'s database to the latest version.', 'twitchpress' ); ?></p>
-    <p class="submit"><a href="<?php echo esc_url( add_query_arg( 'do_update_twitchpress', 'true', admin_url( 'admin.php?page=twitchpress-settings' ) ) ); ?>" class="twitchpress-update-now button-primary"><?php _e( 'Run the updater', 'twitchpress' ); ?></a></p>
+    <p class="submit"><a href="<?php echo esc_url( add_query_arg( 'do_update_twitchpress', 'true', admin_url( 'admin.php?page=twitchpress' ) ) ); ?>" class="twitchpress-update-now button-primary"><?php _e( 'Run the updater', 'twitchpress' ); ?></a></p>
 </div>
 <script type="text/javascript">
     jQuery( '.twitchpress-update-now' ).click( 'click', function() {

@@ -41,9 +41,59 @@ function twitchpress_nonce_prepend( $action, $item = false ) {
 function twitchpress_get_screen_ids() {
 
     $screen_ids = array(
-        'twitchfeed_page_twitchpress-data',
         'twitchfeed_page_twitchpress-settings',
+        'toplevel_page_twitchpress',
     );
 
     return apply_filters( 'twitchpress_screen_ids', $screen_ids );
+}
+
+/**
+* Creates a new twitchchannel post after passing strict checks to ensure
+* that the channel has not already been entered.
+* 
+* @return integer post ID if a twitchchannel post is inserted.
+* @return boolean false if wp_error on inserting channel.
+* @returns boolean false if post already exists with the giving channel_ID.
+* 
+* @param integer $channel_id
+* @param string $channel_name
+* @param boolean $validated passing true will bypass a call to Kraken to validate channel.
+* 
+* @version 1.0
+*/
+function twitchpress_insert_channel( $channel_id, $channel_name, $validated = false ) {
+    
+    // Ensure the channel ID is not already linked to a channel post.  
+    $does_channel_id_exist = twitchpress_channelid_in_postmeta( $channel_id );
+    if( $does_channel_id_exist ) {   
+        return false;    
+    }
+   
+    // Ensure post slug does not already exist.
+    $post_name = sanitize_title( $channel_name );
+    $post_name_exists = twitchpress_does_post_name_exist( $post_name );                
+    if( $does_slug_exists ) {   
+        return false;
+    }
+                                           
+    // Create a new channel post.
+    $post = array(
+        'post_author' => 1,
+        'post_title' => $channel_name,
+        'post_name'  => $post_name,
+        'post_status' => 'draft',
+        'post_type' => 'twitchchannels',
+    );
+    
+    $post_id = wp_insert_post( $post, true );
+    
+    if( is_wp_error( $post_id ) ) {     
+        return false;
+    }
+    
+    // Add Twitch channel ID to the post as a permanent pairing. 
+    add_post_meta( $post_id, 'twitchpress_channel_id', $channel_id );
+    
+    return $post_id;
 }

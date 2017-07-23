@@ -15,9 +15,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-       
-include_once( 'libraries/library.async-request.php' );
-include_once( 'libraries/library.background-process.php' );
 
 /**
  * TwitchPress_Background_Updater Class.

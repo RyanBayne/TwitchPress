@@ -25,15 +25,19 @@ if( !class_exists( 'TWITCHPRESS_Kraken5_Interface' ) ) :
 
 class TWITCHPRESS_Kraken5_Interface {
     
-    protected $twitch_wperror = null;
-    protected $twitch_default_channel = null;// Services own channel name, not ID.
-    protected $twitch_channel_id = null;
-    protected $twitch_client_id = null;
-    protected $twitch_client_secret = null;
-    protected $twitch_client_url = null;
-    protected $twitch_client_code = null;
-    protected $twitch_client_token = null;
+    protected $twitch_wperror                = null;
+    protected $twitch_default_channel        = null;// Services own channel name, not ID.
+    protected $twitch_channel_id             = null;
+    protected $twitch_client_id              = null;
+    protected $twitch_client_secret          = null;
+    protected $twitch_client_url             = null;
+    protected $twitch_client_code            = null;
+    protected $twitch_client_token           = null;
     protected $twitch_global_accepted_scopes = null;
+    
+    // Debugging variables.
+    public $twitch_call_name = 'Unknown';
+    public $twitch_call_id   = null;
     
     public $twitch_scopes = array( 
             'channel_check_subscription',
@@ -258,6 +262,16 @@ class TWITCHPRESS_Kraken5_Interface {
         } 
 
         update_option( 'twitchpress_main_channel_id', $user_objects['users'][0]['_id'], true );        
+  
+        // For now we will assume that the sites official Twitch account is also the users
+        // own personal account. This is temporary, we really need a procedure that offers
+        // the chance to re-authorize a second Twitch account and store that as the users personal.
+        twitchpress_update_user_oauth( 
+            get_current_user_id(), 
+            $_GET['code'], 
+            $new_token['token'], 
+            $user_objects['users'][0]['_id'] 
+        );
         
         // Forward user to the custom destinaton i.e. where they were before oAuth2. 
         wp_redirect( get_site_url() . $oauth_transient['redirectto'] );
@@ -416,7 +430,7 @@ class TWITCHPRESS_Kraken5_Interface {
      */
     protected function cURL_get($url, array $get = array(), array $options = array(), $returnStatus = false){
         $functionName = 'GET';
-        
+
         $this->generateOutput($functionName, 'Starting GET query', 1);
         
         // Specify the header
@@ -556,10 +570,10 @@ class TWITCHPRESS_Kraken5_Interface {
         }
         
         $this->generateOutput( $functionName, 'API Version set to: ' . TWITCHPRESS_API_VERSION, 3 );
-        
+
         // Custom build the post fields
         foreach ($post as $field => $value) {
-            $postfields .= $field . '=' . urlencode($value) . '&';
+            $postfields .= $field . '=' . urlencode( $value ) . '&';
         }
         // Strip the trailing &
         $postfields = rtrim($postfields, '&');
@@ -1460,7 +1474,9 @@ class TWITCHPRESS_Kraken5_Interface {
         );
         $options = array();
         
-        $result = json_decode( $this->cURL_get( $url, $post, $options, false ), true );
+        $result = json_decode( $this->cURL_get( $url, $post, $options, false ), true );                   
+        
+        $token = array();
         
         if ( isset( $result['token'] ) && isset( $result['token']['valid'] ) && $result['token']['valid'] ){
             $this->generateOutput($functionName, 'Token valid', 3);
@@ -1636,7 +1652,7 @@ class TWITCHPRESS_Kraken5_Interface {
     * Recommended for admin requests as it generates notices.  
     * 
     * @author Ryan Bayne
-    * @version 1.0
+    * @version 1.1
     */
     public function start_twitch_session_admin( $account = 'main' ) {
         // Can change from the default "main" credentails. 
@@ -1645,7 +1661,7 @@ class TWITCHPRESS_Kraken5_Interface {
         }
 
         // The plugin will bring the user to their original admin view using the redirectto value.
-        $state = array( 'redirectto' => '/wp-admin/admin.php?page=twitchpress-settings&tab=kraken&amp;' . 'section=maincredentials' );
+        $state = array( 'redirectto' => '/wp-admin/admin.php?page=twitchpress&tab=kraken&amp;' . 'section=entermaincredentials' );
 
         $oAuth2_URL = $this->generate_authorization_url_admin( $this->get_global_accepted_scopes(), $state ); 
         wp_redirect( $oAuth2_URL );

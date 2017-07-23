@@ -81,10 +81,9 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
      */
     public function get_settings( $current_section = '' ) {
         
-        $sections_array = self::get_sections();
-        
+        // Establish a section to display rather than have a default.
+        $sections_array = self::get_sections(); 
         $display_section = null;
-        
         $settings = array();
                      
         if( !$current_section ) { 
@@ -97,6 +96,7 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
 
             $settings = apply_filters( 'twitchpress_user_login_settings', array(
             
+                /*        Example Only
                 array(
                     'title' => __( 'Login Settings', 'twitchpress' ),
                     'type'     => 'title',
@@ -118,6 +118,7 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
                     'type'     => 'sectionend',
                     'id'     => 'usersloginsettings'
                 )
+                */
 
             ));
             
@@ -125,6 +126,7 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
         } elseif( 'registration' == $display_section ) {
             $settings = apply_filters( 'twitchpress_user_registration_settings', array(
  
+                /*          Example Only
                 array(
                     'title' => __( 'Registraton Settings', 'twitchpress' ),
                     'type'     => 'title',
@@ -146,6 +148,7 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
                     'type'     => 'sectionend',
                     'id'     => 'usersregisrationsettings'
                 ),
+                */
 
             ));
         }

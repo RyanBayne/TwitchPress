@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== TwitchPress ===
 Contributors: Ryan Bayne
 Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
@@ -6,13 +6,13 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.2.3
+Stable tag: 1.2.4
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
                        
 == Description ==
 
-TwitchPress is an adaptable solution for the creation of a Twitch service that can do anything Kraken allows. 
+TwitchPress BETA is an adaptable solution for the creation of a Twitch service that can do anything Kraken allows. 
 Marry your WordPress gaming site with your Twitch channel in everyway possible using the plugins extension system
 or create a site just to offer channel management services.
 
@@ -23,8 +23,11 @@ and the plugins extension system. Using the extension system we can make TwitchP
 with the Twitch API. 
 
 = New for 2017 =
-The plugin is still very new. The core plugin is highly reliable. Free extensions are still being developed and tested.
-Premium extensions are not being developed yet although I have already made two privates ones.
+The plugin is still very new. The core plugin is highly reliable. 
+Free extensions are already being released but are also very new. 
+Please test well before using on a live site. 
+Please support the project, every share, like or contribution on GitHub
+will drive the project forward.
 
 = Links =                                                                
 *   <a href="https://twitchpress.wordpress.com" title="">Blog</a>
@@ -69,10 +72,28 @@ Translator needed to localize the Channel Solution for Twitch.
 
 == Upgrade Notice ==
 
-No special upgrade instructions this time. Just remember to 
-backup your site files and database.
+Please complete the Setup Wizard again. You will find it in the Help tab
+on the plugins own settings page. 
 
 == Changelog ==
+= 1.2.4 NOT RELEASED = 
+* FIX - Forwarding URL in start_twitch_session_admin() was causing a blank settings area in Twitch API tab. 
+* DEV - class.twitchpress-settings-kraken.php improved to allow extension to add section. 
+* DEV - New twitchpress_is_user_authorized() function makes it easier for all extensions to check the same user meta values for an authorized Twitch session.
+* DEV - TwitchPress Sync Extension BETA added to list of plugins for quick install during Setup Wizard.
+* DEV - As a temporary approach the sites official (default) Twitch account is applied as the WP users own account i.e. their personal use of the site will use that same account, their WP profile will display data from that channel.
+* NEW - General settings page.
+* NEW - Option to delete everything including data, when plugin is deleted. See Plugin Removal section in General Settings. 
+* DEV - Now including background-process.php and async-request.php in the main file. 
+* DEV - Plugin menu is loaded differently: in a manner that allows multiple post types to be added to it. 
+* NEW - Channels custom post type. This will be a method of managing channels with the option of displaying them. 
+* DEV - Channel feed sync to WordPress is much better with a more complex connection between posts, channels and owners. 
+* DEV - Activating the channel to WordPress feed syncing will now create a new CRON job (scheduled task). 
+* DEV - Removed option for updating Twitch feed entries pending further development.
+* DEV - Removed option for updating WordPress posts when a Twitch feed item changes, pending further development. 
+* DEV - A few lines removed from developertoolbar_uninstall_settings() whicch did not appear to have a purpose. 
+* FIX - Function twitchpress_returning_url_nonced() now builds URL in a way that allows nonce check to pass. 
+
 = 1.2.3 =
 * DEV - TwitchPress_Settings_Permissions renamed to TwitchPress_Settings_Permissions
 * DEV - Default footer message will no longer be displayed. 

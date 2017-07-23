@@ -140,7 +140,7 @@ function twitchpress_get_permalink_structure() {
     }
                       
     $permalinks = wp_parse_args( (array) get_option( 'twitchpress_permalinks', array() ), array(
-        'twitchpress_base'           => '',
+        'twitchpress_base'       => '',
         'category_base'          => '',
         'tag_base'               => '',
         'attribute_base'         => '',
@@ -148,10 +148,10 @@ function twitchpress_get_permalink_structure() {
     ) );
 
     // Ensure rewrite slugs are set.
-    $permalinks['twitchfeed_rewrite_slug']   = untrailingslashit( empty( $permalinks['twitchfeed_base'] ) ? _x( 'twitchfeed', 'slug', 'twitchpress' )             : $permalinks['twitchfeed_base'] );
-    $permalinks['category_rewrite_slug']  = untrailingslashit( empty( $permalinks['category_base'] ) ? _x( 'twitchfeed-category', 'slug', 'twitchpress' )   : $permalinks['category_base'] );
-    $permalinks['tag_rewrite_slug']       = untrailingslashit( empty( $permalinks['tag_base'] ) ? _x( 'twitchfeed-tag', 'slug', 'twitchpress' )             : $permalinks['tag_base'] );
-    $permalinks['attribute_rewrite_slug'] = untrailingslashit( empty( $permalinks['attribute_base'] ) ? '' : $permalinks['attribute_base'] );
+    $permalinks['twitchfeed_rewrite_slug'] = untrailingslashit( empty( $permalinks['twitchfeed_base'] ) ? _x( 'twitchfeed',          'slug', 'twitchpress' )             : $permalinks['twitchfeed_base'] );
+    $permalinks['category_rewrite_slug']   = untrailingslashit( empty( $permalinks['category_base'] )   ? _x( 'twitchfeed-category', 'slug', 'twitchpress' )   : $permalinks['category_base'] );
+    $permalinks['tag_rewrite_slug']        = untrailingslashit( empty( $permalinks['tag_base'] )        ? _x( 'twitchfeed-tag',      'slug', 'twitchpress' )             : $permalinks['tag_base'] );
+    $permalinks['attribute_rewrite_slug']  = untrailingslashit( empty( $permalinks['attribute_base'] )  ? '' : $permalinks['attribute_base'] );
 
     if ( function_exists( 'restore_current_locale' ) && did_action( 'admin_init' ) ) {
         restore_current_locale();
@@ -214,14 +214,15 @@ function twitchpress_error( $message, $message_type = 0, $destination = null, $e
 * 
 * @param mixed $new_parameters_array
 * 
-* @version 1.0
+* @version 1.2
 */
 function twitchpress_returning_url_nonced( $new_parameters_array, $action, $specified_url = null  ) {
-    return esc_url( 
-                wp_nonce_url( 
-                        add_query_arg( $new_parameters_array, $specified_url ) 
-                ), $action 
-           );
+
+    $url = add_query_arg( $new_parameters_array, $specified_url );
+    
+    $url = wp_nonce_url( $url, $action );
+    
+    return $url;
 } 
 
 /**
@@ -310,3 +311,368 @@ function twitchpress_was_valid_token_returned( $returned_value ){
     
     return true;
 }                     
+
+/**
+* Checks if the giving user has Twitch API credentials.
+* 
+* @returns boolean false if no credentials else true
+* 
+* @param mixed $user_id
+* 
+* @version 1.0
+*/
+function twitchpress_is_user_authorized( $user_id ) { 
+    if( !get_user_meta( $user_id, 'twitchpress_code' ) ) {
+        return false;
+    }    
+    if( !get_user_meta( $user_id, 'twitchpress_token' ) ) {
+        return false;
+    }    
+    return true;
+}
+
+/**
+* Gets a giving users Twitch credentials from user meta and if no user
+* is giving defaults to the current logged in user. 
+* 
+* @returns mixed array if user has credentials else false.
+* @param mixed $user_id
+* 
+* @version 1.0
+*/
+function twitchpress_get_user_twitch_credentials( $user_id ) {
+    
+    if( !$user_id ) {
+        return false;
+    } 
+    
+    if( !$code = get_user_meta( $user_id, 'twitchpress_code', true ) ) {  
+        return false;
+    }
+    
+    if( !$token = get_user_meta( $user_id, 'twitchpress_token', true ) ) {  
+        return false;
+    }
+
+    return array(
+        'code'  => $code,
+        'token' => $token
+    );
+}
+
+/**
+* Update giving users oauth2 code.
+* 
+* @param mixed $user_id
+* @param mixed $code
+* 
+* @version 1.0
+*/
+function twitchpress_update_user_code( $user_id, $code ) { 
+    update_user_meta( $user_id, 'twitchpress_auth_time', time() );
+    update_user_meta( $user_id, 'twitchpress_code', $code );    
+}
+
+/**
+* Update users oauth2 token.
+* 
+* @param mixed $user_id
+* @param mixed $token
+* 
+* @version 1.0
+*/
+function twitchpress_update_user_token( $user_id, $token ) { 
+    update_user_meta( $user_id, 'twitchpress_auth_time', time() );
+    update_user_meta( $user_id, 'twitchpress_token', $token );    
+}
+
+/**
+* Update users Twitch ID (in Kraken version 5 user ID and channel ID are the same).
+* 
+* @param mixed $user_id
+* @param mixed $twitch_user_id
+* 
+* @version 1.0
+*/
+function twitchpress_update_user_twitchid( $user_id, $twitch_user_id ) {
+    update_user_meta( $user_id, 'twitchpress_auth_time', time() );
+    update_user_meta( $user_id, 'twitchpress_id', $twitch_user_id );    
+}
+
+/**
+* Updates user code and token for Twitch.tv API.
+* 
+* We always store the Twitch user ID that the code and token matches. This
+* will help to avoid mismatched data.
+* 
+* @param mixed $user_id
+* @param mixed $code
+* @param mixed $token
+* 
+* @version 1.0
+*/
+function twitchpress_update_user_oauth( $user_id, $code, $token, $twitch_user_id ) {
+    twitchpress_update_user_code( $user_id, $code );
+    twitchpress_update_user_token( $user_id, $token ); 
+    twitchpress_update_user_twitchid( $user_id, $twitch_user_id );     
+}
+
+/**
+* Schedule an event for syncing feed posts into WP.
+* 
+* @version 1.0
+*/
+function twitchpress_schedule_sync_channel_to_wp() {
+    wp_schedule_event(
+        time() + 2,
+        3600,
+        'twitchpress_sync_feed_to_wp'
+    );    
+}
+
+/**
+* Controlled by CRON - sync feed posts into wp for a giving channel.
+* 
+* Assumes settings have been checked.                          
+* 
+* @version 1.0
+*/
+function twitchpress_sync_feed_to_wp( $channel_id = false ) {
+    $new_posts_ids = array();
+
+    // If no $channel_id we assume we are syncing the main channel. 
+    if( !$channel_id ) { 
+        $channel_id = twitchpress_get_main_channels_twitchid();   
+    }
+   
+    if( !$channel_id ) {
+        return false;
+    }
+    
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken5-interface.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken5-calls.php' );
+      
+    // Make call to Twitch for the latest feed post. 
+    $kraken = new TWITCHPRESS_Kraken5_Calls();
+    $feed_posts = $kraken->getFeedPosts( $channel_id, 5 );
+    unset( $kraken );
+    if( !$feed_posts) { return; }
+
+    // Check which feed ID's do not exist in the blog and treat them as new Twitch entries.
+    foreach( $feed_posts as $entry_id => $entry_array ) {
+   
+        // Skip feed entries alrady in the database.
+        if( twitchpress_does_feed_item_id_exist( $entry_id ) ) {
+            continue;
+        }
+            
+        // Set WP post author ID based on the feed entry author (channel owner).
+        $post_author_id = twitchpress_feed_owner_wpuser_id( $channel_id );    
+            
+        $new_post_id = twitchpress_insert_feed_post( $channel_id, $entry_array, $post_author_id );
+        
+        if( is_numeric( $new_post_id ) ) {   
+            $new_posts_ids[] = $new_post_id;    
+        }      
+    }
+
+    return $new_posts_ids;
+}
+
+/**
+* Determines if a giving feed item ID exists already or not.
+*      
+* @param mixed $feed_item_id
+* 
+* @returns boolean true if the item ID is found in post meta else returns false.
+* 
+* @version 1.0
+*/
+function twitchpress_does_feed_item_id_exist( $feed_item_id ){ 
+    $args = array(
+        'post_type' => 'twitchfeed',
+        'meta_query' => array(
+            array(
+                'key' => 'twitchpress_feed_item_id',
+                'value' => $feed_item_id
+            )
+        ),
+        'fields' => 'ids'
+    );
+    
+    $query = new WP_Query( $args );
+  
+    if ( !empty( $query->posts ) ) {     
+        return true;
+    }
+
+    return false;    
+}                 
+
+/**
+* Insert a new "twitchfeed" post.
+* 
+* @param mixed $channel_id
+* @param mixed $feed_entry pass the feed item object as returned from the Twitch API.
+* @param mixed $post_author author must be determined based on channel owner if the owner is also a user.
+* @param string $process channeltowp|csvimport|customui
+* 
+* @returns integer post ID or a string explaining why the post was not created.
+* 
+* @version 1.0
+*/
+function twitchpress_insert_feed_post( $channel_id, $feed_entry, $post_author, $process = 'channeltowp' ) {
+   
+    // Ensure feed item does not already exist based on it's ID.
+    if( twitchpress_does_feed_item_id_exist( $feed_entry['id'] ) ) {
+        return __( 'The channel feed item already exists in this WordPress site. This was establishing by checking the items ID which was found in the database already.', 'twitchpress' );
+    }    
+                                           
+    $post = array(
+        'post_author' => 1,
+        'post_title' => __( 'Latest Update by', 'twitchpress' ) . ' ' .  $feed_entry['user']['display_name'],
+        'post_content' => $feed_entry['body'],
+        'post_status' => 'draft',
+        'post_type' => 'twitchfeed',
+    );
+    
+    $post_id = wp_insert_post( $post, true );
+    
+    if( is_wp_error( $post_id ) ) {     
+        return false;
+    }
+    
+    // Add Twitch channel ID to the post as a permanent pairing. 
+    add_post_meta( $post_id, 'twitchpress_channel_id', $channel_id );
+    add_post_meta( $post_id, 'twitchpress_feed_item_id', $feed_entry['id'] );
+
+    return $post_id;    
+}
+
+/**
+* Determine the owner of a channel within the WP site i.e. if administrator
+* entered the channel, then they own it 100% and no other user can be linked.
+* 
+* But what we want to establish is a linked WP user who is a subscriber to the Twitch channel
+* or even just a follower. If the service allows them to enter their own channel and own
+* the channel on this site then we will return their WP user ID. 
+* 
+* @param mixed $channel_id
+* @return mixed
+* 
+* @version 1.0
+*/
+function twitchpress_feed_owner_wpuser_id( $channel_id ) {
+    
+    /**
+    * A channels ID is the same as user ID and they will be stored in user meta. 
+    * 
+    * So here we will get the WP user ID that has the channel ID in their meta else
+    * return a default ID. 
+    */
+    
+    return 1;// WIP - other areas of the plugin and extensions need to progress    
+}
+
+/**
+* Queries the custom post type 'twitchchannels' and returns post ID's that
+* have a specific meta key and specific meta value.
+* 
+* @version 1.0
+*/
+function twitchpress_get_channels_by_meta( $post_meta_key, $post_meta_value, $limit = 100 ) {
+    // args to query for your key
+    $args = array(
+        'post_type' => 'twitchchannels',
+        'meta_query' => array(
+            array(
+                'key' => $post_meta_key,
+                'value' => $post_meta_value
+            )
+        ),
+        'fields' => 'ids'
+    );
+    
+    // perform the query
+    $query = new WP_Query( $args );
+  
+    if ( !empty( $query->posts ) ) {     
+        return true;
+    }
+
+    return false;    
+}
+
+/**
+* Adds post meta that act as settings for the main channel.
+* 
+* @version 1.0
+*/
+function twitchpress_activate_channel_feedtowp_sync( $channel_post_id ) {
+    update_post_meta( $channel_post_id, 'twitchpress_sync_feed_to_wp' );      
+}
+
+/**
+* Get the main/default/official channel ID for the WP site.
+* 
+* @version 1.0
+*/
+function twitchpress_get_main_channels_twitchid() {
+    return get_option( 'twitchpress_main_channel_id' );   
+}
+
+/**
+* Get the main/default/official channels related post ID.
+* 
+* @version 1.0
+*/
+function twitchpress_get_main_channels_postid() {
+    return get_option( 'twitchpress_main_channel_postid' );   
+}
+
+/**
+* Check if giving post name (slug) already exists in wp_posts.
+* 
+* @param mixed $post_name
+*/
+function twitchpress_does_post_name_exist( $post_name ) {
+    global $wpdb;
+    $result = $wpdb->get_var( $wpdb->prepare( "SELECT post_name FROM {$wpdb->prefix}_posts WHERE post_name = '%s'", $post_name ), 'ARRAY_A' );
+    if( $result ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+* Checks if a channel ID exists in post meta for custom post type "twitchchannels"
+* 
+* @returns boolean true if the Twitch channel ID already exists in post meta.
+*  
+* @param mixed $channel_id
+* 
+* @version 1.0
+*/
+function twitchpress_channelid_in_postmeta( $channel_id ) {
+    // args to query for your key
+    $args = array(
+        'post_type' => 'twitchchannels',
+        'meta_query' => array(
+            array(
+                'key' => 'twitchpress_channel_id',
+                'value' => $channel_id
+            )
+        ),
+        'fields' => 'ids'
+    );
+    
+    // perform the query
+    $query = new WP_Query( $args );
+  
+    if ( !empty( $query->posts ) ) {     
+        return true;
+    }
+
+    return false;
+}

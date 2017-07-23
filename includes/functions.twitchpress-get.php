@@ -101,8 +101,7 @@ function twitchpress_getURLParamValue($url, $param, $maxMatchLength = 40, $match
 * 
 * @return $parameters - [array] A keyed array of all values returned, key is param
 */
-function twitchpress_getURLParams( $url, $maxMatchLength = 40, $matchSymbols = false )
-{
+function twitchpress_getURLParams( $url, $maxMatchLength = 40, $matchSymbols = false ){
     if ($matchSymbols){
         $match = '[\w._@#$%\^\*\(\)!+\\|-]';
     } else {

@@ -40,8 +40,8 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
     public function get_sections() {
 
         $sections = array(
-            ''              => __( 'Permissions Scope', 'twitchpress' ),
-            'entermaincredentials'       => __( 'Enter Main Credentials', 'twitchpress' ),
+            'globalscope'           => __( 'Permissions Scope', 'twitchpress' ),
+            'entermaincredentials'  => __( 'Enter Main Credentials', 'twitchpress' ),
         );
 
         return apply_filters( 'twitchpress_get_sections_' . $this->id, $sections );
@@ -76,8 +76,19 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
      * @return array
      */
     public function get_settings( $current_section = '' ) {
-             
-        if ( 'entermaincredentials' == $current_section ) {
+        
+        // Establish a section to display rather than have a default.
+        $sections_array = self::get_sections(); 
+        $display_section = null;
+        $settings = array();
+                  
+        if( !$current_section ) { 
+            $display_section = array_keys($sections_array)[0];
+        } else {
+            $display_section = $current_section;
+        }
+                    
+        if ( 'entermaincredentials' == $display_section ) {
 
             $settings = apply_filters( 'twitchpress_entermaincredentials_settings', array(
             
@@ -160,7 +171,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
             ));
             
         // Domain to Twitch API permission Options
-        } else {
+        } elseif ( 'globalscope' == $display_section ) {
             $settings = apply_filters( 'twitchpress_permissions_scope_settings', array(
  
                 array(

@@ -45,7 +45,7 @@ class TwitchPress_Admin_Settings {
     * 
     * @var mixed
     */
-    private static $defaulttab = 'feeds';
+    private static $defaulttab = 'general';
 
     /**
      * Include the settings page classes.
@@ -55,7 +55,8 @@ class TwitchPress_Admin_Settings {
             $settings = array();
 
             include_once( 'settings/class.twitchpress-settings-page.php' );
-
+                                                                            
+            $settings[] = include( 'settings/class.twitchpress-settings-general.php' );
             $settings[] = include( 'settings/class.twitchpress-settings-feeds.php' );
             $settings[] = include( 'settings/class.twitchpress-settings-kraken.php' ); 
             
@@ -105,7 +106,7 @@ class TwitchPress_Admin_Settings {
         if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'twitchpress-settings' ) ) {
             die( __( 'Action failed. Please refresh the page and retry.', 'twitchpress' ) );
         }
-
+            
         // Trigger actions
         do_action( 'twitchpress_settings_save_' . $current_tab );
         do_action( 'twitchpress_update_options_' . $current_tab );
