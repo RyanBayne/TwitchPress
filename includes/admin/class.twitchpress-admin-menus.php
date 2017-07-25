@@ -39,8 +39,9 @@ class TwitchPress_Admin_Menus {
     
     function secondary_menu_items() {
         
-        add_submenu_page( $this->slug, __('Feed Posts', $this->slug), __('Feed Posts', $this->slug), 'manage_options', 'edit.php?post_type=twitchfeed', '', '' );
-        add_submenu_page( $this->slug, __('Channels',   $this->slug), __('Channels',   $this->slug), 'manage_options', 'edit.php?post_type=twitchchannels', '', '' );
+        add_submenu_page( $this->slug, __('Feed Posts', $this->slug), __('Feed Posts', $this->slug), 'manage_options', 'edit.php?post_type=twitchfeed', '' );
+        add_submenu_page( $this->slug, __('Channels',   $this->slug), __('Channels',   $this->slug), 'manage_options', 'edit.php?post_type=twitchchannels', '' );
+        add_submenu_page( $this->slug, __('Tools',      $this->slug), __('Tools',      $this->slug), 'manage_options', 'twitchpress_tools', array( $this, 'tools_page' ) );
    
     }
 
@@ -49,6 +50,10 @@ class TwitchPress_Admin_Menus {
      */
     public function settings_page() {    
         TwitchPress_Admin_Settings::output();
+    }
+    
+    public function tools_page() {
+        TwitchPress_Admin_Tools_Views::output();    
     }
       
 }

@@ -39,21 +39,63 @@ class TwitchPress_Custom_Posts_TwitchFeed {
     * authored content with Twitch.tv channel feeds.
     * 
     * @author Ryan Bayne
-    * @version 1.0
+    * @version 1.2
     * 
-    * @param mixed $ID
-    * @param mixed $post 
+    * @param mixed $ID post ID
+    * @param mixed $post the post object
     */
     public static function tweetfeed_post_published( $ID, $post ) {
         
         /*
             Currently works for administrators only.
-            Currently uses the main Twitch account only.
+            Currently uses the main Twitch account by default.
         */   
 
+        if( !current_user_can( 'activate_plugins' ) ) {
+            return false;
+        }
+        
         $kraken = new TWITCHPRESS_Kraken5_Calls();
         $send = array( 'content' => $post->post_content );
-        $result = $kraken->postFeedPost( $send, array() );   
+        $result = $kraken->postFeedPost( $send, array() );
+        
+        // Kraken returns a status of "200" on success. 
+        if( '200' == $result ) {
+            
+            // We now need to get the Twitch feed item and store its ID in post meta.
+            // Lets assume another post was published at the same time.
+            $feed_items = $kraken->getFeedPosts( $kraken->twitch_channel_id, 3 );
+
+            // Remove items that were posted more than 30 seconds ago. 
+            $total = 0;
+            if( $feed_items ) {
+                foreach( $feed_items as $item_id => $item_array ) {
+                    $timestamp = twitchpress_convert_created_at_to_timestamp( $item_array['created_at'] );
+                    $in_thirty = $timestamp + 15;
+                    if( time() > $in_thirty ) {
+                        unset( $feed_items[ $item_id ] );
+                    }       
+                }    
+                
+                // If we have a single Twitch feed item than it's probably the one we just posted, right?!
+                if( count( $feed_items ) == 1 ) {
+                    
+                    // Add the channel feed item ID to our post and they become married. 
+                    add_post_meta( $ID, 'twitchpress_feed_item_id' );
+                        
+                } else { 
+                    // If left with 2 or more items, attempt to match content but
+                    // we would need a version of the WP content that has no HTML, maybe!    
+                }
+            }
+
+        } else {
+            
+            // Display a notice indicating a likely failure to update feed with new post. 
+             
+        }   
+        
+        unset( $kraken, $result );
     }
 }  
 

@@ -76,7 +76,7 @@ Please complete the Setup Wizard again. You will find it in the Help tab
 on the plugins own settings page. 
 
 == Changelog ==
-= 1.2.4 NOT RELEASED = 
+= 1.2.4 = 
 * FIX - Forwarding URL in start_twitch_session_admin() was causing a blank settings area in Twitch API tab. 
 * DEV - class.twitchpress-settings-kraken.php improved to allow extension to add section. 
 * DEV - New twitchpress_is_user_authorized() function makes it easier for all extensions to check the same user meta values for an authorized Twitch session.
@@ -93,6 +93,9 @@ on the plugins own settings page.
 * DEV - Removed option for updating WordPress posts when a Twitch feed item changes, pending further development. 
 * DEV - A few lines removed from developertoolbar_uninstall_settings() whicch did not appear to have a purpose. 
 * FIX - Function twitchpress_returning_url_nonced() now builds URL in a way that allows nonce check to pass. 
+* DEV - Removed the mainviews folder and contents deleted as it was not yet in use.
+* NEW - New Tools view - created using a WordPress core table for an approach that allows endless expansion. 
+* DEV - Channel feed item ID is now queried straight after WordPress posts to Twitch and the item ID is stored in the original posts meta under "twitchpress_feed_item_id"
 
 = 1.2.3 =
 * DEV - TwitchPress_Settings_Permissions renamed to TwitchPress_Settings_Permissions

@@ -324,7 +324,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     * @param mixed $returnStatus
     * 
     * @author Ryan R. Bayne
-    * @version 1.2
+    * @version 5.0
     */
     public function postFeedPost( $postparam = array(), $options = array() ){
         $functionName = 'ADD_FEEDPOST';
@@ -1194,7 +1194,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * 
      * @return $chatToken - [string] complete login token for chat login
      */
-     public function chat_generateToken($token, $code){
+    public function chat_generateToken($token, $code){
         $functionName = 'CHAT_GENERATE_TOKEN';
         $requiredAuth = 'chat_login';
         $prefix = 'oauth:';
@@ -1257,7 +1257,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         unset($token, $auth, $authSuccessful, $code, $requiredAuth, $functionName, $type);        
         
         return $chatToken;                
-     }
+    }
     
     /**
      * Gets a list of users that follow a given channel

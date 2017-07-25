@@ -1,8 +1,7 @@
 <?php
 /**
- * Post Types
- *
- * Registers post types and taxonomies.
+ * Methods for handling all post types including "post", "page" and 
+ * registrating custom post types.
  *
  * @class     TwitchPress_Post_types
  * @version   1.0.0

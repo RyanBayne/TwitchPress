@@ -47,13 +47,18 @@ class TwitchPress_Admin {
      * Include any classes we need within admin.
      */
     public function includes() {
+        
+        // Functions
         include_once( dirname( __FILE__ ) . '/functions.twitchpress-admin.php' );
+        
+        // Class
         include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-menus.php' );
         include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-notices.php' );
         include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-assets.php' );
         include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-pointers.php' );
         include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-help.php' );
         include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-pointers.php' );
+        include_once( dirname( __FILE__ ) . '/class.twitchpress-admin-quicktools.php' );
         
         // Help Tabs
         if ( apply_filters( 'twitchpress_enable_admin_help_tab', true ) ) {

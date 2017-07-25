@@ -676,3 +676,14 @@ function twitchpress_channelid_in_postmeta( $channel_id ) {
 
     return false;
 }
+
+/**
+* Converts "2016-11-29T15:52:27Z" format into a timestamp. 
+* 
+* @param mixed $date_time_string
+* 
+* @version 1.0
+*/
+function twitchpress_convert_created_at_to_timestamp( $date_time_string ) {  
+    return date_timestamp_get( date_create( $date_time_string ) );      
+}
