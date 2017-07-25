@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.2.4
+Stable tag: 1.2.5
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
                        
@@ -76,6 +76,9 @@ Please complete the Setup Wizard again. You will find it in the Help tab
 on the plugins own settings page. 
 
 == Changelog ==
+= 1.2.5 = 
+* FIX - Option category menus broken as they were still pointing to "twitchpress-settings" slug.
+
 = 1.2.4 = 
 * FIX - Forwarding URL in start_twitch_session_admin() was causing a blank settings area in Twitch API tab. 
 * DEV - class.twitchpress-settings-kraken.php improved to allow extension to add section. 

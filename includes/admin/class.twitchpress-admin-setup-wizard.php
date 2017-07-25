@@ -812,7 +812,7 @@ class TwitchPress_Admin_Setup_Wizard {
             <div class="twitchpress-setup-next-steps-first">
                 <h2><?php _e( 'Next Steps', 'twitchpress' ); ?></h2>
                 <ul>
-                    <li class="setup-thing"><a class="button button-primary button-large" href="<?php echo esc_url( admin_url( 'admin.php?page=twitchpress-settings' ) ); ?>"><?php _e( 'Go to Settings', 'twitchpress' ); ?></a></li>
+                    <li class="setup-thing"><a class="button button-primary button-large" href="<?php echo esc_url( admin_url( 'admin.php?page=twitchpress' ) ); ?>"><?php _e( 'Go to Settings', 'twitchpress' ); ?></a></li>
                 </ul>                                                                                                 
             </div>
             <div class="twitchpress-setup-next-steps-last">

@@ -41,7 +41,7 @@ function twitchpress_nonce_prepend( $action, $item = false ) {
 function twitchpress_get_screen_ids() {
 
     $screen_ids = array(
-        'twitchfeed_page_twitchpress-settings',
+        'twitchfeed_page_twitchpress_tools',
         'toplevel_page_twitchpress',
     );
 
