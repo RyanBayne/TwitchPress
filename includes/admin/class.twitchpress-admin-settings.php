@@ -46,6 +46,8 @@ class TwitchPress_Admin_Settings {
     * @var mixed
     */
     private static $defaulttab = 'general';
+    
+    private static $defaultsection = null;
 
     /**
      * Include the settings page classes.
@@ -159,7 +161,7 @@ class TwitchPress_Admin_Settings {
      * Handles the display of the main twitchpress settings page in admin.
      */
     public static function output() {
-        global $current_section, $current_tab;
+        global $current_section, $current_tab, $twitchpress_default_section;
 
         $suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
@@ -177,7 +179,7 @@ class TwitchPress_Admin_Settings {
         // Get current tab/section
         $current_tab     = empty( $_GET['tab'] ) ? self::$defaulttab : sanitize_title( $_GET['tab'] );
         $current_section = empty( $_REQUEST['section'] ) ? '' : sanitize_title( $_REQUEST['section'] );
-
+             
         // Save settings if data has been posted
         if ( ! empty( $_POST ) ) {
             self::save();

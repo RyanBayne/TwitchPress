@@ -48,8 +48,8 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
         // needs settings on this tab. 
         $this->sections_array = array(
         
-            //'login'              => __( 'Login', 'twitchpress' ),
-            //'registration'  => __( 'Registration', 'twitchpress' ),
+            'publicserviceswitches' => __( 'Service Switches', 'twitchpress' ),
+            //'publicservicepermissions'  => __( 'Service Permissions', 'twitchpress' ),
 
         );
         
@@ -85,48 +85,97 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
         $sections_array = self::get_sections(); 
         $display_section = null;
         $settings = array();
-                     
+
         if( !$current_section ) { 
             $display_section = array_keys($sections_array)[0];
         } else {
             $display_section = $current_section;
         }
+        
+        // Switch public services on and off easily/quickly.
+        if ( 'publicserviceswitches' == $display_section ) {
 
-        if ( 'login' == $display_section ) {
-
-            $settings = apply_filters( 'twitchpress_user_login_settings', array(
+            $settings = apply_filters( 'twitchpress_user_publicserviceswitches_settings', array(
             
-                /*        Example Only
                 array(
-                    'title' => __( 'Login Settings', 'twitchpress' ),
+                    'title' => __( 'Service Switches', 'twitchpress' ),
                     'type'     => 'title',
-                    'desc'     => __( 'This is the form for entering your main developer application. When you submit the form for the first time, you will go through the oAuth2 procedure. If a code already exists and it is still valid, the procedure will be shorter. When you arrive back on this screen, the token field should be populated and you should be able to make calls to Kraken.', 'twitchpress' ),
-                    'id'     => 'usersloginsettings'
+                    'desc'     => __( 'Main controls for public services. Take great care if your service is live and busy as each switch can cause disruption to your subscribers. These settings do not affect administrator access or automated services setup by administrators.', 'twitchpress' ),
+                    'id'     => 'publicserviceswitches_settings'
                 ),
 
                 array(
-                    'desc'            => __( 'Checkbox One', 'twitchpress' ),
-                    'id'              => 'loginsettingscheckbox1',
+                    'title'         => __( 'Channel Feed Services', 'twitchpress' ),
+                    'desc'          => __( 'Post to Feed', 'twitchpress' ),
+                    'id'            => 'twitchpress_serviceswitch_feeds_posttofeed',
+                    'type'          => 'checkbox',
+                    'default'       => 'no',
+                    'checkboxgroup' => 'start',
+                    'autoload'      => false,
+                ),
+
+                array(
+                    'desc'            => __( 'Allow Scheduled Posts', 'twitchpress' ),
+                    'id'              => 'twitchpress_serviceswitch_feeds_scheduledposts',
                     'default'         => 'yes',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
                     'autoload'        => false,
                 ),
-                                    
+                                
+                array(
+                    'desc'          => __( 'Customize Prepend/Append Values', 'twitchpress' ),
+                    'id'            => 'twitchpress_serviceswitch_feeds_prependappend',
+                    'type'          => 'checkbox',
+                    'default'       => 'yes',
+                    'checkboxgroup' => 'end',
+                    'autoload'      => false,
+                ),
+               
+                array(
+                    'title'         => __( 'Channel Profiles', 'twitchpress' ),
+                    'desc'          => __( 'Take Ownership', 'twitchpress' ),
+                    'id'            => 'twitchpress_serviceswitch_channels_takeownership',
+                    'type'          => 'checkbox',
+                    'default'       => 'no',
+                    'checkboxgroup' => 'start',
+                    'autoload'      => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'Edit Channel Post Content', 'twitchpress' ),
+                    'id'              => 'twitchpress_serviceswitch_channels_editcontent',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                                
+                array(
+                    'desc'          => __( 'Control Chat Display', 'twitchpress' ),
+                    'id'            => 'twitchpress_serviceswitch_channels_controlchatdisplay',
+                    'type'          => 'checkbox',
+                    'default'       => 'yes',
+                    'checkboxgroup' => 'end',
+                    'autoload'      => false,
+                ),
+                                                                                   
                 array(
                     'type'     => 'sectionend',
-                    'id'     => 'usersloginsettings'
-                )
-                */
-
+                    'id'     => 'publicserviceswitches_settings'
+                ),     
+            
             ));
             
-        // Domain to Twitch API permission Options
-        } elseif( 'registration' == $display_section ) {
-            $settings = apply_filters( 'twitchpress_user_registration_settings', array(
+        // Pair public services with roles and capabilities.
+        } elseif( 'publicservicepermissions' == $display_section ) {
+            
+            return;// REMOVE WHEN SECTION READY
+                
+            $settings = apply_filters( 'twitchpress_user_publicservicepermissions_settings', array(
  
-                /*          Example Only
                 array(
                     'title' => __( 'Registraton Settings', 'twitchpress' ),
                     'type'     => 'title',
@@ -148,7 +197,6 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
                     'type'     => 'sectionend',
                     'id'     => 'usersregisrationsettings'
                 ),
-                */
 
             ));
         }

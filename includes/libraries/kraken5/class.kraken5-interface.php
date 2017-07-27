@@ -62,13 +62,16 @@ class TWITCHPRESS_Kraken5_Interface {
     );
   
     /**
-    * Array of streams for testing and generating sample content. Order
-    * them in priority.
+    * Array of streams for testing and generating sample content.
     * 
     * @var mixed
+    * 
+    * @version 1.0
     */
     public $twitchchannels_endorsed = array(
         'zypherevolved'        => array( 'display_name' => 'ZypheREvolved' ),
+        'thatgirlslays'        => array( 'display_name' => 'ThatGirlSlays' ),
+        'nookyyy'              => array( 'display_name' => 'nookyyy' ),
         'starcitizengiveaways' => array( 'display_name' => 'StarCitizenGiveaways' ),        
         'testgaming'           => array( 'display_name' => 'TESTGaming' ),
         'capn_flint'           => array( 'display_name' => 'capn_flint' ),
@@ -82,7 +85,6 @@ class TWITCHPRESS_Kraken5_Interface {
         'mzhartz'              => array( 'display_name' => 'MzHartz' ),
         'boredgameruk'         => array( 'display_name' => 'BoredGamerUK' ),
         'thenoobifier1337'     => array( 'display_name' => 'TheNOOBIFIER1337' ),
-        'tacticaladvance'      => array( 'display_name' => 'TacticalAdvance' ),
     );
         
     /**

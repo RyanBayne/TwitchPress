@@ -76,6 +76,10 @@ Please complete the Setup Wizard again. You will find it in the Help tab
 on the plugins own settings page. 
 
 == Changelog ==
+= 1.2.6 NOT RELEASED =
+* NEW - Service Switches options added.
+* DEV - More changes made to accomodate the new Ultimate Member extension.
+
 = 1.2.5 = 
 * FIX - Option category menus broken as they were still pointing to "twitchpress-settings" slug.
 
