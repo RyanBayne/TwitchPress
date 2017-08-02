@@ -687,3 +687,48 @@ function twitchpress_channelid_in_postmeta( $channel_id ) {
 function twitchpress_convert_created_at_to_timestamp( $date_time_string ) {  
     return date_timestamp_get( date_create( $date_time_string ) );      
 }
+
+/**
+* Get a Twitch users Twitch ID.
+* 
+* @version 1.0
+* 
+* @return integer from Twitch user object or false if failure detected.
+*/
+function twitchpress_get_user_twitchid( $twitch_username ) {
+    $kraken = new TWITCHPRESS_Kraken5_Calls();
+    $user_object = $kraken->get_users( $twitch_username );
+    if( isset( $user_object['users'][0]['_id'] ) && is_numeric( $user_object['users'][0]['_id'] ) ) {
+        return $user_object['users'][0]['_id'];
+    } else {
+        return false;
+    }
+    unset( $kraken );   
+}
+
+/**
+* Gets a channel post 
+* 
+* @param mixed $channel_id
+*/
+function twitchpress_get_channel_post( $channel_id ) {
+    // args to query for your key
+    $args = array(
+        'post_type' => 'twitchchannels',
+        'meta_query' => array(
+            array(
+                'key' => 'twitchpress_channel_id',
+                'value' => $channel_id
+            )
+        ),
+    );
+    
+    // perform the query
+    $query = new WP_Query( $args );
+                             var_dump($query->posts);
+    if ( !empty( $query->posts ) ) {     
+        return $query->posts[0]->ID;
+    }
+
+    return false;     
+}

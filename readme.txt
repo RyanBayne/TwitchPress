@@ -79,6 +79,7 @@ on the plugins own settings page.
 = 1.2.6 NOT RELEASED =
 * NEW - Service Switches options added.
 * DEV - More changes made to accomodate the new Ultimate Member extension.
+* DEV - Setup Wizard now checks for an existing channel post before attempting to create one. 
 
 = 1.2.5 = 
 * FIX - Option category menus broken as they were still pointing to "twitchpress-settings" slug.

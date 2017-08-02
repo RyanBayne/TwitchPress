@@ -49,8 +49,9 @@ function twitchpress_get_screen_ids() {
 }
 
 /**
-* Creates a new twitchchannel post after passing strict checks to ensure
-* that the channel has not already been entered.
+* Creates a new twitchchannel post. after passing 
+* 
+* Does strict checks to ensure that the channel has not already been entered.
 * 
 * @return integer post ID if a twitchchannel post is inserted.
 * @return boolean false if wp_error on inserting channel.

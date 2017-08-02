@@ -149,8 +149,8 @@ class TwitchPress_Post_types {
             apply_filters( 'twitchpress_register_post_type_twitchfeed',
                 array(
                     'labels'              => array(
-                            'name'                  => __( 'TwitchPress Posts', 'twitchpress' ),
-                            'singular_name'         => __( 'TwitchPress Post', 'twitchpress' ),
+                            'name'                  => __( 'Twitch Feed Entries', 'twitchpress' ),
+                            'singular_name'         => __( 'Twitch Feed Entry', 'twitchpress' ),
                             'menu_name'             => _x( 'TwitchPress', 'Admin menu name', 'twitchpress' ),
                             'add_new'               => __( 'Create a post', 'twitchpress' ),
                             'add_new_item'          => __( 'Create Twitch Feed Post', 'twitchpress' ),
@@ -194,8 +194,8 @@ class TwitchPress_Post_types {
             apply_filters( 'twitchpress_register_post_type_twitchchannels',
                 array(
                     'labels'              => array(
-                            'name'                  => __( 'TwitchPress Channels', 'twitchpress' ),
-                            'singular_name'         => __( 'TwitchPress Channels', 'twitchpress' ),
+                            'name'                  => __( 'Twitch Channels', 'twitchpress' ),
+                            'singular_name'         => __( 'Twitch Channel', 'twitchpress' ),
                             'menu_name'             => _x( 'Channels', 'Admin menu name', 'twitchpress' ),
                             'add_new'               => __( 'Add a channel', 'twitchpress' ),
                             'add_new_item'          => __( 'Add New Twitch.tv channel', 'twitchpress' ),

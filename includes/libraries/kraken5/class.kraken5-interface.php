@@ -387,7 +387,7 @@ class TWITCHPRESS_Kraken5_Interface {
      * 
      * @return User defined return
      */ 
-    protected function generateError($errNo, $errStr, $return = null) {
+    protected function generateError( $errNo, $errStr, $return = null ) {
         twitchpress_error( __( 'The Twitch API (version 5) has thrown an error: ' . $errNo . ' - ' . $errStr, 'twitchpress' ) );
     }
     
@@ -407,14 +407,14 @@ class TWITCHPRESS_Kraken5_Interface {
         // Add strings or integers to permit specific output to be displayed.            
         $accepted_outputtypes = array( 1, 2 );
 
-        $current = TWITCHPRESS_Options::get_option( 'debugtracedisplay' );
+        $current = get_option( 'twitchpress_debug_trace_kraken' ); 
         if( !$current ){
             return false;
         }
                
         if ( in_array( $outputLevel, $accepted_outputtypes ) ) {                      
-            $this->UI = new TWITCHPRESS_UI();
-            $this->UI->success_notice( $function, $errStr );
+            //$this->UI = new TWITCHPRESS_UI();
+            //$this->UI->success_notice( $function, $errStr );
         }
     }
     
@@ -524,7 +524,7 @@ class TWITCHPRESS_Kraken5_Interface {
         
         $this->generateOutput($functionName, 'Status Returned: ' . $httpdStatus, 3);
         $this->generateOutput($functionName, 'Raw Return: ' . $result, 4);
-        
+       
         // Clean up
         $this->generateOutput($functionName, 'Cleaning memory', 3);
         unset($url, $get, $options, $debug, $header, $cURL_URL, $default, $key, $opt, $k, $v, $handle, $row);
@@ -1690,7 +1690,46 @@ class TWITCHPRESS_Kraken5_Interface {
         
         return $global_accepted_scopes;
     }
-        
+
+    public function get_objects_default_channel() {
+        return $this->twitch_default_channel;     
+    }
+    
+    public function get_objects_main_channel_id() {
+        return $this->twitch_channel_id;
+    }
+    
+    public function get_objects_main_client_id() {
+        return $this->twitch_client_id;
+    }
+    
+    public function get_objects_main_client_code() {
+        return $this->twitch_client_code;
+    }
+
+    public function get_objects_client_token() {
+        return $this->twitch_client_token;
+    } 
+ 
+    public function get_main_default_channel() {
+        return get_option( 'twitchpress_main_channel_name' );     
+    }
+    
+    public function get_main_channel_id() {
+        return get_option( 'twitchpress_main_channel_id' );
+    }
+    
+    public function get_main_client_id() {
+        return get_option( 'twitchpress_main_client_id' );
+    }
+    
+    public function get_main_client_code() {
+        return get_option( 'twitchpress_main_code' );
+    }
+
+    public function get_main_client_token() {
+        return get_option( 'twitchpress_main_token' );
+    }                               
 }
 
 endif;
