@@ -28,12 +28,12 @@ class TwitchPress_Admin {
      * Constructor.
      */
     public function __construct() {         
-        add_action( 'init', array( $this, 'includes' ) );
-        add_action( 'current_screen', array( $this, 'conditional_includes' ) );
-        add_action( 'admin_init', array( $this, 'buffer' ), 1 );
-        add_action( 'admin_init', array( $this, 'admin_redirects' ) );
-        add_action( 'admin_footer', 'twitchpress_print_js', 25 );
-        add_filter( 'admin_footer_text', array( $this, 'admin_footer_text' ), 1 );
+        add_action( 'init',               array( $this, 'includes' ) );
+        add_action( 'current_screen',     array( $this, 'conditional_includes' ) );
+        add_action( 'admin_init',         array( $this, 'buffer' ), 1 );
+        add_action( 'admin_init',         array( $this, 'admin_redirects' ) );
+        add_action( 'admin_footer',       'twitchpress_print_js', 25 );
+        add_filter( 'admin_footer_text',  array( $this, 'admin_footer_text' ), 1 );
     }
 
     /**
@@ -107,6 +107,8 @@ class TwitchPress_Admin {
      * Handle redirects to setup/welcome page after install and updates.
      *
      * For setup wizard, transient must be present, the user must have access rights, and we must ignore the network/bulk plugin updaters.
+     * 
+     * @version 1.2
      */
     public function admin_redirects() {
 
@@ -120,12 +122,12 @@ class TwitchPress_Admin {
             } else {
                 $url = admin_url( 'plugin-install.php?tab=search&type=term&s=' . $plugin_slug );
             }
-
-            wp_safe_redirect( $url );
+                  
+            twitchpress_redirect_tracking( $url, __LINE__, __FUNCTION__ );          
             exit;
         }
 
-        // Setup wizard redirect
+        // Setup wizard redirect after plugin activation. 
         if ( get_transient( '_twitchpress_activation_redirect' ) ) {
             delete_transient( '_twitchpress_activation_redirect' );
 
@@ -135,10 +137,12 @@ class TwitchPress_Admin {
 
             // If the user needs to install, send them to the setup wizard
             if ( TwitchPress_Admin_Notices::has_notice( 'install' ) ) {
-                wp_safe_redirect( admin_url( 'index.php?page=twitchpress-setup' ) );
+                $admin_url = admin_url( 'index.php?page=twitchpress-setup' );        
+                twitchpress_redirect_tracking( $admin_url, __LINE__, __FUNCTION__ );
                 exit;
             }
         }
+                
     }
 
     /**

@@ -26,6 +26,8 @@ class TwitchPress_Autoloader {
 
     /**
      * The Constructor.
+     * 
+     * @version 1.2
      */
     public function __construct() {
         if ( function_exists( "__autoload" ) ) {
@@ -34,7 +36,7 @@ class TwitchPress_Autoloader {
 
         spl_autoload_register( array( $this, 'autoload' ) );
 
-        $this->include_path = untrailingslashit( plugin_dir_path( TWITCHPRESS_PLUGIN_FILE ) ) . '/includes/';
+        $this->include_path = untrailingslashit( plugin_dir_path( TWITCHPRESS_ABSPATH ) ) . '/includes/';
     }
 
     /**

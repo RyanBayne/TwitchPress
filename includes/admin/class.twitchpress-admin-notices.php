@@ -80,7 +80,7 @@ class TwitchPress_Admin_Notices {
                     Premium Edition: <progress max="100" value="36"></progress> <br>
                     Support Content: <progress max="100" value="67"></progress> <br>
                     Translation: <progress max="100" value="87"></progress>' ) .'
-                    <p>' . __( 'Pledge £9.99 to the Multitool project for 50% discount on the premium edition.' ) . '</p>                                                     
+                    <p>' . __( 'Pledge £9.99 to the TwitchPress project for 50% discount on the premium edition.' ) . '</p>                                                     
                 </div>
 
             </div> 
@@ -250,12 +250,14 @@ class TwitchPress_Admin_Notices {
                                          
     /**
      * Add notices + styles if needed.
+     * 
+     * @version 1.1
      */
     public static function add_notices() {
         $notices = self::get_notices();
 
         if ( ! empty( $notices ) ) {
-            wp_enqueue_style( 'twitchpress-activation', plugins_url(  '/assets/css/activation.css', TWITCHPRESS_PLUGIN_FILE ) );
+            wp_enqueue_style( 'twitchpress-activation', plugins_url(  '/assets/css/activation.css', TWITCHPRESS_ABSPATH ) );
             foreach ( $notices as $notice ) {
                 if ( ! empty( self::$core_notices[ $notice ] ) && apply_filters( 'twitchpress_show_admin_notice', true, $notice ) ) {
                     add_action( 'admin_notices', array( __CLASS__, self::$core_notices[ $notice ] ) );
@@ -299,6 +301,7 @@ class TwitchPress_Admin_Notices {
         // Register the notice as normal, the output process will ensure the correct approach is applied.
         self::add_notice( $name );
         
+        // We store the notice data in its own option. 
         update_option( 'twitchpress_admin_notice_' . $name, $wordpress_notice_array );        
     }
                                         

@@ -40,7 +40,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
     public function get_sections() {
 
         $sections = array(
-            'globalscope'           => __( 'Permissions Scope', 'twitchpress' ),
+            'default'           => __( 'Permissions Scope', 'twitchpress' ),
             'entermaincredentials'  => __( 'Enter Main Credentials', 'twitchpress' ),
         );
 
@@ -66,7 +66,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
         $settings = $this->get_settings( $current_section );
         TwitchPress_Admin_Settings::save_fields( $settings );
         // Attempt to create a Twitch session on the assumption all credentials are ready.
-        $kraken = new TWITCHPRESS_Kraken5_Interface();
+        $kraken = new TWITCHPRESS_Kraken5_API();
         $kraken->start_twitch_session_admin( 'main' );
     }
 
@@ -76,19 +76,9 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
      * @return array
      */
     public function get_settings( $current_section = '' ) {
-        
-        // Establish a section to display rather than have a default.
-        $sections_array = self::get_sections(); 
-        $display_section = null;
         $settings = array();
-                  
-        if( !$current_section ) { 
-            $display_section = array_keys($sections_array)[0];
-        } else {
-            $display_section = $current_section;
-        }
-                    
-        if ( 'entermaincredentials' == $display_section ) {
+               
+        if ( 'entermaincredentials' == $current_section ) {
 
             $settings = apply_filters( 'twitchpress_entermaincredentials_settings', array(
             
@@ -171,7 +161,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
             ));
             
         // Domain to Twitch API permission Options
-        } elseif ( 'globalscope' == $display_section ) {
+        } elseif ( 'default' == $current_section ) {
             $settings = apply_filters( 'twitchpress_permissions_scope_settings', array(
  
                 array(
@@ -364,6 +354,199 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'type'     => 'sectionend',
                     'id'     => 'global_scope_options'
+                ),
+
+ 
+                array(
+                    'title' => __( 'Visitor Scopes', 'twitchpress' ),
+                    'type'     => 'title',
+                    'desc'     => __( 'These are the permissions users will be asked to accept when using Twitch to login and register.', 'twitchpress' ),
+                    'id'     => 'visitor_scope_options',
+                ),
+
+                array(
+                    'title'           => __( 'Select Acceptable Scopes', 'twitchpress' ),
+                    'desc'            => __( 'user_read: Read access to non-public user information, such as email address.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_user_read',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => 'start',
+                    'show_if_checked' => 'option',
+                ),
+
+                array(
+                    'desc'            => __( 'user_blocks_edit: Ability to ignore or unignore on behalf of a user.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_user_blocks_edit',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'user_blocks_read: Read access to a user\'s list of ignored users.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_user_blocks_read',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'user_follows_edit: Access to manage a user\'s followed channels.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_user_follows_edit',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'channel_read: Read access to non-public channel information, including email address and stream key.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_read',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'channel_editor: Write access to channel metadata (game, status, etc).', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_editor',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'channel_commercial: Access to trigger commercials on channel.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_commercial',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'channel_stream: Ability to reset a channel\'s stream key.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_stream',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'channel_subscriptions: Read access to all subscribers to your channel.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_subscriptions',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'user_subscriptions: Read access to subscriptions of a user.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_user_subscriptions',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'channel_check_subscription: Read access to check if a user is subscribed to your channel.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_check_subscription',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'chat_login: Ability to log into chat and send messages.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_chat_login',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+              
+                array(
+                    'desc'            => __( 'channel_feed_read: Ability to view to a channel feed.', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_feed_read',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'channel_feed_edit: Ability to add posts and reactions to a channel feed."', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_channel_feed_edit',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'communities_edit: Manage a user’s communities."', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_communities_edit',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'communities_moderate: Manage community moderators."', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_communities_moderate',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+                
+                array(
+                    'desc'            => __( 'collections_edit: Manage a user’s collections (of videos)."', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_collections_edit',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+
+                array(
+                    'desc'            => __( 'channel_feed_edit: Turn on Viewer Heartbeat Service ability to record user data."', 'twitchpress' ),
+                    'id'              => 'twitchpress_visitor_scope_viewing_activity_read',
+                    'default'         => 'yes',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => 'end',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),
+ 
+                array(
+                    'type'     => 'sectionend',
+                    'id'     => 'visitor_scope_options'
                 ),
 
             ));

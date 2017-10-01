@@ -13,7 +13,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  *
  * @author      Ryan Bayne
  * @category    Admin
- * @package     Multitool/Admin/MainViews
+ * @package     TwitchPress/Admin/MainViews
  * @version     1.0.0
  */
 class TwitchPress_ListTable_Tools extends WP_List_Table {
@@ -33,8 +33,8 @@ class TwitchPress_ListTable_Tools extends WP_List_Table {
 	public function __construct() {
 
 		parent::__construct( array(
-			'singular'  => __( 'Tool', 'multitool' ),
-			'plural'    => __( 'Tools', 'multitool' ),
+			'singular'  => __( 'Tool', 'twitchpress' ),
+			'plural'    => __( 'Tools', 'twitchpress' ),
 			'ajax'      => false
 		) );
         
@@ -46,10 +46,12 @@ class TwitchPress_ListTable_Tools extends WP_List_Table {
     * Setup default items. 
     * 
     * This is not required and was only implemented for demonstration purposes. 
+    * 
+    * @version 1.2
     */
     public function query_items() {
         $quick_tools = new TwitchPress_Tools();
-        $quick_tools->return_tool_info = false;
+        $quick_tools->return_tool_info = true;
         $tools_info_array = array();
         $tool_parameters_array = array();
         
@@ -62,12 +64,9 @@ class TwitchPress_ListTable_Tools extends WP_List_Table {
             
             // Create a new list table item.
             $this->items[] = $tool_info;
-            
-            // Get the last array key and add tool (method) name.
-            end( $this->items );
-            $key = key( $this->items ); 
-            $this->items[ $key ]['name'] = $tool;
         }
+    
+        $this->items = apply_filters( 'twitchpress-tools-query', $this->items, $quick_tools->return_tool_info );
     }
     
 	/**
@@ -94,6 +93,7 @@ class TwitchPress_ListTable_Tools extends WP_List_Table {
 	 */
 	public function output_result() {
 		$this->prepare_items();
+        add_thickbox();
 		echo '<div id="poststuff" class="twitchpress-tables-wide">';
         echo '<form id="twitchpress-list-table-form-tools" method="post">';
 		$this->display();
@@ -130,16 +130,16 @@ class TwitchPress_ListTable_Tools extends WP_List_Table {
             case 'header_action' :
             
                 $nonce = wp_create_nonce( 'tool_action' );
-                
+
                 // Establish single (default) or multiple action tools.
                 if( !isset( $item['actions'] ) || !is_array( $item['actions'] ) ) {
-                    $url   = self_admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=' . $item['name'] );   
+                    $url   = self_admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=' . $item['function'] );   
                     echo '<a href="' . $url . '" class="button button-primary">' . __( 'Run Tool', 'twitchpress' ) . '</a>';
                 } else {
                     $i = 0;
                     foreach( $item['actions'] as $action => $attributes ) {
                         if( $i > 0 ) { echo '<br><br>'; }
-                        $url   = self_admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=' . $item['name'] . '&action=' . $action );   
+                        $url   = self_admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=' . $item['function'] . '&action=' . $action );   
                         echo '<a href="' . $url . '" class="button button-primary">' . $attributes['title'] . '</a>';  
                         ++$i;
                     }    

@@ -24,7 +24,7 @@ if (!extension_loaded('json')) trigger_error('PECL JSON or pear JSON is not inst
 
 if( !class_exists( 'TWITCHPRESS_Kraken5' ) ) :
 
-class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
+class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_API {
     
     /**
      * WordPress integrating constructor. 
@@ -43,10 +43,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     * 
     * @param mixed $users
     * 
-    * @version 5.0
+    * @version 5.5
     */
     public function get_users( $users ) {
-        $functionName = 'GET_USERS';
+        
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_read', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
         // We need a string.
         if( is_array( $users ) ) {
@@ -54,21 +57,14 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         } else {
             $users_string = $users;
         }
-        
-        $this->generateOutput($functionName, 'Attempting to get objects for the following users: ' . $users_string, 1);
-        
+
         $url = 'https://api.twitch.tv/kraken/users?login=' . $users_string . '';
         $options = array();
         $get = array();
         
         // Build our cURL query and store the array
-        $usersObject = json_decode($this->cURL_get($url, $get, $options, false), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode( $usersObject ), 4);
-        
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning Memory', 3);
-        unset( $users_string, $url, $options, $get, $functionName );
-        
+        $usersObject = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__ ), true);
+
         return $usersObject;        
     }
     
@@ -81,73 +77,24 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * 
      * @return $userObject - [array] Returned object for the query
      * 
-     * @version 5.0
+     * @version 5.5
      */ 
     public function getUserObject_Authd( $token, $code ){
-        $functionName = 'GET_USEROBJECT-AUTH';
-        $requiredAuth = 'user_read';
-
-        $this->generateOutput($functionName, 'Attempting to get the authenticated user object for the current user.', 1);
         
-        // We were supplied an OAuth token. check it for validity and scopes
-        if ( ( $token != null || '') || ( $code != null || false ) ){
-            if ( $token != null || ''){
-                $check = $this->checkToken( $token );
-              
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ( $code != null || '' ){
-                        $auth = $this->generateToken( $code ); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-                
-            // Assume the code was given instead and generate if we can    
-            } else { 
-                $auth = $this->generateToken( $code ); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ( !isset( $auth ) || !isset( $auth['token'] ) || $auth['token'] == false ) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type) {
-                if ($type == $requiredAuth) {
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful) {
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
-        
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_read', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
+         
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
+               
         $url = 'https://api.twitch.tv/kraken/user?client_id=' . $this->twitch_client_id;
         $options = array();
         $get = array('oauth_token' => $token );
                           
         // Build our cURL query and store the array
-        $userObject = json_decode( $this->cURL_get( $url, $get, $options, false ), true );
-        $this->generateOutput( $functionName, 'Raw return: ' . json_encode( $userObject ), 4 );
-       
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning Memory', 3);
-        unset($url, $options, $get, $token, $auth, $authSuccessful, $type, $functionName, $code);
+        $userObject = json_decode( $this->cURL_get( $url, $get, $options, false, __FUNCTION__ ), true );
 
         return $userObject;
     }
@@ -159,11 +106,14 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $object - [array] Keyed array of all channel data
+     * 
+     * @version 5.2
      */ 
-    public function getChannelObject_Authd( $token = null, $code = null ){                                     
-        $functionName = 'GET_CHANNEL_AUTHED';
-        $requiredAuth = 'channel_read';
-        $this->generateOutput( $functionName, 'Grabbing authenticated channel object', 1 );
+    public function getChannelObject_Authd( $token = null, $code = null ){        
+                                 
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_read', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
         if( !$token ) {
             $token = $this->twitch_client_token;
@@ -173,64 +123,15 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $code = $this->twitch_client_code;
         }
         
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError( 400, 'Existing token expired and no code available for generation.' );
-                        return array();
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError( 400, 'Auth key not returned, exiting function: ' . $functionName );
-                return array(); // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-                             
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return array();
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/channel';
         $get = array( 'oauth_token' => $token );
         $options = array();
 
-        $object = json_decode($this->cURL_get($url, $get, $options, false), true);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($object), 4);
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($token, $code, $auth, $authSuccessful, $type, $url, $get, $options);
+        $object = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__ ), true);
         
         if (!is_array($object)){
             $object = array(); // Catch to make sure that an array is returned no matter what, technically our fail state
@@ -250,12 +151,9 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     * @return $feedpostsObjects - [array] array of all returned video objects, Key is ID
     * 
     * @author Ryan R. Bayne
-    * @version 1.3
+    * @version 5.3
     */ 
     public function getFeedPosts( $chan, $limit = -1, $offset = 0, $returnTotal = false ) {
-        $functionName = 'GET_FEEDPOSTS-CHANNEL';
-
-        $this->generateOutput($functionName, 'Getting feed post objects for channel: ' . $chan, 1);
 
         // Init some vars
         $feedpostsObjects = array();     
@@ -267,31 +165,24 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $feedposts = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $feedposts = $this->get_iterated( $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, null, null, null, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $feedpostsObjects['_total'] = count($feedposts);
         }
 
         // Key the data
         foreach ( $feedposts as $k => $post ){
             if ( $k == '_total' ){
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $feedpostsObjects[$k] = $post;
                 continue;
             }
             
             $key = $post['id'];
             $feedpostsObjects[$key] = $post;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
 
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $limit, $offset, $functionName, $post, $feedposts, $key, $options, $url, $k, $returnTotal, $returningTotal);
-        
         return $feedpostsObjects;                  
     }
 
@@ -327,9 +218,11 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     * @version 5.0
     */
     public function postFeedPost( $postparam = array(), $options = array() ){
-        $functionName = 'ADD_FEEDPOST';
-        $requiredAuth = 'channel_feed_edit';
-        
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_feed_edit', 'both', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
+
         $url = 'https://api.twitch.tv/kraken/feed/';
         $url.= $this->twitch_channel_id;
         $url.= '/posts';
@@ -338,7 +231,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $post = array( 'oauth_token' => $this->twitch_client_token );
         $post = array_merge( $post, $postparam );
                     
-        $returned_status = $this->cURL_post( $url, $post, $options, true );
+        $returned_status = $this->cURL_post( $url, $post, $options, true, __FUNCTION__ );
         
         unset($url,$post,$options,$postparam);
 
@@ -346,7 +239,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     }  
         
     /**
-     * Grabs a list of the users blocked from a channel
+     * Gets a specified user's block list. List sorted by recency, newest first.
      * 
      * @param $chan - [string] Channel name to grab blocked users list from
      * @param $limit - [int] Limit of users to grab, -1 is unlimited
@@ -356,59 +249,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $blockedUsers - Unkeyed array of all blocked users to limit
+     * 
+     * @version 5.3
      */ 
     public function getBlockedUsers($chan, $limit = -1, $offset = 0, $token, $code, $returnTotal = false) {
-        $functionName = 'GET_BLOCKED';
-        $requiredAuth = 'user_blocks_read';
-        
-        $this->generateOutput($functionName, 'Attempting to pull a complete list of blocked users for the channel: ' . $chan, 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)) {
-            if ($token != null || '') {
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false) {
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || '') {
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return array(); // return out here, match the fail state of the call
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
+    
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_blocks_read', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
             
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return array(); // return out after the error is passed, match the fail tate of the call
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type) {
-                if ($type == $requiredAuth) {
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful) {
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return array(); // Match the fail state of the call so users are not thrown off
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/users/' . $chan . '/blocks';
         $options = array(); // For things where I don't put in any default data, I will leave the end user the capability to configure here
@@ -419,17 +271,10 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        if ($returningTotal) {
-            $this->generateOutput($functionName, 'Returning total count of objets as reported by API', 2);
-        }
-        
-        $usernamesObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'blocks', $token, null, null, null, null, null, null, null, null, $returningTotal);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($usernamesObject), 4);
-        
+        $usernamesObject = $this->get_iterated( $url, $options, $limit, $offset, 'blocks', $token, null, null, null, null, null, null, null, null, $returningTotal);
+
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)) {
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $usernames['_total'] = count($usernamesObject);
         }
         
@@ -437,24 +282,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         foreach ($usernamesObject as $key => $user){
             if ($key == '_total'){
                 // It isn't really the user, but this stops code changes
-                $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
                 $usernames[$key] = $user;
                 continue;
             }
             
-            $this->generateOutput($functionName, 'Setting Key for username: ' . $user['user'][TWITCH_KEY_NAME], 3);
             $usernames[$counter] = $user['user'][TWITCH_KEY_NAME];
             $counter ++;
         }
-        
-        // Was anything returned?  If not, put some output
-        if (empty($usernames)){
-            $this->generateOutput($functionName, 'No blocked users returned for channel: ' . $chan, 3);
-        }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($options, $url, $get, $limit, $usernamesObject, $key, $k, $value, $v, $functionName, $returnTotal, $returningTotal);
         
         // Return out our unkeyed or empty array
         return $usernames;
@@ -469,59 +303,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $success - [bool] Result of the query
+     * 
+     * @version 1.2
      */ 
     public function addBlockedUser($chan, $username, $token, $code){
-        $functionName = 'ADD_BLOCKED';
-        $requiredAuth = 'user_blocks_edit';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_blocks_edit', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        $this->generateOutput($functionName, 'Attempting to add ' . $username . ' to ' . $chan . '\'s list of blocked users', 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return false; // return out here, match the fail state of the call
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return false; // return out after the error is passed, match the fail state of the call
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return false; // match fail state
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
                 
         $url = 'https://api.twitch.tv/kraken/users/' . $chan . '/blocks/' . $username;
         $options = array();
@@ -530,18 +323,12 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $result = $this->cURL_put($url, $post, $options, true);
         
         // What did we get returned status wise?
-        if ($result = 200){
-            $this->generateOutput($functionName, 'Successfully blocked channel ' . $username, 3);
+        if ($result = 200){                                                                    
             $success = true;
-        } else {
-            $this->generateOutput($functionName, 'Unsuccessfully blocked channel ' . $username, 3);
+        } else {                                                                                  
             $success = false;
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $username, $token, $code, $result, $functionName, $requiredAuth, $auth, $authSuccessful, $type, $url, $options, $post);
-        
+
         // Post handles successs, so pass the info on
         return $success;  
     }
@@ -555,59 +342,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $code     - [string] Code used to generate an Authentication key
      * 
      * @return $success - [bool] Result of the query
+     * 
+     * @version 1.4
      */ 
     public function removeBlockedUser($chan, $username, $token, $code){
-        $functionName = 'REMOVE_BLOCKED';
-        $requiredAuth = 'user_blocks_edit';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_blocks_edit', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        $this->generateOutput($functionName, 'Attempting to remove ' . $username . ' from ' . $chan . '\'s list of blocked users', 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return false; // return out here, match the fail state of the call
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return false; // return out after the error is passed, match the fail state of the call
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return false; // match fail state
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/users/' . $chan . '/blocks/' . $username;
         $options = array();
@@ -616,19 +362,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             
         $success = $this->cURL_delete($url, $post, $options);
         
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($success), 4);
-        
         if ($success == '204'){
-            $this->generateOutput($functionName, 'Successfully removed ' . $username . ' from ' . $chan . '\'s list of blocked users', 3);
+            // Successfully removed ' . $username . ' from ' . $chan . '\'s list of blocked users',
         } else if ($success == '422') {
-            $this->generateOutput($functionName, 'Service unavailable or delete failed', 3);
+            // Service unavailable or delete failed
         } else {
-            $this->generateOutput($functionName, 'Failed to remove ' . $username . ' from ' . $chan . '\'s list of blocked users', 3);
+            // Do error here
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $username, $token, $code, $auth, $authSuccessful, $type, $url, $options, $post, $functionName);
         
         // Bascally we either deleted or they were never there
         return true;  
@@ -645,22 +385,12 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @version 5.0
      */
     public function getChannelObject( $channel_id ){
-        $functionName = 'GET_CHANNEL';
-        $this->generateOutput($functionName, 'Grabbing channel object for channel: ' . $channel_id, 1);
-        
+
         $url = 'https://api.twitch.tv/kraken/channels/' . $channel_id . '?client_id=' . $this->twitch_client_id;
         $get = array();
         $options = array();
         
-        $this->generateOutput($functionName, 'Grabbing channel object for ' . $channel_id, 3);
-        
         $object = json_decode($this->cURL_get($url, $get, $options, false), true);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($object), 4);
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset( $channel_id, $functionName, $url, $get, $options );
         
         if (!is_array($object)){
             $object = array(); // Catch to make sure that an array is returned no matter what, technically our fail state
@@ -680,58 +410,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $editors - [array] unkeyed array of all editor names
+     * 
+     * @version 1.2
      */ 
     public function getEditors($chan, $limit = -1, $offset = 0, $token, $code, $returnTotal = false){
-        $functionName = 'GET_EDITORS';
-        $requiredAuth = 'channel_read';
-        $this->generateOutput($functionName, 'Grabbing editors for ' . $chan . '\'s channel', 1);
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_read', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return array();
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return array(); // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return array();
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/editors';
         $options = array(); // For things where I don't put in any default data, I will leave the end user the capability to configure here
@@ -742,29 +432,21 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
     
-        $editorsObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'users', $token, null, null, null, null, null, null, null, null, $returningTotal);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($editorsObject), 4);
+        $editorsObject = $this->get_iterated( $url, $options, $limit, $offset, 'users', $token, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $editors['_total'] = count($editorsObject);
         }
-
+            
         foreach ($editorsObject as $key => $editor){
             if ($key == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
                 $editors[$key] = $editor;
                 continue;
             }
             
             $editors[$counter] = $editor[TWITCH_KEY_NAME];
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $limit, $offset, $token, $code, $auth, $authSuccessful, $type, $functionName, $url, $options, $counter, $editor, $editorsObject, $returnTotal, $returningTotal, $key);
         
         return $editors;
     }
@@ -780,59 +462,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $delay - [int] Seconds of stream delay to put into effect
      * 
      * @return $result - [bool] Success of the query
+     * 
+     * @version 1.5
      */ 
     public function updateChannelObject($chan, $token, $code, $title = null, $game = null, $delay = null){
-        $requiredAuth = 'channel_editor';
-        $functionName = 'UPDATE_CHANNEL';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_editor', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        $this->generateOutput($functionName, 'Updating Channel object', 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return false;
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return false; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return false;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan;
         $updatedObjects = array();
@@ -841,33 +482,27 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $updatedObjects['oauth_token'] = $token;
         
         if ($title != null || ''){
-            $this->generateOutput($functionName, 'New title added to array: ' . $title, 2);
+            // New title added to array
             $updatedObjects['channel']['status'] = $title;
         } 
         
         if ($game  != null || ''){
-            $this->generateOutput($functionName, 'New game added to array: ' . $game, 2);
+            // New game added to array
             $updatedObjects['channel']['game'] = $game;
         } 
         
         if ($delay != null || ''){
-            $this->generateOutput($functionName, 'New Stream Delay added to array: ' . $delay, 2);
+            // New Stream Delay added to array
             $updatedObjects['channel']['delay'] = $delay;
         } 
         
         $result = $this->cURL_put($url, $updatedObjects, $options, true);
-        
-        $this->generateOutput($functionName, 'Status return: ' . $result, 4);
         
         if (($result != 404) || ($result != 400)){
             $result = true;
         } else {
             $result = false;
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $token, $code, $title, $game, $delay, $auth, $authSuccessful, $type, $url, $updatedObjects, $options, $functionName);        
         
         return $result;
     }
@@ -881,60 +516,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $result - True on success, else false on failure.
+     * 
+     * @version 1.5
      */ 
     public function resetStreamKey($chan, $token, $code){   
-        $requiredAuth = 'channel_stream';
-        $functionName = 'RESET_STREAM_KEY';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_stream', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        $this->generateOutput($functionName, 'Resetting stream key for channel: ' . $chan, 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return false;
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                
-                return false; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return false;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/stream_key';
         $options = array();
@@ -942,17 +535,11 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         
         $result = $this->cURL_delete($url, $post, $options, true);
         
-        $this->generateOutput($functionName, 'Status return: ' . $result, 3);
-        
         if ($result == 204){
             $result = true;
         } else {
             $result = false;
         }
-        
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $token, $code, $auth, $authSuccessful, $type, $url, $options, $post, $functionName);
         
         return $result;
     }
@@ -966,65 +553,21 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $length - [int] Length of time for the commercial break.  Valid options are 30,60,90.
      * 
      * @return $return - True on success, else false
+     * 
+     * @version 1.5
      */ 
     public function startCommercial($chan, $token, $code, $length = 30){
-        $functionName = 'START_COMMERCIAL';
-        $requiredAuth = 'channel_commercial';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_commercial', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        $this->generateOutput($functionName, 'Starting commercial for channel: ' . $chan, 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                        return false;
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return false; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return false;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
-        
-        $this->generateOutput($functionName, 'Commercial time recieved as: ' . $length, 2);
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         // Check the length to see if it is valid
         if ($length % 30 == 0){
-            $this->generateOutput($functionName, 'Commercial time invalid, set to 30 seconds', 2);
             $length = 30;
         }
         
@@ -1037,19 +580,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         
         $result = $this->cURL_post($url, $post, $options, true);
         
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($result), 4);
-        
         if ($result == 204){
-            $this->generateOutput($functionName, 'Commercial successfully started', 3);
+            // Commercial successfully started
             $result = true;
         } else {
-            $this->generateOutput($functionName, 'Commercial unable to be started', 3);
+            // Commercial unable to be started
             $result = false;
         }
-        
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $token, $code, $length, $auth, $authSuccessful, $type, $url, $options, $post, $functionName);
         
         return $result;
     }
@@ -1064,9 +601,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] Keyed array of all returned data for the emoticins, including the supplied regex match used to parse it
      */ 
     public function chat_getEmoticonsGlobal($limit = -1, $offset = 0, $returnTotal = false){
-        $functionName = 'GET_EMOTICONS_GLOBAL';
-        $this->generateOutput($functionName, 'Grabbing global Twitch emoticons', 1);
-        
+
         $url = 'https://api.twitch.tv/kraken/chat/emoticons';
         $options = array();
         $object = array();
@@ -1074,22 +609,16 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $objects = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($objects), 4);
-        
+        $objects = $this->get_iterated( $url, $options, $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
+
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $object['_total'] = count($objects);
         }
 
-        $this->generateOutput($functionName, 'Setting Keys', 3);
-        
         // Set keys
         foreach ($objects as $key => $row){
             if ($key == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
                 $object[$key] = $row;
                 continue;
             }
@@ -1097,11 +626,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $k = $row['regex'];
             $object[$k] = $row;
         }
-        
-        // clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($limit, $offset, $url, $options, $functionName, $objects, $row, $k, $key);
-        
+
         return $object;
     }
     
@@ -1116,9 +641,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] Keyed array of all returned data for the emoticons
      */ 
     public function chat_getEmoticons($user, $limit = -1, $offset = 0, $returnTotal = false){
-        $functionName = 'GET_EMOTICONS';
-        $this->generateOutput($functionName, 'Grabbing emoticons for channel: ' . $user, 1);
-        
+
         $url = 'https://api.twitch.tv/kraken/chat/' . $user . '/emoticons';
         $options = array();
         $object = array();
@@ -1126,22 +649,16 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $objects = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($objects), 4);
-        
+        $objects = $this->get_iterated( $url, $options, $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
+
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $object['_total'] = count($objects);
         }
-        
-        $this->generateOutput($functionName, 'Setting Keys', 3);
-        
+
         // Set keys
         foreach ($objects as $key => $row){
             if ($key == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
                 $object[$key] = $row;
                 continue;
             }
@@ -1149,10 +666,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $k = $row['regex'];
             $object[$k] = $row;
         }
-        
-        // clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($user, $limit, $offset, $functionName, $url, $options, $objects, $k, $row, $key);
         
         return $object;
     }
@@ -1167,21 +680,12 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] Keyed array of all returned data for the badges
      */     
     public function chat_getBadges($chan){        
-        $functionName = 'GET_BADGES';
-        
-        $this->generateOutput($functionName, 'Grabbing badges for channel: ' . $chan, 1);
-        
+
         $url = 'https://api.twitch.tv/kraken/chat/' . $chan . '/badges';
         $options = array();
         $get = array();
         
         $object = json_decode($this->cURL_get($url, $get, $options, false), true);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($object), 4);
-        
-        // clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $url, $options, $get, $functionName);        
         
         return $object;                
     }
@@ -1195,67 +699,19 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $chatToken - [string] complete login token for chat login
      */
     public function chat_generateToken($token, $code){
-        $functionName = 'CHAT_GENERATE_TOKEN';
-        $requiredAuth = 'chat_login';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'chat_login', 'both', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }        
+        
         $prefix = 'oauth:';
+
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
-        $this->generateOutput($functionName, 'Generating chat login token', 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
-        
-        $this->generateOutput($functionName, 'Token generated, concating prefix', 3);
         $chatToken = $prefix . $token;
-        
-        $this->generateOutput($functionName, 'Prefix added, login credential made: ' . $chatToken, 3);
-        
-        // clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($token, $auth, $authSuccessful, $code, $requiredAuth, $functionName, $type);        
-        
+
         return $chatToken;                
     }
     
@@ -1271,9 +727,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $follows - [array] An unkeyed array of all followers to limit
      */ 
     public function getFollowers($chan, $limit = -1, $offset = 0, $sorting = 'desc', $returnTotal = false){
-        $functionName = 'GET_FOLLOWERS';
-        $this->generateOutput($functionName, 'Getting the list of channels followed by channel: ' . $chan, 1);
-        
+
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/follows';
         $options = array();
         $followersObject = array();
@@ -1282,31 +736,22 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
              
-        $followersObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($followersObject), 4);
+        $followersObject = $this->get_iterated( $url, $options, $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $followers['_total'] = count($followersObject);
         }
         
         foreach ($followersObject as $k => $follower){
             if ($k == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $followers[$k] = $follower;
                 continue;
             }
             
             $key = $follower['user'][TWITCH_KEY_NAME];
             $followers[$key] = $follower;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $limit, $offset, $sorting, $follower, $followersObject, $functionName, $key, $k);
         
         // Return out our array
         return $followers;
@@ -1325,8 +770,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $channels - [array] An unkeyed array of all followed channels to limit
      */ 
     public function getFollows($username, $limit = -1, $offset = 0, $sorting = 'desc', $sortBy = 'created_at', $returnTotal = false){
-        $functionName = 'GET_FOLLOWS';
-        $this->generateOutput($functionName, 'Getting the list of channels following channel: ' . $username, 1);
         
         // Init some vars       
         $channels = array();
@@ -1340,31 +783,24 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $channelsObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal, $sortBy);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($channelsObject), 4);
+        $channelsObject = $this->get_iterated( $url, $options, $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal, $sortBy);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
+            // Including _total as the count of all object
             $channels['_total'] = count($channelsObject);
         }
         
         foreach ($channelsObject as $k => $channel){
             if ($k == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
+                // Setting key
                 $channels[$k] = $channel;
                 continue;
             }
             
             $key = $channel['channel'][TWITCH_KEY_NAME];
             $channels[$key] = $channel;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($username, $limit, $offset, $sorting, $channelsObject, $channel, $url, $options, $key, $functionName, $k, $sortBy);
         
         // Return out our unkeyed array
         return $channels;        
@@ -1382,26 +818,17 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $targetChannel = strval($targetChannel);
         $user          = strval($user);
         
-        $functionName = 'CHECK_USER_FOLLOWS_CHANNEL';
-        $this->generateOutput($functionName, "Checking to see if [$user] is following channel [$targetChannel]", 1);
-        
         // Init some vars
         $url = "https://api.twitch.tv/kraken/users/$user/follows/channels/$targetChannel";
             
         // Build our cURL query and store the array
         $relationShipObject = $this->cURL_get($url);
         
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($relationShipObject), 4);
-        
         // If the user was not found or is not following, return false
         if (isset($relationShipObject['status']) && ($relationShipObject['status'] == 404)) {
             return false;
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($targetChannel, $user, $functionName, $url);
-        
+
         // Return out our unkeyed array
         return $relationShipObject;        
     }
@@ -1417,77 +844,29 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $success - [bool] Success of the query
      */ 
     public function followChan($user, $chan, $token, $code){
-        $functionName = 'FOLLOW_CHANNEL';
-        $requiredAuth = 'user_follows_edit';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_follows_edit', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
         
-        $this->generateOutput($functionName, 'Attempting to have channel ' . $user . ' follow the user ' . $chan, 1);      
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/users/' . $user . '/follows/channels/' . $chan;
         $options = array();
         $post = array('oauth_token' => $token);
         
         $result = $this->cURL_put($url, $post, $options, true);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . $result, 4);
-        
+
         if ($result == 200){
-            $this->generateOutput($functionName, 'Sucessfully followed channel.', 3);
+            // Sucessfully followed channel
             $result = true;              
         } else {
-            $this->generateOutput($functionName, 'Unable to follow channel.  Channel not found', 3);
+            // Unable to follow channel
             $result = false;            
         }
 
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($user, $chan, $token, $code, $auth, $authSuccessful, $type, $url, $options, $post, $functionName);
-        
         return $result;
     }
     
@@ -1502,76 +881,24 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $success - [bool] Success of the query
      */ 
     public function unfollowChan($user, $chan, $token, $code){
-        $functionName = 'UNFOLLOW_CHANNEL';
-        $requiredAuth = 'user_follows_edit';
         
-        $this->generateOutput($functionName, 'Attempting have channel ' . $user . ' unfollow channel ' . $chan, 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_follows_edit', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
+
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/users/' . $user . '/follows/channels/' . $chan;
         $options = array();
         $delete = array('oauth_token' => $token);
         
         $result = $this->cURL_delete($url, $delete, $options, true);
-        
-        $this->generateOutput($functionName, 'Raw return: ' . $result, 4);
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($user, $chan, $token, $code, $auth, $authSuccessful, $type, $url, $options, $delete);
-        
+
         if ($result == 204){
-            $this->generateOutput($functionName, 'Successfully unfollowed channel', 3);
-            unset($functionName);
             return true;
         } else {
-            $this->generateOutput($functionName, 'Unsuccessfully unfollowed channel', 3);
-            unset($functionName);
             return false;
         }
     }
@@ -1587,10 +914,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] A complete array of all channel objects in order based on the sorting rules
      */ 
     public function getLargestGame($limit = -1, $offset = 0, $hls = false, $returnTotal = false){
-        $functionName = 'GET_LARGEST_GAME';
-        
-        $this->generateOutput($functionName, 'Attempting to get a list of the channels currently live to limit sorted by viewer count', 1);
-        
         // Init some vars       
         $gamesObject = array();
         $games = array();        
@@ -1600,11 +923,11 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $gamesObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'top', null, $hls, null, null, null, null, null, null, null, $returningTotal);
+        $gamesObject = $this->get_iterated( $url, $options, $limit, $offset, 'top', null, $hls, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
+            // Including _total as the count of all object
             $games['_total'] = count($gamesObject);
         }
         
@@ -1618,12 +941,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             
             $key = $game['game']['name'];
             $games[$key] = $game;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($limit, $offset, $hls, $url, $options, $gamesObject, $key, $game, $functionName, $k, $returnTotal, $returningTotal);
         
         return $games;
     }
@@ -1634,18 +952,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $ingests - [array] All returned ingest servers and the information associated with them
      */
     public function getIngests(){
-        $functionName = 'GET_INGESTS';
-        
-        $this->generateOutput($functionName, 'Getting current ingests and ingest statistics for Twitch', 1);
-        
         $ingests = array();
         $url = 'https://api.twitch.tv/kraken/ingests';
         $get = array();
         $options = array();
         
         $result = json_decode($this->cURL_get($url, $get, $options), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($result), 4);
-        
+
         if (is_array($result) && !empty($result)){
             foreach ($result as $key => $value){
                 if ($key == '_links'){
@@ -1654,16 +967,11 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
                 
                 foreach ($value as $val){
                     $k = $val['name'];
-                    $this->generateOutput($functionName, 'Setting Key: ' . $k, 3);
                     $ingests[$k] = $val;
                 }
             }
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($url, $get, $options, $key, $value, $val, $functionName, $result, $k);
-        
+
         return $ingests;        
     }        
     
@@ -1676,9 +984,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] An array of all resulting search returns
      */ 
     public function searchGameCat($query, $live = true){
-        $functionName = 'SEARCH_GAME';
-        $this->generateOutput($functionName, 'Searching all game catagories for the string: ' . $query, 1);
-        
         $url = 'https://api.twitch.tv/kraken/search/games';
         $get = array(
             'query' => $query,
@@ -1689,24 +994,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $object = array();
         
         $result = json_decode($this->cURL_get($url, $get, $options, false), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($result), 4);
-        
+
         foreach ($result as $key => $value){
             if ($key !== '_links'){
                 foreach ($value as $game){
                     $k = $game['name'];
                     if ($k != 'h'){
-                        $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                         $object[$k] = $game;
                     }
                 }                
             }
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($query, $live, $url, $get, $options, $result, $k, $key, $value, $game, $functionName);
-    
+
         return $object;
     }
     
@@ -1718,10 +1017,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array or null] Returned array of all stream object data or null if stream is offline
      */ 
     public function getStreamObject($chan){
-        $functionName = 'GET_STREAM_OBJECT';
-        
-        $this->generateOutput($functionName, 'Getting the stream object for channel ' . $chan, 1);
-        
         $url = 'https://api.twitch.tv/kraken/streams/' . $chan;
         $get = array();
         $options = array();
@@ -1733,10 +1028,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         } else {
             $object = null;
         }
-        
-        // Clean up
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $url, $get, $result, $functionName);
         
         return $object;
     }
@@ -1757,9 +1048,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] All returned data for the query parameters
      */ 
     public function getStreamsObjects($game = null, $channels = array(), $limit = -1, $offset = 0, $embedable = false, $hls = false, $client_id = null, $returnTotal = false){
-        $functionName = 'GET_STREAM_OBJECTS';
-        $this->generateOutput($functionName, 'Attempting to get stream objects for the provided parameters', 1);
-        
         // Init some vars       
         $url = 'https://api.twitch.tv/kraken/streams';
         $options = array();
@@ -1770,11 +1058,10 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $streamsObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'streams', null, $hls, null, $channels, $embedable, $client_id, null, null, $game, $returningTotal);
+        $streamsObject = $this->get_iterated( $url, $options, $limit, $offset, 'streams', null, $hls, null, $channels, $embedable, $client_id, null, null, $game, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $streams['_total'] = count($streamsObject);
         }
         
@@ -1794,11 +1081,7 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
                 }
             }
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($game, $channels, $limit, $offset, $embedable, $hls, $client_id, $url, $options, $streamsObject, $key, $k, $value, $v, $objKey, $functionName, $returnTotal, $returningTotal);
-        
+
         return $streams;              
     }
     
@@ -1813,10 +1096,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $featuredObject - [array] Array of all stream objects for the query or false if the query fails
      */ 
     public function getFeaturedStreams($limit = -1, $offset = 0, $hls = false, $returnTotal = false){
-        $functionName = 'GET_FEATURED';
-        
-        $this->generateOutput($functionName, 'Getting all featured streamers to limit', 1);
-        
         // Init some vars
         $featured = array();          
         $url = 'https://api.twitch.tv/kraken/streams/featured';
@@ -1826,11 +1105,10 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $featuredObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'featured', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $featuredObject = $this->get_iterated( $url, $options, $limit, $offset, 'featured', null, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $featured['_total'] = count($featuredObject);
         }
         
@@ -1848,10 +1126,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             }
         }
         
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($limit, $offset, $embedable, $hls, $url, $options, $featuredObject, $key, $value, $k, $functionName, $returnTotal, $returningTotal);
-        
         return $featured;           
     }
     
@@ -1866,58 +1140,18 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $videos - [array] array of all followed streams online
+     * 
+     * @version 1.2
      */
     public function getFollowedStreams($limit = -1, $offset = 0, $token, $code, $hls = false, $returnTotal = false){
-        $functionName = 'STREAMS_FOLLOWED';
-        $requiredAuth = 'user_read';
+ 
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_read', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
         
-        $this->generateOutput($functionName, 'Attempting to grab all live channels for auth code: ' . $code, 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return array(); // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return array();
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $streams = array();
         $url = 'https://api.twitch.tv/kraken/streams/followed';
@@ -1926,11 +1160,10 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $streamsObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'streams', $token, $hls, null, null, null, null, null, null, null, $returningTotal);
+        $streamsObject = $this->get_iterated( $url, $options, $limit, $offset, 'streams', $token, $hls, null, null, null, null, null, null, null, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $streams['_total'] = count($streamsObject);
         }
         
@@ -1944,15 +1177,10 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             
             if (($key != 'self') && ($key != 'next')){
                 $k = $value['channel'][TWITCH_KEY_NAME];
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $streams[$k] = $value;
             }
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($limit, $offset, $token, $auth, $authSuccessful, $hls, $code, $returnTotal, $requiredAuth, $returningTotal, $k, $key, $value, $url, $options);
-        
+
         return $streams;
      }
     
@@ -1964,10 +1192,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $statistics - [array] (keyed) The current Twitch Statistics 
      */ 
     public function getTwitchStatistics($hls = false){
-        $functionName = 'GET_STATISTICS';
-        
-        $this->generateOutput($functionName, 'Getting current statistics for Twitch', 1);
-        
         $statistics = array();
         $url = 'https://api.twitch.tv/kraken/streams/summary';
         $get = array(
@@ -1975,17 +1199,11 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $options = array();
         
         $result = json_decode($this->cURL_get($url, $get, $options), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($result), 4);
-        
+
         if (is_array($result) && !empty($result)){
-            $this->generateOutput($functionName, 'Statistics transfered', 3);
             $statistics = $result;
         }
 
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($hls, $url, $get, $options, $key, $value, $functionName, $result);
-        
         return $statistics;        
     }
     
@@ -1997,10 +1215,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $object - [array] Video object returned from the query, key is the ID
      */
     public function getVideo_ID($id){
-        $functionName = 'GET_VIDEO-ID';
-        
-        $this->generateOutput($functionName, 'Getting the video object for the video with the ID: ' . $id, 1);
-        
         // init some vars
         $object = array();
         $url = 'https://api.twitch.tv/kraken/videos/' . $id;
@@ -2017,10 +1231,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $object[$id] = array();
         }
 
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($id, $functionName, $url, $get, $options, $result);
-        
         return $object;             
     }
     
@@ -2038,10 +1248,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @version 1.2
      */ 
     public function getVideo_channel($chan, $limit = -1, $offset = 0, $boradcastsOnly = false, $returnTotal = false){
-        $functionName = 'GET_VIDEO-CHANNEL';
-        
-        $this->generateOutput($functionName, 'Getting the video objects for channel: ' . $chan, 1);
-        
         // Init some vars
         $videoObjects = array();     
         $videos = array();
@@ -2052,30 +1258,23 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $videos = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, $boradcastsOnly, null, null, $returningTotal);
+        $videos = $this->get_iterated( $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, $boradcastsOnly, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $videoObjects['_total'] = count($videos);
         }
         
         // Key the data
         foreach ($videos as $k => $video){
             if ($k == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $videoObjects[$k] = $video;
                 continue;
             }
             
             $key = $video['_id'];
             $videoObjects[$key] = $video;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $limit, $offset, $boradcastsOnly, $functionName, $video, $videos, $key, $options, $url, $k, $returnTotal, $returningTotal);
         
         return $videoObjects;                  
     }
@@ -2092,56 +1291,14 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $videosObject - [array] All video objects returned by the query, Key is ID
      */ 
     public function getVideo_followed($limit = -1, $offset = 0, $token, $code, $returnTotal = false){
-        $requiredAuth = 'user_read';
-        $functionName = 'GET_VIDEO-FOLLOWED';
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'user_read', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
         
-        $this->generateOutput($functionName, 'Grabbing all video objects for the channels using the code: ' . $code, 1);
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type) {
-                if ($type == $requiredAuth) {
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful) {
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         // Init some vars       
         $videosObject = array();            
@@ -2153,31 +1310,24 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $videos = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'videos', $token, null, null, null, null, null, null, null, null, $returningTotal);
+        $videos = $this->get_iterated( $url, $options, $limit, $offset, 'videos', $token, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)) {
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $videosObject['_total'] = count($videos);
         }
         
         // Set our keys
         foreach ($videos as $k => $video) {
             if ($k == '_total') {
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $videosObject[$k] = $video;
                 continue;
             }
             
             $key = $video['_id'];
             $videosObject[$key] = $video;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
 
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($limit, $offset, $token, $code, $requiredAuth, $functionName, $auth, $authSuccessful, $token, $type, $videos, $video, $url, $options, $key, $k, $returnTotal, $returningTotal);
-        
         return $videosObject;      
     }
     
@@ -2193,9 +1343,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $videosObject - [array] Array of all returned video objects, Key is ID
      */ 
     public function getTopVideos($game = '', $limit = -1, $offset = 0, $period = 'week', $returnTotal = false){
-        $functionName = 'GET_TOP_VIDEOS';
-        $this->generateOutput($functionName, 'Grabbing all of the top videos to limit', 1);
-        
         // check the period to make sure it is valid
         if (($period != 'week') && ($period != 'month') && ($period != 'all')){
             $period = 'week';
@@ -2211,36 +1358,29 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $videos = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, null, $period, $game, $returningTotal);
+        $videos = $this->get_iterated( $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, null, $period, $game, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $videosObject['_total'] = count($videos);
         }
         
         // Set our keys
         foreach ($videos as $k => $video){
             if ($k == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $videosObject[$k] = $video;
                 continue;
             }
             
             $key = $video['_id'];
             $videosObject[$key] = $video;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($game, $limit, $offset, $period, $functionName, $video, $videos, $key, $url, $options, $k, $returnTotal, $returningTotal);
-        
+
         return $videosObject;         
     }
     
     /**
-     * Gets a lits of all users subscribed to a channel
+     * Gets a list of all users subscribed to a channel.
      * 
      * @param $chan - [string] Channel name to grab the subscribers list of
      * @param $limit - [int] Limit of channel objects to return
@@ -2248,191 +1388,114 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @param $direction - [string] Sorting direction, valid options are 'asc' and 'desc'
      * @param $token - [string] Authentication key used for the session
      * @param $code - [string] Code used to generate an Authentication key
-     * @param $returnTotal - [bool] Returns a _total row in the array
      * 
-     * @return $subscribers - [array] Unkeyed array of all subscribed users
+     * @version 5.5
      */ 
-    public function getChannelSubscribers($chan, $limit = -1, $offset = 0, $direction = 'asc', $token, $code, $returnTotal = false){
-        $requiredAuth = 'channel_subscriptions';
-        $functionName = 'GET_SUBSCRIBERS';
+    public function get_channel_subscribers( $chan, $limit = -1, $offset = 0, $direction = 'asc', $token = null, $code = null ){
         
-        $this->generateOutput($functionName, 'Getting the list of subcribers to channel: ' . $chan, 1);      
-        
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
-        
-        // Check our sorting direction
-        if (($direction != 'asc') && ($direction != 'desc')){
-            $direction = 'asc';
-        }
-
-        // Init some vars       
-        $subscribers = array();
-        $subscribersObject = array();
-        $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions';
-        $options = array();
-        
-        // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
-        $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
-        
-        // Build our cURL query and store the array
-        $subscribersObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'subscriptions', $token, null, $direction, null, null, null, null, null, null, $returningTotal);
-
-        // Include the total if we were asked to return it (In limitless cases))
-        if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
-            $subscribers['_total'] = count($subscribersObject);
-        }
-        
-        // Set the keys and array
-        foreach ($subscribersObject as $k => $subscriber){
-            if ($k == '_total'){
-                $subscribers[$k] = $subscriber;
-                continue;
-            }
-            
-            $key = $subscriber['user'][TWITCH_KEY_NAME];
-            $subscribers[$key] = $subscriber;
-        }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($chan, $limit, $offset, $direction, $token, $code, $requiredAuth, $token, $auth, $authSuccessful, $type, $subscriber, $subscribersObject, $key, $url, $options, $k, $returnTotal, $returningTotal);
-        
-        return $subscribers;
+        if( $this->twitch_sandbox_mode ) { return $this->get_channel_subscriptions_sandbox(); }
+                                                                                                    
+        $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions';                          
+                                                                                                             
+        // Optional Query String Parameters as explained in API Version 5 documentation.                     
+        $url = add_query_arg( array( 'limit' => $limit, 'offset' => $offset, 'direction' => $direction ) );  
+                                                                                                             
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.              
+        $confirm_scope = $this->confirm_scope( 'channel_subscriptions', 'channel', __FUNCTION__ );               
+        if( is_wp_error( $confirm_scope) ) 
+        {
+            $this->bugnet->log_error( __FUNCTION__, __( 'Kraken5 was not giving sccope channel_subscriptions in the get_channel_subscribers() function.', 'twitchpress' ), array(), true ); 
+            return $confirm_scope; 
+        }                                            
+                                                                                                 
+        // Default to main channel credentials.                                                              
+        if( !$token ){ $token = $this->twitch_client_token; }                                                
+        if( !$code ){ $code = $this->twitch_client_code; }                                                   
+         
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
+        $get = array('oauth_token' => $token);
+         
+        return json_decode( $this->cURL_get($url, $get, array( /* cURL options */), false, __FUNCTION__ ), true);
     }
     
     /**
-     * Checks to see if a user is subscribed to a specified channel from the channel side
+    * Sandbox version of get_channel_subscriptions().
+    * 
+    * @version 1.0
+    */
+    public function get_channel_subscriptions_sandbox() { 
+        return array( 
+                        "_total" => 4,
+                        "subscriptions" => array( 
+                            array(
+                                "_id"            => "e5e2ddc37e74aa9636625e8d2cc2e54648a30418",
+                                "created_at"     => "2016-04-06T04:44:31Z",
+                                "sub_plan"       => "1000",
+                                "sub_plan_name"  =>  "Channel Subscription (mr_woodchuck)",
+                                "user"               => array(
+                                    "_id"            => "89614178",
+                                    "bio"            => "Twitch staff member who is a heimerdinger main on the road to diamond.",
+                                    "created_at"     => "2015-04-26T18:45:34Z",
+                                    "display_name"   => "Mr_Woodchuck",
+                                    "logo"           => "https://static-cdn.jtvnw.net/jtv_user_pictures/mr_woodchuck-profile_image-a8b10154f47942bc-300x300.jpeg",
+                                    "name"           => "mr_woodchuck",
+                                    "type"           => "staff",
+                                    "updated_at"     => "2017-04-06T00:14:13Z" ),
+                                    
+                            )
+                        )
+        );
+    }   
+    
+    /**
+     * Gets a giving users subscription details for a giving channel
+     * 
+     * For use by channel owners. 
      * 
      * @param $user - [string] Username of the user check against
      * @param $chan - [string] Channel name of the channel to check against
      * @param $token - [string] Authentication key used for the session
      * @param $code - [string] Code used to generate an Authentication key
      * 
-     * @return $subscribed - [bool] the status of the user subscription
+     * @return $subscribed - [array] the subscription details or error details.
+     * 
+     * @version 5.0
      */ 
-    public function checkChannelSubscription( $user, $chan, $token, $code ){
-        $requiredAuth = 'channel_subscriptions';
-        $functionName = 'CHECK_CHANNEL_SUBSCRIPTION';
+    public function getChannelSubscription( $user, $chan, $token, $code ){
         
-        $this->generateOutput($functionName, 'Checking to see if user ' . $user . ' is subscribed to channel ' . $chan, 1);
+        // I witnessed a possible empty string in $user resulting in wrong URL endpoint.
+        if( $user === '' ){ $this->bugnet->log_error( __FUNCTION__, __( 'User not giving when checking channel subscription.', 'twitchpress' ), array(), true ); }            
+                                                                   
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'channel', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // We were supplied an OAuth token. check it for validity and scopes
-        if (($token != null || '') || ($code != null || false)){
-            if ($token != null || ''){
-                $check = $this->checkToken($token);
-                
-                if ($check["token"] != false){
-                    $auth = $check;
-                } else { // attempt to generate one
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                }
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . '; required Auth: ' . $requiredAuth);
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions/' . $user;
         $options = array();
         $get = array('oauth_token' => $token);
         
-        // Build our cURL query and store the array
-        $subscribed = json_decode($this->cURL_get($url, $get, $options, true), true);
-        
-        // Check the return
-        if ($subscribed == 403){
-            $this->generateOutput($functionName, 'Authentication failed to have access to channel account.  Please check channel ' . $chan . ' access.', 3);
-            $subscribed = false;
-        } elseif ($subscribed == 422) {
-            $this->generateOutput($functionName, 'Channel ' . $chan . ' does not have subscription program available', 3);
-            $subscribed = false;
-        } elseif ($subscribed == 404) {
-            $this->generateOutput($functionName, 'User ' . $user . ' is not subscribed to channel ' . $chan, 3);
-            $subscribed = false;
-        } else {
-            $this->generateOutput($functionName, 'User ' . $user . ' is subscribed to channel' . $chan, 3);
-            $subscribed = true;
+        $subscribed = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__ ), true);
+
+        // only check results here to log them and return the original response.
+        if( isset( $subscribed['error'] ) ) 
+        {
+            $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Failed to get subscription data for user ID %s from channel ID %s.', 'twitchpress' ), $user, $chan ), array(), false );
+            return $subscribed;
+        } 
+        elseif( isset( $subscribed['sub_plan'] ) )
+        {
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'Subscription data returned for user ID %s from channel ID %s.', 'twitchpress' ), $user, $chan ), array(), false, false );
+            return $subscribed;   
         }
         
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset($user, $chan, $token, $code, $requiredAuth, $functionName, $auth, $authSuccessful, $token, $type, $url, $options, $get);
-        
+        // We should never arrive here. 
+        $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Unexpected response from request for subscribers data. User ID: %s Channel ID: %s.', 'twitchpress' ), $user, $chan ), array(), false );
         return $subscribed;
     }
     
@@ -2442,13 +1505,14 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
     * 
     * @param mixed $user_id
     * 
-    * @version 1.2
+    * @version 2.0
     */
-    public function get_user_subscription_main_channel( $user_id ) {
+    public function is_user_subscribed_to_main_channel( $user_id ) {
         if( !$credentials = twitchpress_get_user_twitch_credentials( $user_id ) ) {
-            return false;    
+            return null;    
         }        
-            
+        
+        // Returns boolean, false if no subscription else true.     
         return $this->checkUserSubscription( 
             $user_id, 
             $this->twitch_default_channel, 
@@ -2470,10 +1534,14 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @version 5.0
      */ 
     public function checkUserSubscription( $user_id, $chan, $token = false, $code = false ){
-        $requiredAuth = 'channel_check_subscription';
-        $functionName = 'CHECK_USER_SUBSCRIPTION';       
-                
-        $this->generateOutput($functionName, 'Checking to see if user ' . $user_id . ' is subscribed to channel ' . $chan, 1);
+
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) 
+        {
+            $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'TwitchPress Error: The function %s() requires the channel_check_subscription scope to be permitted.', 'twitchpress' ), __FUNCTION__ ), array(), true ); 
+            return $confirm_scope; 
+        }
         
         if( !$token ) {
             $token = $this->twitch_client_token;
@@ -2483,105 +1551,77 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $code = $this->twitch_client_code;    
         }
         
-        // We were supplied an OAuth token. check it for validity and scopes
-        if ( ( $token != null || '') || ( $code != null || false ) ){
-            
-            if ($token != null || ''){
-                
-                $check = $this->checkToken($token);
-
-                if ($check["token"] != false){
-                    
-                    $auth = $check;
-                    
-                } else { // attempt to generate one
-                
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {       
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                    
-                }
-                
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {      
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){      
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . ' required Auth: ' . $requiredAuth );
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan;
         $options = array();
         $get = array( 'oauth_token' => $token );   
 
         // Build our cURL query and store the array
-        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, true ), true );
+        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, true, __FUNCTION__ ), true );
 
         // Check the return
         if ( $subscribed == 403 ){      
-            $this->generateOutput($functionName, 'Authentication failed to have access to channel account.  Please check user access.', 3);
+            // Authentication failed to have access to channel account.  Please check user access.
             $subscribed = false;
         } elseif ( $subscribed == 422 ) {     
-            $this->generateOutput($functionName, 'Channel ' . $chan . ' does not have subscription program available', 3);
+            // Channel ' . $chan . ' does not have subscription program available
             $subscribed = false;
         } elseif ( $subscribed == 404 ) {    
-            $this->generateOutput($functionName, 'User ' . $user_id . ' is not subscribed to channel ' . $chan, 3);
+            // User ' . $user_id . ' is not subscribed to channel ' . $chan
             $subscribed = false;
         } else {
-            $this->generateOutput($functionName, 'User ' . $user_id . ' is subscribed to channel ' . $chan, 3);
+            // User ' . $user_id . ' is subscribed to channel ' . $chan
             $subscribed = true;
         }
                  
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset( $user_id, $chan, $token, $code, $requiredAuth, $functionName, $auth, $authSuccessful, $token, $type, $url, $options, $get);
-        
         return $subscribed;
     }
 
     /**
-     * Gets the a users subscription status for specified channel from the user side.
+    * Get the giving WordPress users Twitch subscription plan for the
+    * main channel using the users own oAuth2 code and token.
+    * 
+    * This method is done from the users side.
+    * 
+    * @param mixed $user_id
+    * 
+    * @version 5.1
+    */
+    public function getUserSubscriptionPlan( $user_id ) {
+        if( !$credentials = twitchpress_get_user_twitch_credentials( $user_id ) ) {
+            return null;    
+        }        
+
+        $sub = $this->getUserSubscription(             
+            $user_id, 
+            $this->twitch_channel_id, 
+            $credentials['token'], 
+            $credentials['code']  
+        );    
+          
+        return $sub['sub_plan'];
+    }
+    
+    /**
+     * Gets the a users subscription data for specified channel from the user side.
      * 
      * @param $user_id - [string] User ID of the user check against
      * @param $chan    - [string] Channel name of the channel to check against
      * @param $token   - [string] Authentication key used for the session
      * @param $code    - [string] Code used to generate an Authentication key
      * 
-     * @return $subscribed - [bool] the status of the user subscription
+     * @return $subscribed - [array] subscription data.
      * 
      * @version 5.0
      */ 
-    public function getUserSubscription( $user_id, $chan, $token = false, $code = false ){
-        $requiredAuth = 'channel_check_subscription';
-        $functionName = 'GET_USER_SUBSCRIPTION';       
-                
-        $this->generateOutput($functionName, 'Attempting to get user ' . $user_id . ' subscription details for channel ' . $chan, 1);
+    public function getUserSubscription( $user_id, $chan, $token = false, $code = false ){   
+      
+        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
+        $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'user', __FUNCTION__ );
+        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
         if( !$token ) {
             $token = $this->twitch_client_token;
@@ -2591,70 +1631,17 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
             $code = $this->twitch_client_code;    
         }
         
-        // We were supplied an OAuth token. check it for validity and scopes
-        if ( ( $token != null || '') || ( $code != null || false ) ){
-            
-            if ($token != null || ''){
-                
-                $check = $this->checkToken($token);
-
-                if ($check["token"] != false){
-                    
-                    $auth = $check;
-                    
-                } else { // attempt to generate one
-                
-                    if ($code != null || ''){
-                        $auth = $this->generateToken($code); // Assume generation and check later for failure
-                    } else {       
-                        $this->generateError(400, 'Existing token expired and no code available for generation.');
-                    }
-                    
-                }
-                
-            } else { // Assume the code was given instead and generate if we can
-                $auth = $this->generateToken($code); // Assume generation and check later for failure
-            }
-            
-            // check to see if we recieved a token after all of that checking
-            if ($auth['token'] == false) {      
-                $this->generateError(400, 'Auth key not returned, exiting function: ' . $functionName);
-                return; // return out after the error is passed
-            }
-            
-            $authSuccessful = false;
-            
-            // Check the array of scopes
-            foreach ($auth['scopes'] as $type){
-                if ($type == $requiredAuth){
-                    // We found the scope, we are good then
-                    $authSuccessful = true;
-                    break;
-                }
-            }
-            
-            // Did we fail?
-            if (!$authSuccessful){      
-                $this->generateError(403, 'Authentication token failed to have permissions for ' . $functionName . ' required Auth: ' . $requiredAuth );
-                return null;
-            }
-            
-            // Assign our key
-            $this->generateOutput($functionName, 'Required scope found in array', 3);
-            $token = $auth['token'];
-        }
+        // Validate token, if not valid this will generate one.                                                                                                           
+        $auth = $this->establish_token( $token );
+        $token = $auth['token'];
         
         $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan;
         $options = array();
         $get = array( 'oauth_token' => $token );   
 
         // Build our cURL query and store the array
-        $subscribed = json_decode( $this->cURL_get( $url, $get, $options ), true );
+        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, false, __FUNCTION__ ), true );
                  
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning memory', 3);
-        unset( $user_id, $chan, $token, $code, $requiredAuth, $functionName, $auth, $authSuccessful, $token, $type, $url, $options, $get);
-        
         return $subscribed;
     }
         
@@ -2668,10 +1655,6 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $teams - [array] Keyed array of all team objects.  Key is the team name
      */ 
     public function getTeams($limit = -1, $offset = 0, $returnTotal = false){        
-        $functionName = 'GET_TEAMS';
-        
-        $this->generateOutput($functionName, 'Grabbing all available teams objects', 1);
-        
         // Init some vars       
         $teams = array();        
         $url = 'https://api.twitch.tv/kraken/teams';
@@ -2681,30 +1664,23 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $teamsObject = $this->get_iterated($functionName, $url, $options, $limit, $offset, 'teams', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $teamsObject = $this->get_iterated( $url, $options, $limit, $offset, 'teams', null, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
-            $this->generateOutput($functionName, 'Including _total as the count of all object', 3);
             $teams['_total'] = count($teamsObject);
         }
         
         // Transfer to teams
         foreach ($teamsObject as $k => $team){
             if ($k == '_total'){
-                $this->generateOutput($functionName, 'Setting key: ' . $k, 3);
                 $teams[$k] = $team;
                 continue;
             }
             
             $key = $team[TWITCH_KEY_NAME];
             $teams[$key] = $team;
-            $this->generateOutput($functionName, 'Setting key: ' . $key, 3);
         }
-        
-        // Clean up quickly
-        $this->generateOutput($functionName, 'Cleaning Memory', 3);
-        unset($limit, $offset, $teamsObject, $team, $url, $options, $key, $k, $returnTotal, $returningTotal);
         
         return $teams;
     }
@@ -2717,20 +1693,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @return $teamObject - [array] Object returned for the team queried
      */ 
     public function getTeam( $team ){
-        $functionName = 'GET_USEROBJECT';
-        $this->generateOutput($functionName, 'Attempting to get the team object for user: ' . $team, 1);
-        
         $url = 'https://api.twitch.tv/kraken/teams/' . $team;
         $options = array();
         $get = array();
         
         // Build our cURL query and store the array
-        $teamObject = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $teamObject = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__), true);
 
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning Memory', 3);
-        unset($team, $url, $options, $get, $functionName);
-        
         return $teamObject;
     }    
     
@@ -2740,21 +1709,13 @@ class TWITCHPRESS_Kraken5_Calls extends TWITCHPRESS_Kraken5_Interface {
      * @todo This function now requires clientid appended to URL ?client_id=' . $client_id
      */ 
     public function revoke_access_tokens(){
-        $functionName = 'GET_USEROBJECT';
-        $this->generateOutput($functionName, 'Attempting to revoke access token for this client!', 1);
-        
         $url = 'https://api.twitch.tv/kraken/oauth2/revoke?client_id=' . $this->twitch_client_id . '&token=' . $this->twitch_client_token;
         $options = array();
         $get = array();
         
         // Build our cURL query and store the array
-        $userObject = json_decode($this->cURL_get($url, $get, $options, false), true);
-        $this->generateOutput($functionName, 'Raw return: ' . json_encode($userObject), 4);
-        
-        //clean up
-        $this->generateOutput($functionName, 'Cleaning Memory', 3);
-        unset($user, $url, $options, $get, $functionName);
-        
+        $userObject = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__), true);
+
         return $userObject;          
     }    
 }

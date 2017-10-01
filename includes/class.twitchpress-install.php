@@ -36,6 +36,7 @@ class TwitchPress_Install {
         add_action( 'in_plugin_update_message-twitchpress/twitchpress.php', array( __CLASS__, 'in_plugin_update_message' ) );
         add_filter( 'plugin_action_links_' . TWITCHPRESS_PLUGIN_BASENAME, array( __CLASS__, 'plugin_action_links' ) );    
         add_filter( 'plugin_row_meta', array( __CLASS__, 'plugin_row_meta' ), 10, 2 );
+        add_action( 'twitchpress_plugin_background_installer', array( __CLASS__, 'background_installer' ), 10, 2 );
     }
     
     /**
@@ -65,9 +66,12 @@ class TwitchPress_Install {
     }
     
     /**
-    * If key values are missing we will offer the wizard.
+    * If key values are missing we will offer the wizard. 
     * 
-    * @version 1.0
+    * Does not apply when the setup wizard has not been complete. This is
+    * currently done by checking 
+    * 
+    * @version 1.1
     */
     public static function offer_wizard() {
         $offer_wizard = false;
@@ -76,15 +80,17 @@ class TwitchPress_Install {
             return;    
         }
         
+        // Avoid registering notice during the Setup Wizard.
         if( isset( $_GET['page']) && $_GET['page'] == 'twitchpress-setup' ) {
             return;    
         }
         
-        if( !get_option( 'twitchpress_version' ) ) {
-            
-            $offer_wizard = 'twitchpress_version';
-            
-        } elseif( !get_option( 'twitchpress_main_channel_name' ) ) {
+        // If already displaying the install notice, do not display.
+        if( TwitchPress_Admin_Notices::has_notice( 'install' ) ) {
+            return;
+        }
+
+        if( !get_option( 'twitchpress_main_channel_name' ) ) {
             
             $offer_wizard = 'twitchpress_main_channel_name';
             
@@ -112,7 +118,7 @@ class TwitchPress_Install {
         
         if( $offer_wizard === false ) { return; }
         
-        $wizard_link = '<p><a href="' . esc_url( admin_url( 'index.php?page=twitchpress-setup' ) ) . '" class="button button-primary">' . __( 'Setup wizard', 'twitchpress' ) . '</a></p>';
+        $wizard_link = '<p><a href="' . admin_url( 'index.php?page=twitchpress-setup' ) . '" class="button button-primary">' . __( 'Setup wizard', 'twitchpress' ) . '</a></p>';
         
         TwitchPress_Admin_Notices::add_wordpress_notice(
             'missingvaluesofferwizard',
@@ -141,7 +147,11 @@ class TwitchPress_Install {
     public static function install_action_updater_cron() {
         if ( ! empty( $_GET['force_update_twitchpress'] ) ) {
             do_action( 'wp_twitchpress_updater_cron' );
-            wp_safe_redirect( admin_url( 'admin.php?page=twitchpress' ) );
+            
+            $admin_url = admin_url( 'admin.php?page=twitchpress' );
+
+            twitchpress_redirect_tracking( $admin_url, __LINE__, __FUNCTION__ );
+            exit;
         }        
     }
     
@@ -512,7 +522,153 @@ class TwitchPress_Install {
                 }
             }
         }
-    }                    
+    }   
+    
+    /**
+     * Get slug from path
+     * @param  string $key
+     * @return string
+     */
+    private static function format_plugin_slug( $key ) {
+        $slug = explode( '/', $key );
+        $slug = explode( '.', end( $slug ) );
+        return $slug[0];
+    }
+        
+    /**
+     * Install a plugin from .org in the background via a cron job (used by installer - opt in).
+     * 
+     * @param string $plugin_to_install_id
+     * @param array $plugin_to_install
+     * @since 1.2.7
+     */
+    public static function background_installer( $plugin_to_install_id, $plugin_to_install ) {
+        // Explicitly clear the event.
+        wp_clear_scheduled_hook( 'twitchpress_plugin_background_installer', func_get_args() );
+
+        if ( ! empty( $plugin_to_install['repo-slug'] ) ) {
+            
+            // Requires some core WP files.
+            require_once( ABSPATH . 'wp-admin/includes/file.php' );
+            require_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+            require_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
+            require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+            WP_Filesystem();
+
+            $skin              = new Automatic_Upgrader_Skin;
+            $upgrader          = new WP_Upgrader( $skin );
+            $installed_plugins = array_map( array( __CLASS__, 'format_plugin_slug' ), array_keys( get_plugins() ) );
+            $plugin_slug       = $plugin_to_install['repo-slug'];
+            $plugin            = $plugin_slug . '/' . $plugin_slug . '.php';
+            $installed         = false;
+            $activate          = false;
+
+            // See if the plugin is installed already
+            if ( in_array( $plugin_to_install['repo-slug'], $installed_plugins ) ) {
+                $installed = true;
+                $activate  = ! is_plugin_active( $plugin );
+            }
+
+            // Install this thing!
+            if ( ! $installed ) {
+                // Suppress feedback
+                ob_start();
+
+                try {
+                    $plugin_information = plugins_api( 'plugin_information', array(
+                        'slug'   => $plugin_to_install['repo-slug'],
+                        'fields' => array(
+                            'short_description' => false,
+                            'sections'          => false,
+                            'requires'          => false,
+                            'rating'            => false,
+                            'ratings'           => false,
+                            'downloaded'        => false,
+                            'last_updated'      => false,
+                            'added'             => false,
+                            'tags'              => false,
+                            'homepage'          => false,
+                            'donate_link'       => false,
+                            'author_profile'    => false,
+                            'author'            => false,
+                        ),
+                    ) );
+
+                    if ( is_wp_error( $plugin_information ) ) {
+                        throw new Exception( $plugin_information->get_error_message() );
+                    }
+
+                    $package  = $plugin_information->download_link;
+                    $download = $upgrader->download_package( $package );
+
+                    if ( is_wp_error( $download ) ) {
+                        throw new Exception( $download->get_error_message() );
+                    }
+
+                    $working_dir = $upgrader->unpack_package( $download, true );
+
+                    if ( is_wp_error( $working_dir ) ) {
+                        throw new Exception( $working_dir->get_error_message() );
+                    }
+
+                    $result = $upgrader->install_package( array(
+                        'source'                      => $working_dir,
+                        'destination'                 => WP_PLUGIN_DIR,
+                        'clear_destination'           => false,
+                        'abort_if_destination_exists' => false,
+                        'clear_working'               => true,
+                        'hook_extra'                  => array(
+                            'type'   => 'plugin',
+                            'action' => 'install',
+                        ),
+                    ) );
+
+                    if ( is_wp_error( $result ) ) {
+                        throw new Exception( $result->get_error_message() );
+                    }
+
+                    $activate = true;
+
+                } catch ( Exception $e ) {
+                    TwitchPress_Admin_Notices::add_custom_notice(
+                        $plugin_to_install_id . '_install_error',
+                        sprintf(
+                            __( '%1$s could not be installed (%2$s). <a href="%3$s">Please install it manually by clicking here.</a>', 'twitchpress' ),
+                            $plugin_to_install['name'],
+                            $e->getMessage(),
+                            esc_url( admin_url( 'index.php?wc-install-plugin-redirect=' . $plugin_to_install['repo-slug'] ) )
+                        )
+                    );
+                }
+
+                // Discard feedback
+                ob_end_clean();
+            }
+
+            wp_clean_plugins_cache();
+
+            // Activate this thing
+            if ( $activate ) {
+                try {
+                    $result = activate_plugin( $plugin );
+
+                    if ( is_wp_error( $result ) ) {
+                        throw new Exception( $result->get_error_message() );
+                    }
+                } catch ( Exception $e ) {
+                    TwitchPress_Admin_Notices::add_custom_notice(
+                        $plugin_to_install_id . '_install_error',
+                        sprintf(
+                            __( '%1$s was installed but could not be activated. <a href="%2$s">Please activate it manually by clicking here.</a>', 'twitchpress' ),
+                            $plugin_to_install['name'],
+                            admin_url( 'plugins.php' )
+                        )
+                    );
+                }
+            }
+        }
+    }                     
 }
 
 endif;

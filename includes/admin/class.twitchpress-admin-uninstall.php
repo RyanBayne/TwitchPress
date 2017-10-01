@@ -1,12 +1,4 @@
 <?php       
-/**
- * TwitchPress - Uninstallation class.
- * 
- * @author   Ryan Bayne
- * @category Configuration
- * @package  TwitchPress/Core
- * @since    1.0.0
- */
  
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -15,9 +7,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 if( !class_exists( 'TwitchPress_Uninstall' ) ) : 
 
 /**
- * TwitchPress_Install Class.
+ * TwitchPress - Uninstallation class.
+ * 
+ * @author   Ryan Bayne
+ * @category Configuration
+ * @package  TwitchPress/Core
+ * @since    1.0.0
  */
 class TwitchPress_Uninstall {
+    
+    public static function removeall() {
+        self::uninstall_options();
+    }
+    
     /**
     * Called when Deactive is clicked on the Plugins view. 
     * 
@@ -36,6 +38,8 @@ class TwitchPress_Uninstall {
     * @version 1.0
     */
     public static function uninstall_options() {
+        return;// Requires reworking as this method is outside of the plugins API.
+        
         if( !current_user_can( 'activate_plugins' ) ) {
             return false;
         }

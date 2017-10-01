@@ -37,12 +37,19 @@ function twitchpress_nonce_prepend( $action, $item = false ) {
  * Get all WordPress TwitchPress screen ids.
  *
  * @return array
+ * 
+ * @version 1.3
  */
 function twitchpress_get_screen_ids() {
 
     $screen_ids = array(
-        'twitchfeed_page_twitchpress_tools',
+        'twitchpress_page_twitchpress_tools',
         'toplevel_page_twitchpress',
+        'twitchchannels',
+        'edit-twitchchannels',
+        'twitchfeed',
+        'edit-twitchfeed',
+        'twitchpress_page_twitchpress_data'
     );
 
     return apply_filters( 'twitchpress_screen_ids', $screen_ids );
@@ -61,7 +68,7 @@ function twitchpress_get_screen_ids() {
 * @param string $channel_name
 * @param boolean $validated passing true will bypass a call to Kraken to validate channel.
 * 
-* @version 1.0
+* @version 1.1
 */
 function twitchpress_insert_channel( $channel_id, $channel_name, $validated = false ) {
     
@@ -74,7 +81,7 @@ function twitchpress_insert_channel( $channel_id, $channel_name, $validated = fa
     // Ensure post slug does not already exist.
     $post_name = sanitize_title( $channel_name );
     $post_name_exists = twitchpress_does_post_name_exist( $post_name );                
-    if( $does_slug_exists ) {   
+    if( $post_name_exists ) {   
         return false;
     }
                                            

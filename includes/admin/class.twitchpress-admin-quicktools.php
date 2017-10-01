@@ -33,7 +33,7 @@ class TwitchPress_Tools {
     * @var mixed
     */
     public $return_tool_info = false;
-    
+                  
     /**
     * Mainly for hooks. 
     */
@@ -68,7 +68,9 @@ class TwitchPress_Tools {
             'url'         => '',
             'category'    => 'users',
             'capability'  => 'activate_plugins',
-            'option'      => null
+            'option'      => null,
+            'function'    => __FUNCTION__,
+            'plugin'      => 'TwitchPress',
         );
         
         if( $this->return_tool_info ){ return $tool_info; }     
@@ -96,14 +98,14 @@ class TwitchPress_Tools {
             return;
         }     
         
-        if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'quicktool_action' ) ) {
+        if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'tool_action' ) ) {
             return;
         } 
         
         if( !isset( $_GET['toolname'] ) ) {  
             return;
         }
-        $tool_name = multitool_clean( $_GET['toolname'] );
+        $tool_name = twitchpress_clean( $_GET['toolname'] );
              
         if( !method_exists( __CLASS__, $tool_name ) ) {       
             return;
@@ -114,7 +116,7 @@ class TwitchPress_Tools {
             return; 
         }
                 
-        $QuickTools = new TwitchPress_QuickTools();                 
+        $QuickTools = new TwitchPress_Tools();                 
         $QuickTools->return_tool_info = true;
         
         // Prepare an array for passing to the tool method.
@@ -133,7 +135,7 @@ class TwitchPress_Tools {
         
         // Is this a tool with multiple possible actions? 
         if( isset( $tool_info['actions'] ) && is_array( $tool_info['actions'] ) ) {
-            $action = multitool_clean( $_GET['action'] );
+            $action = twitchpress_clean( $_GET['action'] );
             if( !isset( $tool_info['actions'][ $action ] ) ) {
                 return false;
             }   
@@ -157,14 +159,15 @@ class TwitchPress_Tools {
     */
     public function tool_display_latest_subscribers() {
         $tool_info = array(
-            'title'       => 'Display Latest Subscribers',
-            'description' => __( 'Displays usernames and email addresses for the latest registered users.', 'multitool' ),
+            'title'       => __( 'Display Latest Subscribers', 'twitchpress' ),
+            'description' => __( 'Displays usernames and email addresses for the latest registered users.', 'twitchpress' ),
             'version'     => '1.1',
             'author'      => 'Ryan Bayne',
             'url'         => '',
             'category'    => 'users',
             'capability'  => 'activate_plugins',
             'option'      => null,
+            'function'    => __FUNCTION__
         );
         
         if( $this->return_tool_info ){ return $tool_info; }    
@@ -191,7 +194,8 @@ class TwitchPress_Tools {
             'url'         => '',
             'category'    => 'users',
             'capability'  => 'activate_plugins',
-            'option'      => null
+            'option'      => null,
+            'function'    => __FUNCTION__
         );
         
         if( $this->return_tool_info ){ return $tool_info; }     
@@ -222,7 +226,7 @@ class TwitchPress_Tools {
     public function tool_plugin_displayerrors( $tool_parameters_array ) {
 
         $tool_info = array(
-            'title'       => __( 'Display Errors', 'multitool' ),
+            'title'       => __( 'Display Errors', 'twitchpress' ),
             'description' => __( 'A tool for developers that will display errors.', 'twitchpress' ),
             'version'     => '1.0',
             'author'      => 'Ryan Bayne',
@@ -234,6 +238,7 @@ class TwitchPress_Tools {
                 'displayerrors'    => array( 'title' => __( 'Display Errors', 'twitchpress' ) ),
                 'hideerrors' => array( 'title' => __( 'Hide Errors', 'twitchpress' ) ),
             ),
+            'function'    => __FUNCTION__
         );
               
         if( $this->return_tool_info ){ return $tool_info; }     
@@ -243,14 +248,63 @@ class TwitchPress_Tools {
         if( !isset( $tool_parameters_array['action'] ) ) { return; }
                                         
         if( $tool_parameters_array['action'] == 'displayerrors' ) {     
+            
             update_option( 'twitchpress_displayerrors', 'yes', true );
             TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsyes', 'Error display has been activated by the TwitchPress Display Errors tool. You can reverse this by going to the plugins menu, select Quick Tools, search for "Display Errors" and click on the Hide Errors button.', 'twitchpress' );
-            wp_safe_redirect( admin_url( 'tools.php?page=twitchpress-tools' ) );
+            twitchpress_redirect_tracking( admin_url( 'admin.php?page=twitchpress_tools' ), __LINE__, __FUNCTION__ );
+            exit;
+            
         } elseif( $tool_parameters_array['action'] == 'hideerrors' ) {                 
+            
             delete_option( 'twitchpress_displayerrors' );
-            wp_safe_redirect( admin_url( 'tools.php?page=twitchpress-tools' ) );
+            TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', 'Error display has been disabled by the TwitchPress Display Errors tool.', 'twitchpress' );            
+            twitchpress_redirect_tracking( admin_url( 'admin.php?page=twitchpress_tools' ), __LINE__, __FUNCTION__ );          
+            exit;
+            
         }
     } 
+    
+    /**
+    * Delete all trace data created by BugNet
+    * 
+    * @version 1.0
+    */
+    public function tool_delete_all_trace_transients() {
+        /**
+        * Description of values.
+        * 
+        * title       - give the tool a name.
+        * description - describe what the tool does.
+        * version     - tools must be versioned to give users warning
+        * author      - we have to know who to come to for help with a tool
+        * url         - link to a tutorial or other documentation
+        * category    - a way to group tools
+        * capability  - apply security using a core or custom capability
+        * option      - add option name if configuration required to use tool
+        */
+        $tool_info = array(
+            'title'       => __( 'Delete Cached Trace Data', 'multitool' ),
+            'description' => __( 'Deletes all trace data generated by BugNet and stored in WordPress transient caches.', 'multitool' ),
+            'version'     => '1.1',
+            'author'      => 'Ryan Bayne',
+            'plugin'      => 'TwitchPress',
+            'url'         => '',
+            'category'    => 'bugnet',
+            'capability'  => 'activate_plugins',
+            'option'      => null,
+            'function'    => __FUNCTION__
+        );
+        
+        if( $this->return_tool_info ){ return $tool_info; }     
+        
+        if( !current_user_can( $tool_info['capability'] ) ) { return; }
+        
+        // Get list of individual traces. 
+        global $bugnet;
+        $transient_list = $bugnet->handler_tracing->delete_all_trace_cache_data();
+        
+        TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', __( 'All BugNet Tracing data has been deleted from caches.', 'twitchpress' ), 'twitchpress' );            
+    }                                                
           
 }
 

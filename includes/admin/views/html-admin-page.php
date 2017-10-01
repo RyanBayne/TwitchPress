@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     $title = '';
     if( !isset( $_GET['listtable'] ) ) {
         // User did not click sub view so use first sub view data.
-        $title = array_values($tabs[ $current_tab ]['toolstabviews'])[0]['title'];
+        $title = array_values( $tabs[ $current_tab ]['toolstabviews'] )[0]['title'];
     } else {
         $title = $tabs[ $current_tab ]['toolstabviews'][ $_GET['twitchpressview'] ]['title'];    
     }

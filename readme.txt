@@ -1,20 +1,21 @@
 === TwitchPress ===
 Contributors: Ryan Bayne
-Donate link: https://www.patreon.com/zypherevolved
+Donate link: https://www.patreon.com/ryanbayne
 License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.2.5
+Stable tag: 1.5.0
+Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
                        
 == Description ==
 
-TwitchPress BETA is an adaptable solution for the creation of a Twitch service that can do anything Kraken allows. 
+TwitchPress is an adaptable solution for the creation of a Twitch service that can do anything Twitch.tv allows. 
 Marry your WordPress gaming site with your Twitch channel in everyway possible using the plugins extension system
-or create a site just to offer channel management services.
+or create a site that offersr channel management services to the public.
 
 = Core Features =
 The initial purpose of the free plugin is to share WP posts on Twitch channel feeds and collect feed updates
@@ -22,21 +23,14 @@ from Twitch.tv for publishing as new WordPress posts. All updates to the core wi
 and the plugins extension system. Using the extension system we can make TwitchPress and WP do anything possible
 with the Twitch API. 
 
-= New for 2017 =
-The plugin is still very new. The core plugin is highly reliable. 
-Free extensions are already being released but are also very new. 
-Please test well before using on a live site. 
-Please support the project, every share, like or contribution on GitHub
-will drive the project forward.
-
 = Links =                                                                
 *   <a href="https://twitchpress.wordpress.com" title="">Blog</a>
 *   <a href="https://github.com/RyanBayne/TwitchPress-Login-Extension" title="">GitHub</a>       
-*   <a href="https://twitter.com/ryan_r_bayne" title="Follow the projects Tweets.">Developers Twitter</a>     
-*   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">TwitchPress Twitter</a>     
-*   <a href="https://www.twitch.tv/zypherevolved" title="Follow my Twitch channel.">Authors Twitch</a>     
-*   <a href="https://discord.gg/NaRB3wE" title="Chat about TwitchPress on Discord.">Discord Chat</a>          
-*   <a href="https://www.patreon.com/zypherevolved" title="">Patreon Donations</a>     
+*   <a href="https://twitter.com/ryan_r_bayne" title="Follow the projects Tweets.">Developers Twitter</a
+*   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">TwitchPress Twitter</a>
+*   <a href="https://www.twitch.tv/zypherevolved" title="Follow my Twitch channel.">Authors Twitch</a>   
+*   <a href="https://discord.gg/NaRB3wE" title="Chat about TwitchPress on Discord.">Discord Chat</a>     
+*   <a href="https://www.patreon.com/ryanbayne" title="">Patreon Pledges</a>     
 *   <a href="https://www.paypal.me/zypherevolved" title="">PayPal Donations</a>       
 
 = Features List = 
@@ -72,78 +66,53 @@ Translator needed to localize the Channel Solution for Twitch.
 
 == Upgrade Notice ==
 
-Please complete the Setup Wizard again. You will find it in the Help tab
-on the plugins own settings page. 
+Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
-= 1.2.6 NOT RELEASED =
-* NEW - Service Switches options added.
-* DEV - More changes made to accomodate the new Ultimate Member extension.
-* DEV - Setup Wizard now checks for an existing channel post before attempting to create one. 
+= 1.5.1 NOT RELEASED = 
+* DEV = BugNet activation switch removed. Individual handler switches should be used to reduce logging activity. 
 
-= 1.2.5 = 
-* FIX - Option category menus broken as they were still pointing to "twitchpress-settings" slug.
+= 1.5.0 = 
+* FIX - If BugNet is deactivated it causes error in the Twitch API because the library is not included within the core file if BugNet switched off. 
 
-= 1.2.4 = 
-* FIX - Forwarding URL in start_twitch_session_admin() was causing a blank settings area in Twitch API tab. 
-* DEV - class.twitchpress-settings-kraken.php improved to allow extension to add section. 
-* DEV - New twitchpress_is_user_authorized() function makes it easier for all extensions to check the same user meta values for an authorized Twitch session.
-* DEV - TwitchPress Sync Extension BETA added to list of plugins for quick install during Setup Wizard.
-* DEV - As a temporary approach the sites official (default) Twitch account is applied as the WP users own account i.e. their personal use of the site will use that same account, their WP profile will display data from that channel.
-* NEW - General settings page.
-* NEW - Option to delete everything including data, when plugin is deleted. See Plugin Removal section in General Settings. 
-* DEV - Now including background-process.php and async-request.php in the main file. 
-* DEV - Plugin menu is loaded differently: in a manner that allows multiple post types to be added to it. 
-* NEW - Channels custom post type. This will be a method of managing channels with the option of displaying them. 
-* DEV - Channel feed sync to WordPress is much better with a more complex connection between posts, channels and owners. 
-* DEV - Activating the channel to WordPress feed syncing will now create a new CRON job (scheduled task). 
-* DEV - Removed option for updating Twitch feed entries pending further development.
-* DEV - Removed option for updating WordPress posts when a Twitch feed item changes, pending further development. 
-* DEV - A few lines removed from developertoolbar_uninstall_settings() whicch did not appear to have a purpose. 
-* FIX - Function twitchpress_returning_url_nonced() now builds URL in a way that allows nonce check to pass. 
-* DEV - Removed the mainviews folder and contents deleted as it was not yet in use.
-* NEW - New Tools view - created using a WordPress core table for an approach that allows endless expansion. 
-* DEV - Channel feed item ID is now queried straight after WordPress posts to Twitch and the item ID is stored in the original posts meta under "twitchpress_feed_item_id"
+= 1.4.3 = 
+* DEV - Changed "Create a Post" button to "Post to Twitch" for clarity on post type. 
+* DEV - HTTPDStatus log entries will only happen if Twitch returns something other than a 200 code. 
+* NEW - Can now share any post type. 
+* DEV - BugNet log entries are now level 100 by default meaning this level alone can be deactivated. Allows focus on higher level log entries.
+* FIX - Error on daily log view when no logging has happened for the day resulting in no log file yet. 
 
-= 1.2.3 =
-* DEV - TwitchPress_Settings_Permissions renamed to TwitchPress_Settings_Permissions
-* DEV - Default footer message will no longer be displayed. 
-* DEV - New settings views are being added, they will be hidden until active extensions require them. 
-* DEV - Internationalizing (i18n) files added for the first time. 
-* DEV - Updated scopes description to insist on strict selection of required scopes only.
-* DEV - get_global_accepted_scopes() had a "twitch_scope" string changed to "twitchpress_scope".
-* DEV - CSV 2 POST plugin removed from extensions list. 
-* DEV - The first official extension "TwitchPress Login Extension" added to extensions list. 
-* DEV - New function twitchpress_validate_code() applied to administrator_main_account_listener().
-* DEV - Applied "$_SERVER['REQUEST_METHOD'] !== 'GET'" to $_GET listeners.
-* DEV - Updated user-friendly descriptions in scopes(). 
-* DEV - added "openid" scope to the scopes() function. 
-* DEV - The $twitch_scopes variable has been updated with openid in TWITCHPRESS_Kraken5_Interface()
-* DEV - Removed the getUserObject() function which has never been used and is no longer usable.
+= 1.4.2 = 
+* DEV - Added new var_dump_twitchpress() function which only dumps when specified user is making the request. 
+* DEV - Add new wp_die_twitchpress() function which only works if specific user makes request. 
 
-= 1.2.2 =
-* DEV - Notices class improved to allow easier creation of all class (color) of notices. 
-* DEV - Changed Senior Developer role (seniordeveloper) to TwitchPress Developer (twitchpressdeveloper)
-* DEV - The code_twitchpress capability is no longer applied to administrators on installation.
-* DEV - New twitchpressdevelopertoolbar capability added and is only assigned to the administrator with ID:1 and TwitchPress Developers.
-* NEW - TwitchPress Developers toolbar now available. It will only show for users with "TwitchPress Developer" role or custom capability applied to an admin account.
-* NEW - Toolbar option for uninstalling all TwitchPress options.
-* DEV - Renamed twitchpress_main_channel to twitchpress_main_channel_name
-* DEV - New option "twitchpress_main_channel_id"
-* FIX - Channel does not exist situation reported 27th June fixed 28th June.
-* DEV - Notice will now appear when API credentials are missing, encouraging user to complete the Setup Wizard. 
-* DEV - Added esc_url() to second_level_configuration_options()
-* DEV - Setup Wizard green styling replaced with purple. 
+= 1.4.1 = 
+* NEW - Setting for BugNet for entry of user ID. Errors will only be displayed for the entered user. 
 
-= 1.2.1 =
-* FIX - Incorrect class name prevented plugin activation.  
+= 1.4.0 =
+* FIX - Uninstallation class is now included in the uninstall.php file fixing uninstall error. 
+* DEV - Added TwitchPress UM Extension to the extensions list in Setup Wizard. 
+* NEW - Option added to disable system logging in BugNet when performing any logging to the plugins own log files. 
+* DEV - twitchpress_redirect_tracking() now always adds a new value to the URL as a measure to prevent looping. 
+* DEV - twitchpress_redirect_tracking() refuses redirect if "twitchpressredirected=1" is already in URL.
+* DEV - System log entries are not prepended with "TwitchPress: " and "TwitchPress Error: ". 
 
-= 1.2.0 =
-* NEW - Setup wizard making installation clearer and more professional.
-* NEW - Extensions system so developers can add features quickly.
-* NEW - Settings pages now use the WordPress Options API.
-* VER - Twitch API Kraken Version 5 now supported.
+= 1.3.18 = 
+* DEV - Logging greatly increased in Kraken5 (Twitch API library for WordPress) - using BugNet for WordPress
+* DEV - All generateError() replaced with BugNet logging which will increase logging for most API calls. 
+* NEW - Daily Log tab in Data area displays a more constant history than traces which are primarily designed for investigations.
+* FIX - Subscription query now relies on a returned array and not a status which was causing problems.
+* DEV - Removed get_subscribers_plan() from Kraken library as it is no longer needed. 
 
+= 1.3.17 =
+* DEV - Now displaying URL on TWitch API Requests table.
+
+= 1.3.16 =
+* DEV - New core function for validating Twitch sub plan string. 
+
+= 1.3.15 = 
+* FIX - Unknown bug broke the Kraken5 library and required rollback. 
+    
 = When To Update = 
 
 Browse the changes log and decide if an update is required. There is nothing wrong with skipping version if it does not
@@ -156,13 +125,10 @@ in software development and it is why we need to make preparations that allow re
 == Contributors ==
 Donators, GitHub contributors and developers who support me when working on TwitchPress will be listed here. 
 
-* IBurn36360 - Author of the main Twitch API class on GitHub.
-* Automattic - The plugins initial design is massively based on their work.  
-* Ignacio Cruz at WPMUDEV
-* Ashley Rich (A5shleyRich)
-* Igor Vaynberg
-* M. Alsup
-* Amir-Hossein Sobhi
+* nookyyy      - A popular Twitch.tv streamer who done half of the testing.
+* IBurn36360   - Author of the main Twitch API class on GitHub.
+* Automattic   - The plugins initial design is massively based on their work.  
+* Ashley Rich  - I used a great class by Ashley (Username A5shleyRich).
 
 == Version Numbers and Updating ==
 

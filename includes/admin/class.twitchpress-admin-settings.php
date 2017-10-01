@@ -47,10 +47,10 @@ class TwitchPress_Admin_Settings {
     */
     private static $defaulttab = 'general';
     
-    private static $defaultsection = null;
-
     /**
      * Include the settings page classes.
+     * 
+     * @version 1.2
      */
     public static function get_settings_pages() {
         if ( empty( self::$settings ) ) {
@@ -61,13 +61,8 @@ class TwitchPress_Admin_Settings {
             $settings[] = include( 'settings/class.twitchpress-settings-general.php' );
             $settings[] = include( 'settings/class.twitchpress-settings-feeds.php' );
             $settings[] = include( 'settings/class.twitchpress-settings-kraken.php' ); 
-            
-            // These core views are only displayed when needed.
-            // These default views encourage extensions to keep within expected categories.
-            if( defined( 'TWITCHPRESS_SHOW_SETTINGS_USERS' ) ) {
-                $settings[] = include( 'settings/class.twitchpress-settings-users.php' );    
-            }                                 
-            
+            $settings[] = include( 'settings/class.twitchpress-settings-users.php' );    
+
             if( defined( 'TWITCHPRESS_SHOW_SETTINGS_BOT' ) ) {
                     
             }
@@ -159,6 +154,8 @@ class TwitchPress_Admin_Settings {
      * Settings page.
      *
      * Handles the display of the main twitchpress settings page in admin.
+     * 
+     * @version 1.2
      */
     public static function output() {
         global $current_section, $current_tab, $twitchpress_default_section;
@@ -178,8 +175,8 @@ class TwitchPress_Admin_Settings {
 
         // Get current tab/section
         $current_tab     = empty( $_GET['tab'] ) ? self::$defaulttab : sanitize_title( $_GET['tab'] );
-        $current_section = empty( $_REQUEST['section'] ) ? '' : sanitize_title( $_REQUEST['section'] );
-             
+        $current_section = empty( $_REQUEST['section'] ) ? 'default' : sanitize_title( $_REQUEST['section'] );
+           
         // Save settings if data has been posted
         if ( ! empty( $_POST ) ) {
             self::save();

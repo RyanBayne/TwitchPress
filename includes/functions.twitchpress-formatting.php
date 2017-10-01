@@ -100,7 +100,6 @@ function twitchpress_trim_string( $string, $chars = 200, $suffix = '...' ) {
     return $string;
 }     
 
-
 /**
  * Clean variables using sanitize_text_field. Arrays are cleaned recursively.
  * Non-scalar values are ignored.
@@ -113,4 +112,51 @@ function twitchpress_clean( $var ) {
     } else {
         return is_scalar( $var ) ? sanitize_text_field( $var ) : $var;
     }
+}
+
+/**
+* Pass a template and replace {{placeholders}} with data. 
+* 
+* @param mixed $replacements
+* @param mixed $template
+* 
+* @version 1.0
+*/
+function twitchpress_parse_template($replacements, $template) 
+{
+    return preg_replace_callback('/{{(.+?)}}/', function($matches) use ($replacements) 
+    {
+        return $replacements[$matches[1]];
+    }, $template);
+}
+
+/**
+* Edits content (usually post) for publishing on a Twitch
+* channel feed. 
+* 
+* @returns string always 
+* @version 1.0
+*/
+function twitchpress_prepare_post_to_feed_content( $content ) {
+    
+    // Are prepend values to be added? 
+    if( 'yes' === get_option( 'twitchpress_apply_prepend_value_all_posts' ) ) {
+        if( $prepend_value = get_option( 'twitchpress_prepend_value_all_posts' ) ) {
+            if( is_string( $prepend_value ) ) {
+                $content = $prepend_value . ' ' . $content;    
+            }    
+        }    
+    }
+    
+    // Are append values to be added? 
+    if( 'yes' === get_option( 'twitchpress_apply_appending_value_all_posts' ) ) {
+        if( $append_value = get_option( 'twitchpress_prepend_value_all_posts' ) ) {
+            if( is_string( $append_value ) ) {
+                $content = $append_value . ' ' . $content;    
+            }    
+        }    
+    }    
+    
+    // We will finish by replacing placeholders. 
+    return twitchpress_parse_template( array(), $content );
 }

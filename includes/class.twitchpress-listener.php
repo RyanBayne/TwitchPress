@@ -62,7 +62,7 @@ class TwitchPress_Listener {
             return;    
         }
 
-        // Start of TwitchPress administrator only requests.
+        // Developer Toolbar Actions - First call 
         self::developertoolbar_admin_actions();                   
     } 
     
@@ -75,6 +75,11 @@ class TwitchPress_Listener {
         
         if( !isset( $_GET['twitchpressaction'] ) ) { 
             return; 
+        }
+
+        // Varify Nonce
+        if( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $_GET['twitchpressaction'] ) ) {
+            return;    
         }
 
         switch ( $_GET['twitchpressaction'] ) {

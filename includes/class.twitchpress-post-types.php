@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Methods for handling all post types including "post", "page" and 
  * registrating custom post types.
@@ -8,14 +13,6 @@
  * @package   TwitchPress/Includes/Post_Types
  * @category  Class
  * @author    Ryan Bayne
- */
-
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
-
-/**
- * TwitchPress_Post_types Class.
  */
 class TwitchPress_Post_types {
 
@@ -28,6 +25,9 @@ class TwitchPress_Post_types {
         add_action( 'init', array( __CLASS__, 'register_post_status' ), 9 );
         add_filter( 'rest_api_allowed_post_types', array( __CLASS__, 'rest_api_allowed_post_types' ) );
         add_action( 'twitchpress_flush_rewrite_rules', array( __CLASS__, 'flush_rewrite_rules' ) );
+        add_action( 'add_meta_boxes', array( __CLASS__, 'add_custom_boxes' ) );
+        add_action( 'save_post', array( __CLASS__, 'save_twitchpress_post_sharing_options' ) );  
+        add_action( 'post_submitbox_misc_actions', array( __CLASS__, 'post_submitbox' ) );
     }
 
     /**
@@ -77,7 +77,7 @@ class TwitchPress_Post_types {
                 'hierarchical'          => true,
                 'label'                 => __( 'Categories', 'twitchpress' ),
                 'labels' => array(
-                        'name'              => __( 'Twitch Feed categories', 'twitchpress' ),
+                        'name'              => __( 'Twitch Feed Categories', 'twitchpress' ),
                         'singular_name'     => __( 'Category', 'twitchpress' ),
                         'menu_name'         => _x( 'Categories', 'Admin menu name', 'twitchpress' ),
                         'search_items'      => __( 'Search categories', 'twitchpress' ),
@@ -106,7 +106,7 @@ class TwitchPress_Post_types {
                 'hierarchical'          => false,
                 'label'                 => __( 'Twitch Feed tags', 'twitchfeed' ),
                 'labels'                => array(
-                        'name'                       => __( 'Twitch Feed tags', 'twitchpress' ),
+                        'name'                       => __( 'Twitch Feed Tags', 'twitchpress' ),
                         'singular_name'              => __( 'Tag', 'twitchpress' ),
                         'menu_name'                  => _x( 'Tags', 'Admin menu name', 'twitchpress' ),
                         'search_items'               => __( 'Search tags', 'twitchpress' ),
@@ -152,7 +152,7 @@ class TwitchPress_Post_types {
                             'name'                  => __( 'Twitch Feed Entries', 'twitchpress' ),
                             'singular_name'         => __( 'Twitch Feed Entry', 'twitchpress' ),
                             'menu_name'             => _x( 'TwitchPress', 'Admin menu name', 'twitchpress' ),
-                            'add_new'               => __( 'Create a post', 'twitchpress' ),
+                            'add_new'               => __( 'Post to Twitch', 'twitchpress' ),
                             'add_new_item'          => __( 'Create Twitch Feed Post', 'twitchpress' ),
                             'edit'                  => __( 'Edit', 'twitchpress' ),
                             'edit_item'             => __( 'Edit TwitchPress post', 'twitchpress' ),
@@ -231,6 +231,8 @@ class TwitchPress_Post_types {
                     'show_in_nav_menus'   => false,
                     'show_in_rest'        => true,
                     'show_in_menu'        => false,
+                    'map_meta_cap'        => true,
+                    'capability_type'     => 'post'
                 )
             )
         );
@@ -268,7 +270,6 @@ class TwitchPress_Post_types {
         flush_rewrite_rules();
     }
 
-
     /**
      * Allow twitchfeed posts in API controlled by JetPack.
      *
@@ -280,6 +281,92 @@ class TwitchPress_Post_types {
 
         return $post_types;
     }
+    
+    /**
+    * Add all custom meta boxes. 
+    * 
+    * @version 1.0
+    */
+    public static function add_custom_boxes() {
+        global $post;
+        
+        // Display checkbox option to share post content to Twitch.
+        $post_type = get_post_type( $post );
+        
+        // Should this post-type get Twitch sharing controls? 
+        if( 'yes' == get_option( 'twitchpress_shareable_posttype_' . $post_type ) ) {
+            add_meta_box(
+                'twitchpress_post_sharing_options', // Unique ID
+                __( 'Twitch Channel Feed', 'twitchpress' ),  
+                array( __CLASS__, 'html_twitchpress_post_sharing_options' ),        
+                $post_type // Post type
+            );
+        }
+    } 
+    
+    /**
+    * Options for sharing post content to Twitch feed.
+    * 
+    * @param mixed $post
+    * 
+    * @version 1.0
+    */
+    public static function html_twitchpress_post_sharing_options($post) {
+        
+        /*
+        ?>
+        <label for="twitchpress_whentoshare"><?php _e( 'When should the content be shared?', 'twitchpress' ); ?></label>
+        <select name="twitchpress_whentoshare" id="twitchpress_whentoshare" class="postbox">
+            <option value="">Select something...</option>
+            <option value="publishing">ASAP</option>
+        </select>
+        <?php
+        */
+        
+    }
+ 
+    /**
+    * Saves and processes share to feed options.
+    * 
+    * @param mixed $post_id
+    * 
+    * @version 1.0
+    */
+    public static function save_twitchpress_post_sharing_options($post_id){
+        
+        /*
+        if ( array_key_exists( 'twitchpress_whentoshare', $_POST ) ) {
+            update_post_meta(
+                $post_id,
+                '_twitchpress_whentoshare',
+                $_POST['twitchpress_whentoshare']
+            );
+        }
+        */
+        
+        return $post_id;
+    }  
+    
+    /**
+    * Display custom fields in the publish box. 
+    * 
+    * @version 1.0
+    */
+    public static function post_submitbox() {
+        global $post;
+        
+        // Display checkbox option to share post content to Twitch.
+        $post_type = get_post_type($post);
+        $twitch_share = get_option( 'twitchpress_shareable_posttype_' . $post_type );
+        if ( $twitch_share == 'yes' ) {
+            echo '<div class="misc-pub-section misc-pub-section-last" style="border-top: 1px solid #eee;">';
+            wp_nonce_field( plugin_basename(__FILE__), 'nonce_twitchpress_share_post_option' );
+            echo '<input type="checkbox" name="twitchpress_share_post_option" id="twitchpress_share_post_option" value="share" /> <label for="twitchpress_share_post_option">Share to Twitch Feed</label><br />';
+            echo '</div>';
+        }  
+
+    }
+    
 }
 
 TwitchPress_Post_types::init();

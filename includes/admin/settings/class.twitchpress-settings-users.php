@@ -48,7 +48,7 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
         // needs settings on this tab. 
         $this->sections_array = array(
         
-            'publicserviceswitches' => __( 'Service Switches', 'twitchpress' ),
+            'default' => __( 'Service Switches', 'twitchpress' ),
             //'publicservicepermissions'  => __( 'Service Permissions', 'twitchpress' ),
 
         );
@@ -80,20 +80,10 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
      * @return array
      */
     public function get_settings( $current_section = '' ) {
-        
-        // Establish a section to display rather than have a default.
-        $sections_array = self::get_sections(); 
-        $display_section = null;
         $settings = array();
-
-        if( !$current_section ) { 
-            $display_section = array_keys($sections_array)[0];
-        } else {
-            $display_section = $current_section;
-        }
         
         // Switch public services on and off easily/quickly.
-        if ( 'publicserviceswitches' == $display_section ) {
+        if ( 'default' == $current_section ) {
 
             $settings = apply_filters( 'twitchpress_user_publicserviceswitches_settings', array(
             
@@ -170,7 +160,7 @@ class TwitchPress_Settings_Users extends TwitchPress_Settings_Page {
             ));
             
         // Pair public services with roles and capabilities.
-        } elseif( 'publicservicepermissions' == $display_section ) {
+        } elseif( 'publicservicepermissions' == $current_section ) {
             
             return;// REMOVE WHEN SECTION READY
                 

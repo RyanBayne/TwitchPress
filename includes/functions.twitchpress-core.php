@@ -160,10 +160,8 @@ function twitchpress_get_permalink_structure() {
 }
 
 /**
-* Log an error with extra information.
-* 
-* Feel free to use error_log() on its own however keep in mind that
-* 
+* Log a PHP error with extra information. Bypasses any WP configuration.
+
 * Common Use: twitchpress_error( 'DEEPTRACE', 0, null, null, __LINE__, __FUNCTION__, __CLASS__, time() );
 * 
 * @version 1.2
@@ -225,27 +223,29 @@ function twitchpress_returning_url_nonced( $new_parameters_array, $action, $spec
     return $url;
 } 
 
-/**
- * What type of request is this?
- *
- * Functions and constants are WordPress core. This function will allow
- * you to avoid large operations or output at the wrong time.
- * 
- * @param  string $type admin, ajax, cron or frontend.
- * @return bool
- */
-function twitchpress_is_request( $type ) {
-    switch ( $type ) {
-        case 'admin' :
-            return is_admin();
-        case 'ajax' :
-            return defined( 'DOING_AJAX' );
-        case 'cron' :
-            return defined( 'DOING_CRON' );
-        case 'frontend' :
-            return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
-    }
-} 
+if( !function_exists( 'twitchpress_is_request' ) ) {
+    /**
+     * What type of request is this?
+     *
+     * Functions and constants are WordPress core. This function will allow
+     * you to avoid large operations or output at the wrong time.
+     * 
+     * @param  string $type admin, ajax, cron or frontend.
+     * @return bool
+     */
+    function twitchpress_is_request( $type ) {
+        switch ( $type ) {
+            case 'admin' :
+                return is_admin();
+            case 'ajax' :
+                return defined( 'DOING_AJAX' );
+            case 'cron' :
+                return defined( 'DOING_CRON' );
+            case 'frontend' :
+                return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
+        }
+    } 
+}
 
 /**
 * Validate the value passed as a $_GET['code'] prior to using it.
@@ -322,10 +322,10 @@ function twitchpress_was_valid_token_returned( $returned_value ){
 * @version 1.0
 */
 function twitchpress_is_user_authorized( $user_id ) { 
-    if( !get_user_meta( $user_id, 'twitchpress_code' ) ) {
+    if( !get_user_meta( $user_id, 'twitchpress_code', true ) ) {
         return false;
     }    
-    if( !get_user_meta( $user_id, 'twitchpress_token' ) ) {
+    if( !get_user_meta( $user_id, 'twitchpress_token', true ) ) {
         return false;
     }    
     return true;
@@ -346,11 +346,11 @@ function twitchpress_get_user_twitch_credentials( $user_id ) {
         return false;
     } 
     
-    if( !$code = get_user_meta( $user_id, 'twitchpress_code', true ) ) {  
+    if( !$code = twitchpress_get_user_code( $user_id ) ) {  
         return false;
     }
     
-    if( !$token = get_user_meta( $user_id, 'twitchpress_token', true ) ) {  
+    if( !$token = twitchpress_get_user_token( $user_id ) ) {  
         return false;
     }
 
@@ -358,6 +358,14 @@ function twitchpress_get_user_twitch_credentials( $user_id ) {
         'code'  => $code,
         'token' => $token
     );
+}
+
+function twitchpress_get_user_code( $user_id ) {
+    return get_user_meta( $user_id, 'twitchpress_code', true );    
+}
+
+function twitchpress_get_user_token( $user_id ) {
+    return get_user_meta( $user_id, 'twitchpress_token', true );    
 }
 
 /**
@@ -634,10 +642,12 @@ function twitchpress_get_main_channels_postid() {
 * Check if giving post name (slug) already exists in wp_posts.
 * 
 * @param mixed $post_name
+* 
+* @version 1.0
 */
 function twitchpress_does_post_name_exist( $post_name ) {
     global $wpdb;
-    $result = $wpdb->get_var( $wpdb->prepare( "SELECT post_name FROM {$wpdb->prefix}_posts WHERE post_name = '%s'", $post_name ), 'ARRAY_A' );
+    $result = $wpdb->get_var( $wpdb->prepare( "SELECT post_name FROM {$wpdb->prefix}posts WHERE post_name = '%s'", $post_name ), 'ARRAY_A' );
     if( $result ) {
         return true;
     } else {
@@ -725,10 +735,106 @@ function twitchpress_get_channel_post( $channel_id ) {
     
     // perform the query
     $query = new WP_Query( $args );
-                             var_dump($query->posts);
+                            
     if ( !empty( $query->posts ) ) {     
         return $query->posts[0]->ID;
     }
 
     return false;     
+}
+
+/**
+* Checks if the giving post type is one that
+* has been permitted for sharing to Twitch channel feeds.
+* 
+* @version 1.0
+* 
+* @param string $post_type
+*/
+function twitchpress_is_posttype_shareable( $post_type ) {
+    if( get_option( 'twitchpress_shareable_posttype_' . $post_type ) ) {
+        return true;
+    }
+    return false;
+}
+
+/**
+* Handles redirects with log entries and added arguments to URL for 
+* easy visual monitoring.
+* 
+* @param mixed $url
+* @param mixed $line
+* @param mixed $function
+* @param mixed $file
+* 
+* @version 1.2
+*/
+function twitchpress_redirect_tracking( $url, $line, $function, $file = '' ) {
+    global $bugnet;
+
+    $redirect_counter = 1;
+    
+    // Refuse the redirect and log if twitchpressredirected=1 in giving $url. 
+    if( strstr( $url, 'twitchpressredirected=1' ) ) {
+        $bugnet->log_error( __FUNCTION__, __( 'Possible redirect loop in progress. The giving URL was used to redirect the visitor already.', 'twitchpress' ), array(), true );    
+        ++$redirect_counter;
+    }elseif( strstr( $url, 'twitchpressredirected=2' ) ){
+        $bugnet->log_error( __FUNCTION__, __( 'Redirect loop in progress. The giving URL was used twice.', 'twitchpress' ), array(), true );    
+        return;
+    }
+    
+    // Tracking adds more values to help trace where redirect was requested. 
+    if( get_option( 'twitchress_redirect_tracking_switch' ) == 'yes' ) {
+        $url = add_query_arg( array( 'redirected-line' => $line, 'redirected-function' => $function ), $url );
+ 
+        $bugnet->trace(
+            'twitchpressredirects',
+            $line,
+            $function,
+            $file,
+            false,
+            __( 'TwitchPress System Redirect Visitor To: ' . $url, 'twitchpress' )           
+        );
+    }    
+
+    // Add twitchpressredirected to show that the URL has had a redirect. 
+    // If it ever becomes normal to redirect again, we can increase the integer.
+    wp_safe_redirect( add_query_arg( array( 'twitchpressredirected' => $redirect_counter ), $url ) );
+    exit;
+}
+
+/**
+* Determines if giving value is a valid Twitch subscription plan. 
+* 
+* @param mixed $value
+* 
+* @returns boolean true if the $value is valid.
+* 
+* @version 1.0
+*/
+function twitchpress_is_valid_sub_plan( $value ){
+    $sub_plans = array( 'prime', 1000, 2000, 3000 );
+    if( !is_string( $value ) && !is_numeric( $value ) ){ return false;}
+    if( is_string( $value ) ){ $value = strtolower( $value ); }
+    if( in_array( $value, $sub_plans ) ) { return true;}
+    return false;
+}
+
+/**
+* Generates a random 14 character string.
+* 
+* @version 1.0
+*/
+function twitchpress_random14(){ 
+    return rand( 10000000000000, 99999999999999 );   
+}
+
+function var_dump_twitchpress( $var ) {
+    $dumper = new TwitchPress_Error_Dump();
+    $dumper->var_dump( esc_html( $var ) );
+}
+
+function wp_die_twitchpress( $html ) {
+    $dumper = new TwitchPress_Error_Dump();
+    $dumper->wp_die( esc_html( $html ) );
 }
