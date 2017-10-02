@@ -4,7 +4,7 @@
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch stream and channel management services to WordPress. 
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com
  * Requires at least: 4.4
@@ -41,7 +41,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.5.0';
+    public $version = '1.5.1';
 
     /**
      * Minimum WP version.
@@ -167,7 +167,7 @@ final class WordPressTwitchPress {
         if ( ! defined( 'TWITCHPRESS_DISCORD' ) ) {           define( 'TWITCHPRESS_DISCORD', 'https://discord.gg/NaRB3wE' ); }
        
         // Author (social) constants - can act as default when support constants are false.                                                                                                              
-        if ( ! defined( 'TWITCHPRESS_AUTHOR_HOME' ) ) {       define( 'TWITCHPRESS_AUTHOR_HOME', 'https://www.linkedin.com/in/ryanrbayne/' ); }
+        if ( ! defined( 'TWITCHPRESS_AUTHOR_HOME' ) ) {       define( 'TWITCHPRESS_AUTHOR_HOME', 'https://ryanbayne.wordpress.com' ); }
         if ( ! defined( 'TWITCHPRESS_AUTHOR_FORUM' ) ) {      define( 'TWITCHPRESS_AUTHOR_FORUM', false ); }
         if ( ! defined( 'TWITCHPRESS_AUTHOR_TWITTER' ) ) {    define( 'TWITCHPRESS_AUTHOR_TWITTER', 'http://www.twitter.com/Ryan_R_Bayne' ); }
         if ( ! defined( 'TWITCHPRESS_AUTHOR_FACEBOOK' ) ) {   define( 'TWITCHPRESS_AUTHOR_FACEBOOK', 'https://www.facebook.com/ryanrbayne' ); }
@@ -282,11 +282,28 @@ final class WordPressTwitchPress {
     */
     public function output_errors() {
         // Display Errors Tool            
-        if( get_option( 'twitchpress_displayerrors' ) == 'yes' ) { 
-            include_once( 'includes/class.twitchpress-debug.php' );           
-        }        
+        if( !twitchpress_current_user_allowed() ) { return false; }
+
+        ini_set( 'display_errors', 1 );
+        error_reporting(E_ALL);
+        
+        add_action( 'print_footer_scripts', array( $this, 'show_errors' ), 1 );
+        add_action( 'print_footer_scripts', array( $this, 'print_errors' ), 1 );                    
     }
 
+    public static function show_errors() {
+        global $wpdb; 
+        
+        _e( '<h1>TwitchPress Error Dump</h1>', 'twitchpress' );
+
+        $wpdb->show_errors();   
+    }
+    
+    public static function print_errors() {
+        global $wpdb;       
+        $wpdb->print_error();    
+    }
+        
     /**
      * Get the plugin url.
      * @return string

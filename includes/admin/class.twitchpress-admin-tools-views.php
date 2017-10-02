@@ -44,7 +44,7 @@ class TwitchPress_Admin_Tools_Views {
             'title'  => __( 'Quick Tools', 'twitchpress' ),
             'toolstabviews' => array(
                 "tools_all" => array(
-                    'title'       => __( 'Default Items', 'twitchpress' ),
+                    'title'       => __( 'Quick Tools Table', 'twitchpress' ),
                     'description' => '',
                     'hide_title'  => true,
                     'callback'    => array( __CLASS__, 'get_toolstabview' )

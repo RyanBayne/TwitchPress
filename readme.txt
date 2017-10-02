@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.8
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -69,8 +69,12 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
-= 1.5.1 NOT RELEASED = 
-* DEV = BugNet activation switch removed. Individual handler switches should be used to reduce logging activity. 
+= 1.5.1 = 
+* DEV - BugNet activation switch removed. Individual handler switches should be used to reduce logging activity. 
+* DEV - Deleted debug class file after migrating functions to core files. 
+* DEV - Error dumps are now done in footer to prevent header output errors.
+* DEV - Final step in setup wizard updated with links and "Contact Ryan" changed to "Support". 
+* DEV - Example redirect URL in setup wizard is now based on the actual site domain using get_site_url(). 
 
 = 1.5.0 = 
 * FIX - If BugNet is deactivated it causes error in the Twitch API because the library is not included within the core file if BugNet switched off. 

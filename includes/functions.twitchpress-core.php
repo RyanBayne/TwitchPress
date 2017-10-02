@@ -830,11 +830,39 @@ function twitchpress_random14(){
 }
 
 function var_dump_twitchpress( $var ) {
-    $dumper = new TwitchPress_Error_Dump();
-    $dumper->var_dump( esc_html( $var ) );
+    if( !bugnet_current_user_allowed() ) { return false; }
+    echo '<pre>'; var_dump( $var ); echo '</pre>';
 }
 
 function wp_die_twitchpress( $html ) {
-    $dumper = new TwitchPress_Error_Dump();
-    $dumper->wp_die( esc_html( $html ) );
+    if( !twitchpress_current_user_allowed() ){ return; }
+    wp_die( esc_html( $html ) ); 
+}
+
+/**
+* Checks if the current user is permitted to view 
+* error dumps for the entire blog.
+* 
+* Assumes the BugNet library.
+* 
+* @version 1.0
+*/
+function twitchpress_current_user_allowed() {
+    if( twitchpress_is_background_process() ) { 
+        return false; 
+    }        
+    
+    if( !get_option( 'twitchpress_displayerrors' ) || get_option( 'twitchpress_displayerrors' ) !== 'yes' ) {
+        return false;
+    }
+
+    if( !current_user_can( 'activate_plugins' ) ) {
+        return false;
+    }
+    
+    if( get_current_user_id() != get_option( 'bugnet_error_dump_user_id') ) {
+        return false;    
+    }   
+    
+    return true;
 }

@@ -267,7 +267,7 @@ class TwitchPress_Admin_Setup_Wizard {
                     <th scope="row"><label for="twitchpress_main_redirect_uri"><?php _e( 'Redirect URI', 'twitchpress' ); ?></label></th>
                     <td>
                         <input type="text" id="twitchpress_main_redirect_uri" name="twitchpress_main_redirect_uri" class="input-text" value="<?php echo get_option( 'twitchpress_main_redirect_uri' );?>" />
-                        <label for="twitchpress_main_redirect_uri"><?php _e( 'example: http://www.yourdomain.pro/twitchservices', 'twitchpress' ); ?></label>
+                        <label for="twitchpress_main_redirect_uri"><?php echo __( 'example: ', 'twitchpress' ) . get_site_url(); ?></label>
                     </td>
                 </tr>
                 <tr>
@@ -986,6 +986,8 @@ class TwitchPress_Admin_Setup_Wizard {
     
     /**
      * Final step.
+     * 
+     * @version 2.0
      */
     public function twitchpress_setup_ready() {
         $this->twitchpress_setup_ready_actions();?>
@@ -1000,12 +1002,14 @@ class TwitchPress_Admin_Setup_Wizard {
             </div>
             <div class="twitchpress-setup-next-steps-last">
             
-                <h2><?php _e( 'Contact Ryan', 'twitchpress' ); ?></h2>
+                <h2><?php _e( 'Support', 'twitchpress' ); ?></h2>
                                                            
                 <a href="<?php echo TWITCHPRESS_GITHUB; ?>"><?php _e( 'GitHub', 'twitchpress' ); ?></a>
                 <a href="<?php echo TWITCHPRESS_DISCORD; ?>"><?php _e( 'Discord', 'twitchpress' ); ?></a>
                 <a href="https://twitter.com/TwitchPress"><?php _e( 'Twitter', 'twitchpress' ); ?></a>
-
+                <a href="<?php echo TWITCHPRESS_AUTHOR_HOME; ?>"><?php _e( 'Blog', 'twitchpress' ); ?></a>
+                <a href="<?php echo TWITCHPRESS_AUTHOR_DONATE; ?>"><?php _e( 'Patreon', 'twitchpress' ); ?></a>
+     
             </div>
         </div>
         <?php
