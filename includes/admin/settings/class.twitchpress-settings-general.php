@@ -207,7 +207,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Activate Events Service', 'twitchpress' ),
                     'id'              => 'bugnet_activate_events',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -217,7 +217,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Activate Logging Service', 'twitchpress' ),
                     'id'              => 'bugnet_activate_log',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -251,7 +251,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'title'           => __( 'Activate/Disable Levels', 'twitchpress' ),
                     'desc'            => __( 'Emergency Level Events', 'twitchpress' ),
                     'id'              => 'bugnet_levelswitch_emergency',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'start',
                     'show_if_checked' => 'option',
@@ -261,7 +261,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Serious Alerts', 'twitchpress' ),
                     'id'              => 'bugnet_levelswitch_alert',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -271,7 +271,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Critical Faults', 'twitchpress' ),
                     'id'              => 'bugnet_levelswitch_critical',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -281,7 +281,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Errors', 'twitchpress' ),
                     'id'              => 'bugnet_levelswitch_error',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -291,7 +291,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Important Warnings', 'twitchpress' ),
                     'id'              => 'bugnet_levelswitch_warning',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -325,7 +325,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'title'           => __( 'Activate/Disable Handlers', 'twitchpress' ),
                     'desc'            => __( 'Emails', 'wpseed' ),
                     'id'              => 'bugnet_handlerswitch_email',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'start',
                     'show_if_checked' => 'option',
@@ -335,7 +335,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Log Files', 'twitchpress' ),
                     'id'              => 'bugnet_handlerswitch_logfiles',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -345,7 +345,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'REST API', 'twitchpress' ),
                     'id'              => 'bugnet_handlerswitch_restapi',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -355,7 +355,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Tracing', 'twitchpress' ),
                     'id'              => 'wpseed_bugnet_handlerswitch_tracing',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -389,7 +389,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'title'           => __( 'Activate/Disable Reports', 'twitchpress' ),
                     'desc'            => __( 'Daily Summary', 'wpseed' ),
                     'id'              => 'bugnet_reportsswitch_dailysummary',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'start',
                     'show_if_checked' => 'option',
@@ -399,7 +399,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Event Snapshot', 'twitchpress' ),
                     'id'              => 'bugnet_reportsswitch_eventsnapshot',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -409,7 +409,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'Trace Complete', 'twitchpress' ),
                     'id'              => 'bugnet_reportsswitch_tracecomplete',
-                    'default'         => 'yes',
+                    'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'end',
                     'show_if_checked' => 'yes',
