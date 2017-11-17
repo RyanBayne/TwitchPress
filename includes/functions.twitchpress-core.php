@@ -457,11 +457,11 @@ function twitchpress_sync_feed_to_wp( $channel_id = false ) {
         return false;
     }
     
-    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken5-interface.php' );
-    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken5-calls.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken-interface.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken-calls.php' );
       
     // Make call to Twitch for the latest feed post. 
-    $kraken = new TWITCHPRESS_Kraken5_Calls();
+    $kraken = new TWITCHPRESS_Kraken_Calls();
     $feed_posts = $kraken->getFeedPosts( $channel_id, 5 );
     unset( $kraken );
     if( !$feed_posts) { return; }
@@ -706,7 +706,7 @@ function twitchpress_convert_created_at_to_timestamp( $date_time_string ) {
 * @return integer from Twitch user object or false if failure detected.
 */
 function twitchpress_get_user_twitchid( $twitch_username ) {
-    $kraken = new TWITCHPRESS_Kraken5_Calls();
+    $kraken = new TWITCHPRESS_Kraken_Calls();
     $user_object = $kraken->get_users( $twitch_username );
     if( isset( $user_object['users'][0]['_id'] ) && is_numeric( $user_object['users'][0]['_id'] ) ) {
         return $user_object['users'][0]['_id'];
@@ -835,7 +835,7 @@ function var_dump_twitchpress( $var ) {
 }
 
 function wp_die_twitchpress( $html ) {
-    if( !twitchpress_current_user_allowed() ){ return; }
+    if( !twitchpress_are_errors_allowed() ){ return; }
     wp_die( esc_html( $html ) ); 
 }
 
@@ -847,22 +847,33 @@ function wp_die_twitchpress( $html ) {
 * 
 * @version 1.0
 */
-function twitchpress_current_user_allowed() {
+function twitchpress_are_errors_allowed() {
     if( twitchpress_is_background_process() ) { 
         return false; 
     }        
-    
+                     
     if( !get_option( 'twitchpress_displayerrors' ) || get_option( 'twitchpress_displayerrors' ) !== 'yes' ) {
         return false;
     }
 
+    // We can bypass the protection to display errors for a specified user.
+    if( 'BYPASS' == get_option( 'bugnet_error_dump_user_id') ) {
+        return true;    
+    } 
+    
     if( !current_user_can( 'activate_plugins' ) ) {
         return false;
+    }  
+
+    // We can display errors for all administrators. 
+    if( 'ADMIN' == get_option( 'bugnet_error_dump_user_id') ) {
+        return true;    
     }
     
+    // Now assume numeric value was entered and ensure the current user is that ID.
     if( get_current_user_id() != get_option( 'bugnet_error_dump_user_id') ) {
         return false;    
-    }   
+    } 
     
     return true;
 }

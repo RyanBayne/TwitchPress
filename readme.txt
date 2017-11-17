@@ -5,8 +5,8 @@ License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
-Tested up to: 4.8
-Stable tag: 1.5.2
+Tested up to: 4.9
+Stable tag: 1.5.4
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -41,6 +41,9 @@ with the Twitch API.
 * Custom post type for Twitch posts. 
 * Fully supported. 
 * Free and Premium levels of service. 
+* Channel Status Indicator shortcode (beta)
+* Channel Status Line shortcode (beta)
+* Channel Status Box shortcode (beta) 
 
 == Installation ==
 
@@ -69,6 +72,24 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
+= 1.5.4 =
+* DEV - New constant allows us to switch between TWitch API library versions (preparing for version 6).
+* DEV - Created functions.kraken-endpoints.php - offers an array of Twitch API endpoints and information. 
+* INF - New endpoints file is intended to aid development.
+* DEV - Started a Twitter API library for all extensions to use. 
+* DEV - Function kraken_httpstatuses() improved to return the correct wiki or twitch site status text. 
+* DEV - Status section in Help tab now outputs specific text relating to the status code and not just the code. 
+
+= 1.5.3 = 
+* DEV - Renamed twitchpress_current_user_allowed() to twitchpress_are_errors_allowed().
+* DEV - Can now enter "BYPASS" instead of a user ID for BugNet error dump control.
+* DEV - Can now enter "ADMIN" instead of user ID so all administrators can see error output. 
+* NEW - The recently released TwitchPress Embed Everything plugin has been added to the Setup Wizard. 
+* DEV - Removed defining of TWITCHPRESS_UPLOADS_DIR (was not yet in use)
+* FIX - Removed wp_upload_dir() from define_constants() due to memory related error. 
+* DEV - Updated the language domain within Kraken5 - specifically the list of HTTP status. 
+* DEV - Renamed all uses of Kraken5 to just Kraken as we prepare to switch between Twitch API versions easily. 
+
 = 1.5.2 =
 * DEV - All BugNet switches are now off (no) by default to encourage a gradual increase of logging activity when needed. 
 * DEV - Error dumps in the footer now happen on PHP shutdown (using shutdown hook) which makes errors easier to see on admin side. 

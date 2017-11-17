@@ -4,11 +4,11 @@
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch stream and channel management services to WordPress. 
- * Version: 1.5.2
+ * Version: 1.5.4
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com
  * Requires at least: 4.4
- * Tested up to: 4.8
+ * Tested up to: 4.9
  * License: GPL3
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Domain Path: /i18n/languages/
@@ -41,7 +41,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.5.1';
+    public $version = '1.5.4';
 
     /**
      * Minimum WP version.
@@ -135,7 +135,7 @@ final class WordPressTwitchPress {
     }
 
     /**
-     * Define TwitchPress Constants.
+     * Define TwitchPress Constants.      
      */
     private function define_constants() {
         
@@ -144,6 +144,7 @@ final class WordPressTwitchPress {
         if(!defined( "TWITCHPRESS_CURRENTUSERID" ) ){define( "TWITCHPRESS_CURRENTUSERID", get_current_user_id() );}
                 
         // Main (package) constants.
+        if ( ! defined( 'TWITCHPRESS_KRAKEN' ) ) {            define( 'TWITCHPRESS_KRAKEN', '5' ); }
         if ( ! defined( 'TWITCHPRESS_ABSPATH' ) ) {           define( 'TWITCHPRESS_ABSPATH', __FILE__ ); }
         if ( ! defined( 'TWITCHPRESS_PLUGIN_BASENAME' ) ) {   define( 'TWITCHPRESS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); }
         if ( ! defined( 'TWITCHPRESS_PLUGIN_DIR_PATH' ) ) {   define( 'TWITCHPRESS_PLUGIN_DIR_PATH', plugin_dir_path( __FILE__ ) ); }
@@ -154,7 +155,7 @@ final class WordPressTwitchPress {
         if ( ! defined( 'TWITCHPRESS_SESSION_CACHE_GROUP')) { define( 'TWITCHPRESS_SESSION_CACHE_GROUP', 'twitchpress_session_id' ); }
         if ( ! defined( 'TWITCHPRESS_DEV_MODE' ) ) {          define( 'TWITCHPRESS_DEV_MODE', false ); }
         if ( ! defined( 'TWITCHPRESS_WORDPRESSORG_SLUG' ) ) { define( 'TWITCHPRESS_WORDPRESSORG_SLUG', false ); }
-                            
+                           
         // Support (project) constants.
         if ( ! defined( 'TWITCHPRESS_HOME' ) ) {              define( 'TWITCHPRESS_HOME', 'https://wordpress.org/plugins/channel-solution-for-twitch' ); }
         if ( ! defined( 'TWITCHPRESS_FORUM' ) ) {             define( 'TWITCHPRESS_FORUM', 'https://wordpress.org/support/plugin/channel-solution-for-twitch' ); }
@@ -198,25 +199,26 @@ final class WordPressTwitchPress {
     /**
      * Include required core files.
      * 
-     * @version 1.3
+     * @version 1.4
      */
     public function includes() {
-        
+ 
         // SPL Autoloader Class
         include_once( 'includes/class.twitchpress-autoloader.php' );
                 
-        // Load core classes.
+        // Load core files.
         include_once( 'includes/libraries/class.async-request.php' );
         include_once( 'includes/libraries/class.background-process.php' );            
         include_once( 'includes/class.twitchpress-post-types.php' );                
         include_once( 'includes/class.twitchpress-install.php' );
         include_once( 'includes/class.twitchpress-ajax.php' );
-        include_once( 'includes/libraries/kraken5/functions.kraken5-statuses.php' );
-        include_once( 'includes/libraries/kraken5/class.kraken5-api.php' );
-        include_once( 'includes/libraries/kraken5/class.kraken5-calls.php' );        
+        include_once( 'includes/libraries/kraken5/functions.kraken-statuses.php' );
+        include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-api.php' );
+        include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-calls.php' );        
         include_once( 'includes/toolbars/class.twitchpress-toolbars.php' );        
         include_once( 'includes/class.twitchpress-listener.php' );
         include_once( 'includes/class.twitchpress-feeds.php' );
+        include_once( 'includes/functions.twitchpress-shortcodes.php' );
         
         // Load classes only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {
@@ -282,8 +284,8 @@ final class WordPressTwitchPress {
     */
     public function output_errors() {
         // Display Errors Tool            
-        if( !twitchpress_current_user_allowed() ) { return false; }
-
+        if( !twitchpress_are_errors_allowed() ) { return false; }
+                 
         ini_set( 'display_errors', 1 );
         error_reporting(E_ALL);
         
@@ -292,10 +294,8 @@ final class WordPressTwitchPress {
     }
 
     public static function show_errors() {
-        global $wpdb; 
-        
+        global $wpdb;   
         _e( '<h1>TwitchPress Error Dump</h1>', 'twitchpress' );
-
         $wpdb->show_errors();   
     }
     

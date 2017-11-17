@@ -273,36 +273,48 @@ class TwitchPress_Admin_Help {
         $cache = get_transient( 'twitchpresshelptabstatus' );
         if( $cache ) {
             print $cache;
-            _e( 'You are viewing cached results which could be up to 60 seconds old. Refresh one minute after any changes you make to get the real status.', 'twitchpress' ); 
+            _e( '<p>You are viewing cached results which could be up to 60 seconds old. Refresh one minute after any changes you make to get the real status.</p>', 'twitchpress' ); 
             return;
         }
         
         // No existing cache found, so test Kraken, generate output, cache output, output output!
         $output = '';
-        $kraken = new TWITCHPRESS_Kraken5_Calls();
+        $kraken = new TWITCHPRESS_Kraken_Calls();
         
         // Token
         $token = $kraken->checkToken();
         $output .= '<h2>' . __( 'Existing Token Check', 'twitchpress' ) . '</h2>';
-        if( is_string( $token['token'] ) ) {
+        if( is_string( $token['token'] ) ) 
+        {
             $output .= __( 'The existing token passed and is ready.', 'twitchpress' );        
-        } elseif( $token['token'] === false ) {
+        } 
+        elseif( $token['token'] === false ) 
+        {
             $output .= __( 'The existing token was rejected. TwitchPress will now request a new token.', 'twitchpress' );
             $new_token = $kraken->generateToken();
         }
         
         // Get authenticated channel object. 
-        $output .= '<h2>' . __( 'Get Main Channel', 'twitchpress' ) . '</h2>';
+        $output .= '<h2>' . __( 'Get Main Channel Test', 'twitchpress' ) . '</h2>';
         $channel = $kraken->getChannelObject_Authd();
-        if( !$channel ) {
-            $output .= __( 'Attempt failed, there might be a fault or Twitch.tv is hungover today! Refresh the page and if this message continues please let Ryan know.', 'twitchpress' );    
-        } else {
-            
+        
+        if( !$channel ) 
+        {
+            $output .= __( 'Attempt failed and the likley reason is: ', 'twitchpress' );    
+        }
+        elseif( is_numeric( $channel['status'] ) )
+        {
+            $output .= '<h3>' . __( 'Result: Error ', 'twitchpress' ) . $channel['status'] . '</h3>'; 
+            $output .= kraken_httpstatuses( $channel['status'], 'wiki' );    
+        } 
+        else 
+        { 
             if( isset( $channel['display_name'] ) ) { $channel_display_name = $channel['display_name']; }
             if( isset( $channel['status'] ) ) { $channel_status = $channel['status']; }
             if( isset( $channel['game'] ) ) { $channel_game = $channel['game']; }
             
-            $output .= __( 'Great news! TwitchPress is communicating with Twitch.tv. Here\'s some of your main channels information...to prove it!', 'twitchpress' );    
+            $output .= '<h3>' . __( 'Result: Ready!', 'twitchpress' ) . '</h3>'; 
+            $output .= __( 'TwitchPress is communicating with Twitch.tv. Here\'s some of your main channels information...to prove it!', 'twitchpress' );    
             $output .= '<ul>';
             $output .= '<li><strong>Display Name: </strong>' . $channel_display_name . '</li>';
             $output .= '<li><strong>Status: </strong>' . $channel_status . '</li>';
@@ -314,7 +326,7 @@ class TwitchPress_Admin_Help {
         
         print $output;  
         
-        _e( 'You are viewing real-time results (not cached). The results will be cached for 60 seconds to reduce the risk of flooding the Twitch API.', 'twitchpress' );  
+        _e( '<p>You are viewing real-time results on this request (not cached). The results will be cached for 60 seconds to reduce the risk of flooding the Twitch API.</p>', 'twitchpress' );  
     }
 }
 

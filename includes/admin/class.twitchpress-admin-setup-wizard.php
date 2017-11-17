@@ -602,7 +602,7 @@ class TwitchPress_Admin_Setup_Wizard {
         }
    
         // Delete options for scopes that are not in $_POST (not checked) and add those that are.
-        $pre_credentials_kraken = new TWITCHPRESS_Kraken5_API();
+        $pre_credentials_kraken = new TWITCHPRESS_Kraken_API();
         $all_scopes = $pre_credentials_kraken->scopes();
         foreach( $all_scopes as $scope => $scope_info ) {  
             if( in_array( $scope, $_POST['twitchpress_scopes'] ) ) {     
@@ -619,7 +619,7 @@ class TwitchPress_Admin_Setup_Wizard {
         update_option( 'twitchpress_main_channel_name',  $main_channel,  true );
                                         
         // Confirm the giving main channel is valid. 
-        $kraken_calls_obj = new TWITCHPRESS_Kraken5_Calls();
+        $kraken_calls_obj = new TWITCHPRESS_Kraken_Calls();
         $user_objects = $kraken_calls_obj->get_users( $main_channel );
         $twitch_user_id = $user_objects['users'][0]['_id'];
         
@@ -658,7 +658,7 @@ class TwitchPress_Admin_Setup_Wizard {
         TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored. TwitchPress will now send you to Twitch.tv to authorize your account.' ) );
         
         // Create a Twitch API oAuth2 URL
-        $post_credentials_kraken = new TWITCHPRESS_Kraken5_API();
+        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
         
         $state = array( 'redirectto' => admin_url( '/?page=twitchpress-setup&step=folders' ),
                         'userrole'   => 'administrator',
@@ -775,7 +775,7 @@ class TwitchPress_Admin_Setup_Wizard {
      * 
      * @return array
      * 
-     * @version 1.2
+     * @version 1.3
      */
     protected function get_wizard_extensions() {       
         $gateways = array(
@@ -795,6 +795,12 @@ class TwitchPress_Admin_Setup_Wizard {
                 'name'        => __( 'TwitchPress UM Extension', 'twitchpress' ),
                 'description' => __( 'Requires the Ultimate Member plugin.', 'twitchpress' ),
                 'repo-slug'   => 'twitchpress-um-extension',
+                'source'        => 'remote'
+            ),  
+            'twitchpress-embed-everything' => array(
+                'name'        => __( 'TwitchPress Embed Everything', 'twitchpress' ),
+                'description' => __( 'Embed live stream. chat and VOD.', 'twitchpress' ),
+                'repo-slug'   => 'twitchpress-embed-everything',
                 'source'        => 'remote'
             ),  
             

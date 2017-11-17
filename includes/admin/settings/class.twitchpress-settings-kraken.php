@@ -66,7 +66,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
         $settings = $this->get_settings( $current_section );
         TwitchPress_Admin_Settings::save_fields( $settings );
         // Attempt to create a Twitch session on the assumption all credentials are ready.
-        $kraken = new TWITCHPRESS_Kraken5_API();
+        $kraken = new TWITCHPRESS_Kraken_API();
         $kraken->start_twitch_session_admin( 'main' );
     }
 
