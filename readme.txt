@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.5.4
+Stable tag: 1.5.5
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -34,16 +34,26 @@ with the Twitch API.
 *   <a href="https://www.paypal.me/zypherevolved" title="">PayPal Donations</a>       
 
 = Features List = 
-
+ 
 * Post content to Twitch feed.
 * Get content from Twitch feed.
 * Extension system to build Twitch suites. 
 * Custom post type for Twitch posts. 
+* Share standard posts to Twitch feeds.
 * Fully supported. 
 * Free and Premium levels of service. 
-* Channel Status Indicator shortcode (beta)
-* Channel Status Line shortcode (beta)
-* Channel Status Box shortcode (beta) 
+* Channel Status Indicator shortcode.
+* Channel Status Line shortcode.
+* Channel Status Box shortcode. 
+
+= Features In Extensions = 
+
+* Sign-In Via Twitch
+* Registration Via Twitch
+* Embed Live Streams
+* Embed Live Chat
+* Frequent data sync.
+* Ultimate Member integration.
 
 == Installation ==
 
@@ -72,6 +82,20 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
+= 1.5.6 NOT RELEASED = 
+* DEV - Improved some HTTP error descriptions to make more sense. 
+* DEV - Twitch API HTTP status logs now have a code description appeneded to the current line. 
+* FIX - Corrected shortcode attribute value in twitchpress_channel_status(). 
+* DEV - generateToken() now returns false if no token is generated.
+* DEV - Created twitchpress_prepare_scopes() for preparing scopes being added to headers or URL.
+* DEV - generate_authorization_url() now uses the new twitchpress_prepare_scopes() function. 
+* FIX - Checkboxes on Permissions Scopes view no longer default to yes (checked) when the option does not exist. 
+* DEV - Scope missing log entries now include the missing scope in confirm_scope(). 
+
+= 1.5.5 = 
+* DEV - Finished error description array in Twitch API library. 
+* DEV - Made changes to Kraken status array, removed duplicate and re-ordered entries. 
+
 = 1.5.4 =
 * DEV - New constant allows us to switch between TWitch API library versions (preparing for version 6).
 * DEV - Created functions.kraken-endpoints.php - offers an array of Twitch API endpoints and information. 

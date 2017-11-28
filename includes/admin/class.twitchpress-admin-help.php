@@ -262,7 +262,7 @@ class TwitchPress_Admin_Help {
     * This focuses on the services main Twitch application credentials only.
     * 
     * @author Ryan Bayne
-    * @version 2.0
+    * @version 2.1
     */
     public function status() {
         $channel_display_name = __( 'Not Found', 'twitchpress' );

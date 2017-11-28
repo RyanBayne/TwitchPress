@@ -18,7 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
 * Shortcode outputs a basic status for the giving channel. 
 * 
-* @version 1.0
+* [twitchpress_channel_status_line channel_id=""]
+* 
+* @version 1.1
 */
 function twitchpress_channel_status( $atts ) {   
     $html_output = null;
@@ -26,7 +28,7 @@ function twitchpress_channel_status( $atts ) {
     $atts = shortcode_atts( array(             
             'channel_id'   => null,
             'channel_name' => null,
-    ), $atts, 'twitchpress_channel_status_line' );
+    ), $atts, 'twitchpress_channel_status' );
     
     // Establish channel ID
     if( $atts['channel_id'] === null && $atts['channel_name'] === null ) 
@@ -156,7 +158,7 @@ function twitchpress_channel_status_box( $atts ) {
     $atts = shortcode_atts( array(             
             'channel_id'   => null,
             'channel_name' => null,
-    ), $atts, 'twitchpress_channel_status_line' );
+    ), $atts, 'twitchpress_channel_status_box' );
     
     // Establish channel ID
     if( $atts['channel_id'] === null && $atts['channel_name'] === null ) 

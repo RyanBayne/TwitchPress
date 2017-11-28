@@ -2,12 +2,9 @@
 /**
  * Kraken5 main class for calling the Twitch API. 
  * 
- * @author Ryan R. Bayne
- * 
  * Do not use this class unless you accept the Twitch Developer Services Agreement
  * @link https://www.twitch.tv/p/developer-agreement
  * 
- * @class    TwitchPress_Admin
  * @author   Ryan Bayne
  * @category Admin
  * @package  TwitchPress/Core
@@ -43,7 +40,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     * 
     * @param mixed $users
     * 
-    * @version 5.5
+    * @version 5.6
     */
     public function get_users( $users ) {
         
@@ -58,7 +55,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
             $users_string = $users;
         }
 
-        $url = 'https://api.twitch.tv/kraken/users?login=' . $users_string . '';
+        $url = 'https://api.twitch.tv/kraken/users?login=' . $users_string;
+        $url.= '&client_id=' . $this->twitch_client_id;
         $options = array();
         $get = array();
         
@@ -1456,19 +1454,19 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * For use by channel owners. 
      * 
-     * @param $user - [string] Username of the user check against
+     * @param $user_id - [string] Username of the user check against
      * @param $chan - [string] Channel name of the channel to check against
      * @param $token - [string] Authentication key used for the session
      * @param $code - [string] Code used to generate an Authentication key
      * 
-     * @return $subscribed - [array] the subscription details or error details.
+     * @returns $subscribed - [mixed] the subscription details (array) or error details (array) or null if Twitch returns null.
      * 
-     * @version 5.0
+     * @version 5.3
      */ 
-    public function getChannelSubscription( $user, $chan, $token, $code ){
+    public function getChannelSubscription( $user_id, $chan, $token, $code ){
         
         // I witnessed a possible empty string in $user resulting in wrong URL endpoint.
-        if( $user === '' ){ $this->bugnet->log_error( __FUNCTION__, __( 'User not giving when checking channel subscription.', 'twitchpress' ), array(), true ); }            
+        if( $user_id === '' ){ $this->bugnet->log_error( __FUNCTION__, __( 'User ID not giving when checking channel subscription.', 'twitchpress' ), array(), true ); }            
                                                                    
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'channel', __FUNCTION__ );
@@ -1478,26 +1476,50 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $auth = $this->establish_token( $token );
         $token = $auth['token'];
         
-        $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions/' . $user;
+        $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions/' . $user_id;
         $options = array();
         $get = array('oauth_token' => $token);
         
-        $subscribed = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__ ), true);
+        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, false, __FUNCTION__ ), true );
 
         // only check results here to log them and return the original response.
         if( isset( $subscribed['error'] ) ) 
         {
-            $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Failed to get subscription data for user ID %s from channel ID %s.', 'twitchpress' ), $user, $chan ), array(), false );
+            $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Failed to get subscription data for user ID %s from channel ID %s.', 'twitchpress' ), $user_id, $chan ), array(), false );
             return $subscribed;
         } 
         elseif( isset( $subscribed['sub_plan'] ) )
         {
-            $this->bugnet->log( __FUNCTION__, sprintf( __( 'Subscription data returned for user ID %s from channel ID %s.', 'twitchpress' ), $user, $chan ), array(), false, false );
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'Subscription data returned for user ID %s from channel ID %s.', 'twitchpress' ), $user_id, $chan ), array(), false, false );
             return $subscribed;   
         }
-        
+        elseif( $subscribed === null )
+        {
+            // This response only begun happening around October 2017 despite months of use. 
+            // I will assume it means that the user is not a subscriber and the "error" value is nolonger returned. 
+            return null;
+        }
+             
         // We should never arrive here. 
-        $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Unexpected response from request for subscribers data. User ID: %s Channel ID: %s.', 'twitchpress' ), $user, $chan ), array(), false );
+        // These lines were added to debugging the new "null" response which the documentation says nothing about for this endpint. 
+        // This bug may be the cause of 500 errors on returning from Twitch.
+        $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Unexpected response from request for subscribers data. User ID: %s Channel ID: %s.', 'twitchpress' ), $user_id, $chan ), array(), false );
+        
+        if( is_array( $subscribed ) ) 
+        {
+            $unexpected = error_log( print_r( $subscribed, TRUE ) );
+        }
+        elseif( is_string( $subscribed ) )
+        {
+            $unexpected = $subscribed;
+        }
+        elseif( empty( $subscribed ) ) 
+        {
+            $unexpected = __( 'json_decode() has returned an empty value!', 'twitchpress' );
+        }
+        
+        $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Examine the unexpected response: %s', 'twitchpress' ), $unexpected ), array(), false );
+          
         return $subscribed;
     }
     

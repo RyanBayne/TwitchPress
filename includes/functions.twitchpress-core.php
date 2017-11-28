@@ -877,3 +877,24 @@ function twitchpress_are_errors_allowed() {
     
     return true;
 }
+
+/**
+* Adds spaces between each scope as required by the Twitch API. 
+* 
+* @param mixed $scopes_array
+* @param mixed $for_url
+* 
+* @version 1.0
+*/
+function twitchpress_prepare_scopes( $scopes_array, $for_url = true ) {
+        $scopes_string = '';
+        foreach ( $scopes_array as $s ){
+            $scopes_string .= $s . ' ';
+        }
+
+        $prepped_scopes = rtrim( $scopes_string, ' ' );
+        
+        if( $for_url ) { $prepped_scopes = urlencode( $prepped_scopes ); }
+        
+        return $prepped_scopes;
+}

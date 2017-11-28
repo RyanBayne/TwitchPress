@@ -617,17 +617,21 @@ class TwitchPress_Admin_Setup_Wizard {
         update_option( 'twitchpress_main_client_id',     $client_id,     true );
         update_option( 'twitchpress_main_client_secret', $client_secret, true );
         update_option( 'twitchpress_main_channel_name',  $main_channel,  true );
-                                        
+                                  
+        // Added November 2017 - Generate an App Access Token
+        $maybe_token = $pre_credentials_kraken->request_app_access_token( __FUNCTION__ );                          
+                                 
         // Confirm the giving main channel is valid. 
         $kraken_calls_obj = new TWITCHPRESS_Kraken_Calls();
         $user_objects = $kraken_calls_obj->get_users( $main_channel );
-        $twitch_user_id = $user_objects['users'][0]['_id'];
         
-        if( !isset( $twitch_user_id ) ) {
+        if( !isset( $user_objects['users'][0]['_id'] ) ) {
             TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist', __( '<strong>Channel Not Found:</strong> TwitchPress wants to avoid errors in future by ensuring what you typed is correct. So far it could not confirm your entered channel is correct. Please check the spelling of your channel and the status of Twitch. If your entered channel name is correct and Twitch is online, please report this message.', 'twitchpress' ) );      
             return;                         
         } 
         
+        $twitch_user_id = $user_objects['users'][0]['_id'];
+                
         // The user ID is the same as the channel ID on Twitch.tv just because.
         update_option( 'twitchpress_main_channel_id', $twitch_user_id, true );
 
@@ -636,7 +640,8 @@ class TwitchPress_Admin_Setup_Wizard {
         $existing_channelpost_id = twitchpress_get_channel_post( $twitch_user_id );
                 
         // Insert a new twitchchannel post if one does not already exist.
-        if( !$existing_channelpost_id ) { 
+        if( !$existing_channelpost_id ) 
+        { 
             $post_id = twitchpress_insert_channel( 
                 $twitch_user_id, 
                 $main_channel, 
@@ -650,7 +655,9 @@ class TwitchPress_Admin_Setup_Wizard {
             
             update_option( 'twitchpress_main_channel_postid', $post_id, true );            
             
-        } else {
+        } 
+        else 
+        {
             $post_id = $existing_channelpost_id;
         } 
 

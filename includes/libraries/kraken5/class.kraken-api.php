@@ -470,7 +470,7 @@ class TWITCHPRESS_Kraken_API {
      * 
      * @return $result - [mixed] The raw return of the resulting query or the numerical status
      * 
-     * @version 1.5
+     * @version 1.6
      */
     protected function cURL_get($url, array $get = array(), array $options = array(), $returnStatus = false, $function = '' ){
 
@@ -480,7 +480,7 @@ class TWITCHPRESS_Kraken_API {
         $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) 
                         || (array_key_exists('oauth_token', $get) === true))) 
                                 ? array_merge($header, array('Authorization: OAuth ' . $get['oauth_token'])) : $header ;
-                                
+                                                        // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
         $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
 
         if (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) || (array_key_exists('oauth_token', $get) === true))) {
@@ -529,7 +529,8 @@ class TWITCHPRESS_Kraken_API {
         // Check our HTTPD status that was returned for error returns
         $error_string = '';
         $error_no = '';
-        if (($httpdStatus == 404) || ($httpdStatus == 0) || ($httpdStatus == 503)) {
+        if (($httpdStatus == 404) || ($httpdStatus == 0) || ($httpdStatus == 503)) 
+        {
             $error_string = curl_error($handle);
             $error_no = curl_errno($handle);
             $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'TwitchPress Error %s: %s', 'twitchpress' ), $error_no, $error_string ), array(), true );
@@ -537,9 +538,12 @@ class TWITCHPRESS_Kraken_API {
         
         curl_close($handle);
         
-        // Log anything that isn't a good response. 
-        if( $httpdStatus !== 200 ) {
-            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s', 'twitchpress' ), $httpdStatus ), array(), true, false );
+        // Log the HTTP status in more detail if it isn't a good response. 
+        if( $httpdStatus !== 200 ) 
+        {
+            $status_meaning = kraken_httpstatuses( $httpdStatus, 'wiki' );
+            if( !is_string( $status_meaning ) ) { $status_meaning = __( 'Sorry, no more information could be retrieved for this status.', 'twitchpress' ); }
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s - %s', 'twitchpress' ), $httpdStatus, $status_meaning ), array(), true, false );
         }
         
         if ($returnStatus) {
@@ -579,7 +583,7 @@ class TWITCHPRESS_Kraken_API {
      * 
      * @return $result - [mixed] The raw return of the resulting query or the numerical status
      * 
-     * @version 1.6
+     * @version 1.7
      */ 
     protected function cURL_post($url, array $post = array(), array $options = array(), $returnStatus = false){
         $postfields = '';
@@ -587,8 +591,8 @@ class TWITCHPRESS_Kraken_API {
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) ? array_merge($header, array('Authorization: OAuth ' . $post['oauth_token'])) : $header;
-        $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
-        
+        $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                           // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
+    
         if (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) {
             unset($post['oauth_token']);
         }
@@ -615,7 +619,7 @@ class TWITCHPRESS_Kraken_API {
             CURLOPT_FORBID_REUSE => 1,
             CURLOPT_HTTPHEADER => $header
         );
-        
+                   
         // Do we have a certificate to use?  if OpenSSL is available, there will be a certificate
         if ( TWITCHPRESS_CERT_PATH != '' ){
             // Overwrite outr defaults to include the SSL cert and options
@@ -652,7 +656,9 @@ class TWITCHPRESS_Kraken_API {
         
         // Log anything that isn't a good response. 
         if( $httpdStatus !== 200 ) {
-            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s', 'twitchpress' ), $httpdStatus ), array(), true, false );
+            $status_meaning = kraken_httpstatuses( $httpdStatus, 'wiki' );
+            if( !is_string( $status_meaning ) ) { $status_meaning = __( 'Sorry, no more information could be retrieved for this status.', 'twitchpress' ); }
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s - %s', 'twitchpress' ), $httpdStatus, $status_meaning ), array(), true, false );
         }
         
         // Are we returning the HHTPD status?
@@ -673,7 +679,7 @@ class TWITCHPRESS_Kraken_API {
      * 
      * @return $result - [mixed] The raw return of the resulting query or the numerical status
      * 
-     * @version 1.5
+     * @version 1.6
      */ 
     protected function cURL_put($url, array $put = array(), array $options = array(), $returnStatus = false) {
         $postfields = '';
@@ -681,7 +687,7 @@ class TWITCHPRESS_Kraken_API {
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $put) === 1) || (array_key_exists('oauth_token', $put) === true))) ? array_merge($header, array('Authorization: OAuth ' . $put['oauth_token'])) : $header ;
-        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
+        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                         // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
         
         if ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $put) === 1) || (array_key_exists('oauth_token', $put) === true))) {
             unset($put['oauth_token']);
@@ -741,7 +747,9 @@ class TWITCHPRESS_Kraken_API {
         
         // Log anything that isn't a good response. 
         if( $httpdStatus !== 200 ) {
-            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s', 'twitchpress' ), $httpdStatus ), array(), true, false );
+            $status_meaning = kraken_httpstatuses( $httpdStatus, 'wiki' );
+            if( !is_string( $status_meaning ) ) { $status_meaning = __( 'Sorry, no more information could be retrieved for this status.', 'twitchpress' ); }
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s - %s', 'twitchpress' ), $httpdStatus, $status_meaning ), array(), true, false );
         }
         
         // Are we returning the HHTPD status?
@@ -762,13 +770,13 @@ class TWITCHPRESS_Kraken_API {
      * 
      * @return $result - [mixed] The raw return of the resulting query or the numerical status
      * 
-     * @version 1.0
+     * @version 1.2
      */ 
     protected function cURL_delete($url, array $post = array(), array $options = array(), $returnStatus = true) {
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) ? array_merge($header, array('Authorization: OAuth ' . $post['oauth_token'])) : $header ;
-        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
+        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                           // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
         
         if ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) {
             unset($post['oauth_token']);
@@ -814,7 +822,9 @@ class TWITCHPRESS_Kraken_API {
         
         // Log anything that isn't a good response. 
         if( $httpdStatus !== 200 ) {
-            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s', 'twitchpress' ), $httpdStatus ), array(), true, false );
+            $status_meaning = kraken_httpstatuses( $httpdStatus, 'wiki' );
+            if( !is_string( $status_meaning ) ) { $status_meaning = __( 'Sorry, no more information could be retrieved for this status.', 'twitchpress' ); }
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'TwitchPress HTTPDStatus: %s - %s', 'twitchpress' ), $httpdStatus, $status_meaning ), array(), true, false );
         }
         
         // Are we returning the HHTPD status?
@@ -1323,15 +1333,67 @@ class TWITCHPRESS_Kraken_API {
         delete_transient( 'twitchpress_kraken_requests' );
         set_transient( 'twitchpress_kraken_requests', $gets, 600 );
     }                          
- 
+
+    /**
+     * Generate an App Access Token as part of OAuth Client Credentials Flow. 
+     * 
+     * @link https://dev.twitch.tv/docs/authentication#oauth-authorization-code-flow-user-access-tokens
+     * 
+     * This token is meant for authorizing the application and making API calls related to the main channel
+     * and public data. User specific channel access requires Auth Authorization Code Flow (User Access Tokens)
+     * and the token is generated using a different header.
+     * 
+     * @param $code - [string] String of auth code used to grant authorization
+     * 
+     * @return array $token - The generated token and the array of all scopes returned with the token, keyed.
+     * 
+     * @version 1.0
+     */
+    public function request_app_access_token( $requesting_function = null ){
+
+        $url = 'https://api.twitch.tv/kraken/oauth2/token';
+        $post = array(
+            'client_id'     => $this->twitch_client_id,
+            'client_secret' => $this->twitch_client_secret,
+            'grant_type'    => 'client_credentials',
+            'scope'         => twitchpress_prepare_scopes( $this->get_global_accepted_scopes(), true ),
+        );
+       
+        $options = array();
+          
+        $result = json_decode($this->cURL_post($url, $post, $options, false), true);
+        
+        if ( is_array( $result ) && array_key_exists( 'access_token', $result ) )
+        {
+            $token['token'] = $result['access_token'];
+            $token['scopes'] = $result['scope'];
+            
+            $appending = '';
+            if( $requesting_function == null ) { $appending = $token['token']; }
+            else{ $appending = sprintf( __( 'Requesting function was %s() and the token is %s.', 'twitchpress' ), $requesting_function, $token['token'] ); }
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'Access token returned. %s', 'twitchpress' ), $appending ), array(), true, false );
+            
+            return $token;
+        } 
+        else 
+        {
+            $request_string = '';
+            if( $requesting_function == null ) { $request_string = __( 'Requesting function is not known!', 'twitchpress' ); }
+            else{ $request_string = __( 'Requesting function is ', 'twitchpress' ) . $requesting_function; }
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'No access token returned: %s()', 'twitchpress' ), $request_string ), array(), true, false );
+        
+            return false;
+        }
+    }
+    
     /**
      * Generate an Auth key (token) for our session to use if we don't have one.
      * 
      * @param $code - [string] String of auth code used to grant authorization
      * 
-     * @return $token - The generated token and the array of all scopes returned with the token, keyed
+     * @return array $token - The generated token and the array of all scopes returned with the token, keyed.
      * 
-     * @version 2.0
+     * @version 2.2
      */
     public function generateToken( $code = null, $requesting_function = null ){
 
@@ -1341,16 +1403,16 @@ class TWITCHPRESS_Kraken_API {
         
         $url = 'https://api.twitch.tv/kraken/oauth2/token';
         $post = array(
+            'client_id' => $this->twitch_client_id,
             'client_secret' => $this->twitch_client_secret,
             'grant_type' => 'authorization_code',
             'redirect_uri' => $this->twitch_client_url,
             'code' => $code,
-            'client_id' => $this->twitch_client_id,
             'state' => '1',
         );
        
         $options = array();
-                    
+          
         $result = json_decode($this->cURL_post($url, $post, $options, false), true);
  
         if ( is_array( $result ) && array_key_exists( 'access_token', $result ) )
@@ -1362,6 +1424,8 @@ class TWITCHPRESS_Kraken_API {
             if( $requesting_function == null ) { $appending = $token['token']; }
             else{ $appending = sprintf( __( 'Requesting function was %s() and the token is %s.', 'twitchpress' ), $requesting_function, $token['token'] ); }
             $this->bugnet->log( __FUNCTION__, sprintf( __( 'Access token returned. %s', 'twitchpress' ), $appending ), array(), true, false );
+            
+            return $token;
         } 
         else 
         {
@@ -1369,9 +1433,9 @@ class TWITCHPRESS_Kraken_API {
             if( $requesting_function == null ) { $request_string = __( 'Requesting function is not known!', 'twitchpress' ); }
             else{ $request_string = __( 'Requesting function is ', 'twitchpress' ) . $requesting_function; }
             $this->bugnet->log( __FUNCTION__, sprintf( __( 'No access token returned: %s()', 'twitchpress' ), $request_string ), array(), true, false );
-        }
         
-        return $token;
+            return false;
+        }
     }
                        
     /**
@@ -1430,7 +1494,7 @@ class TWITCHPRESS_Kraken_API {
     * security. 
     * 
     * @author Ryan Bayne
-    * @version 2.0
+    * @version 3.0
     * 
     * @param mixed $permitted_scopes
     * @param mixed $state_array
@@ -1446,13 +1510,7 @@ class TWITCHPRESS_Kraken_API {
         // Primary request handler - value is checked on return from Twitch.tv
         set_transient( 'twitchpress_oauth_' . $local_state['random14'], $local_state, 6000 );
   
-        // Prepare scopes. 
-        $scopes_string = '';
-        foreach ( $permitted_scopes as $s ){
-            $scopes_string .= $s . ' ';
-        }
-        $scopes_rtrimmed = rtrim( $scopes_string, ' ' );
-        $scopes_urlencoded = urlencode( $scopes_rtrimmed );
+        $scopes_urlencoded = twitchpress_prepare_scopes( $permitted_scopes, true );
 
         // Build oauth2 URL.
         $url = 'https://api.twitch.tv/kraken/oauth2/authorize?' .
@@ -1624,7 +1682,7 @@ class TWITCHPRESS_Kraken_API {
     * @param mixed $side
     * @param mixed $function
     * 
-    * @version 1.0
+    * @version 1.2
     */
     public function confirm_scope( $scope, $side, $function ) {
         global $bugnet;
@@ -1637,10 +1695,10 @@ class TWITCHPRESS_Kraken_API {
         // Check applicable $side array scope.
         switch ( $side ) {
            case 'user':
-                if( !in_array( $scope, $this->get_user_scopes() ) ) { return $bugnet->log_error( 'twitchpressscopenotpermittedbyuser', sprintf( __( 'A Kraken5 call requires a scope that the user did not give permission for.', 'twitchpress' ), $function ), true ); }
+                if( !in_array( $scope, $this->get_user_scopes() ) ) { return $bugnet->log_error( 'twitchpressscopenotpermittedbyuser', sprintf( __( 'TwitchPress requires visitor scope: %s for function %s()', 'twitchpress' ), $scope, $function ), true ); }
              break;           
            case 'channel':
-                if( !in_array( $scope, $this->get_global_accepted_scopes() ) ) { return $bugnet->log_error( 'twitchpressscopenotpermittedbyadmin', sprintf( __( 'A Kraken5 call requires a scope that was not permitted by administration.', 'twitchpress' ), $function ), true ); }
+                if( !in_array( $scope, $this->get_global_accepted_scopes() ) ) { return $bugnet->log_error( 'twitchpressscopenotpermittedbyadmin', sprintf( __( 'TwitchPress scope %s was not permitted by administration and is required by %s().', 'twitchpress' ), $scope, $function ), true ); }
              break;         
            case 'both':
                 // This measure is temporary, to avoid faults, until we confirm which $side some calls apply to. 

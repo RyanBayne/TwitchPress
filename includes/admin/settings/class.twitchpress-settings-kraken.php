@@ -162,6 +162,9 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
             
         // Domain to Twitch API permission Options
         } elseif ( 'default' == $current_section ) {
+            
+            $default = 'no';
+            
             $settings = apply_filters( 'twitchpress_permissions_scope_settings', array(
  
                 array(
@@ -175,7 +178,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                     'title'           => __( 'Select Acceptable Scopes', 'twitchpress' ),
                     'desc'            => __( 'user_read: Read access to non-public user information, such as email address.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_user_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'start',
                     'show_if_checked' => 'option',
@@ -184,7 +187,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_blocks_edit: Ability to ignore or unignore on behalf of a user.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_user_blocks_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -194,7 +197,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_blocks_read: Read access to a user\'s list of ignored users.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_user_blocks_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -204,7 +207,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_follows_edit: Access to manage a user\'s followed channels.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_user_follows_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -214,7 +217,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_read: Read access to non-public channel information, including email address and stream key.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -224,7 +227,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_editor: Write access to channel metadata (game, status, etc).', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_editor',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -234,7 +237,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_commercial: Access to trigger commercials on channel.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_commercial',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -244,7 +247,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_stream: Ability to reset a channel\'s stream key.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_stream',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -254,7 +257,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_subscriptions: Read access to all subscribers to your channel.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_subscriptions',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -264,7 +267,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_subscriptions: Read access to subscriptions of a user.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_user_subscriptions',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -274,7 +277,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_check_subscription: Read access to check if a user is subscribed to your channel.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_check_subscription',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -284,7 +287,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'chat_login: Ability to log into chat and send messages.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_chat_login',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -294,7 +297,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_feed_read: Ability to view to a channel feed.', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_feed_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -304,7 +307,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_feed_edit: Ability to add posts and reactions to a channel feed."', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_channel_feed_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -314,7 +317,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'communities_edit: Manage a user’s communities."', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_communities_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -324,7 +327,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'communities_moderate: Manage community moderators."', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_communities_moderate',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -334,7 +337,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'collections_edit: Manage a user’s collections (of videos)."', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_collections_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -344,7 +347,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_feed_edit: Turn on Viewer Heartbeat Service ability to record user data."', 'twitchpress' ),
                     'id'              => 'twitchpress_scope_viewing_activity_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'end',
                     'show_if_checked' => 'yes',
@@ -356,7 +359,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                     'id'     => 'global_scope_options'
                 ),
 
- 
+                // VISITOR SCOPES
                 array(
                     'title' => __( 'Visitor Scopes', 'twitchpress' ),
                     'type'     => 'title',
@@ -368,7 +371,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                     'title'           => __( 'Select Acceptable Scopes', 'twitchpress' ),
                     'desc'            => __( 'user_read: Read access to non-public user information, such as email address.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_user_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'start',
                     'show_if_checked' => 'option',
@@ -377,7 +380,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_blocks_edit: Ability to ignore or unignore on behalf of a user.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_user_blocks_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -387,7 +390,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_blocks_read: Read access to a user\'s list of ignored users.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_user_blocks_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -397,7 +400,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_follows_edit: Access to manage a user\'s followed channels.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_user_follows_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -407,7 +410,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_read: Read access to non-public channel information, including email address and stream key.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -417,7 +420,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_editor: Write access to channel metadata (game, status, etc).', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_editor',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -427,7 +430,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_commercial: Access to trigger commercials on channel.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_commercial',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -437,7 +440,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_stream: Ability to reset a channel\'s stream key.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_stream',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -447,7 +450,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_subscriptions: Read access to all subscribers to your channel.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_subscriptions',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -457,7 +460,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'user_subscriptions: Read access to subscriptions of a user.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_user_subscriptions',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -467,7 +470,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_check_subscription: Read access to check if a user is subscribed to your channel.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_check_subscription',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -477,7 +480,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'chat_login: Ability to log into chat and send messages.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_chat_login',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -487,7 +490,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_feed_read: Ability to view to a channel feed.', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_feed_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -497,7 +500,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_feed_edit: Ability to add posts and reactions to a channel feed."', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_channel_feed_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -507,7 +510,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'communities_edit: Manage a user’s communities."', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_communities_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -517,7 +520,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'communities_moderate: Manage community moderators."', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_communities_moderate',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -527,7 +530,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'collections_edit: Manage a user’s collections (of videos)."', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_collections_edit',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
@@ -537,7 +540,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
                 array(
                     'desc'            => __( 'channel_feed_edit: Turn on Viewer Heartbeat Service ability to record user data."', 'twitchpress' ),
                     'id'              => 'twitchpress_visitor_scope_viewing_activity_read',
-                    'default'         => 'yes',
+                    'default'         => $default,
                     'type'            => 'checkbox',
                     'checkboxgroup'   => 'end',
                     'show_if_checked' => 'yes',

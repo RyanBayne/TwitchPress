@@ -9,6 +9,11 @@
  * @author   Ryan Bayne <squeekycoder@gmail.com>
  * @version  1.0.0
  */
+ 
+// Make sure we meet our dependency requirements
+if (!extension_loaded('curl')) trigger_error('cURL is not currently installed on your server, please install cURL if your wish to use Twitter API services in TwitchPress.');
+if (!extension_loaded('json')) trigger_error('PECL JSON or pear JSON is not installed, please install either PECL JSON or compile pear JSON if you wish to use Twitter API services in TwitchPress.');
+
 class Twitter_API                             
 {
     /**
@@ -69,18 +74,14 @@ class Twitter_API
      * These are all available by creating your own application on dev.twitter.com
      * Requires the cURL library
      *
-     * @throws \RuntimeException When cURL isn't loaded
      * @throws \InvalidArgumentException When incomplete settings parameters are provided
      *
      * @param array $settings
+     * 
+     * @version 2.0
      */
     public function __construct(array $settings)
     {
-        if (!function_exists('curl_init'))
-        {
-            throw new RuntimeException('TwitterAPIExchange requires cURL extension to be loaded, see: http://curl.haxx.se/docs/install.html');
-        }
-
         if (!isset($settings['oauth_access_token'])
             || !isset($settings['oauth_access_token_secret'])
             || !isset($settings['consumer_key'])
@@ -145,66 +146,69 @@ class Twitter_API
             '385' => __('No Reply Target','twitchpress'),
             '386' => __('Too Many Attachments','twitchpress')
         );
-        
+
         $descriptions = array(
-            '3'   => __('Corresponds with HTTP 400. The coordinates provided as parameters were not valid for the request.','twitchpress');
-            '13'  => __('No location associated with the specified IP address. Corresponds with HTTP 404. It was not possible to derive a location for the IP address provided as a parameter on the geo search request.','twitchpress');
-            '17'  => __('No user matches for specified terms. Corresponds with HTTP 404. It was not possible to find a user profile matching the parameters specified.','twitchpress');
-            '32'  => __('Corresponds with HTTP 401. There was an issue with the authentication data for the request.','twitchpress');
-            '34'  => __('Corresponds with HTTP 404. The specified resource was not found.','twitchpress');
-            '36'  => __('You cannot report yourself for spam. Corresponds with HTTP 403. You cannot use your own user ID in a report spam call.','twitchpress');
-            '44'  => __('Corresponds with HTTP 400. The URL value provided is not a URL that can be attached to this Tweet.','twitchpress');
-            '50'  => __('Corresponds with HTTP 404. The user is not found.','twitchpress');
-            '63'  => __('User has been suspended. Corresponds with HTTP 403 The user account has been suspended and information cannot be retrieved.','twitchpress');
-            '64'  => __('Your account is suspended and is not permitted to access this feature. Corresponds with HTTP 403. The access token being used belongs to a suspended user.','twitchpress');
-            '68'  => __('The Twitter REST API v1 is no longer active. Please migrate to API v1.1. Corresponds to a HTTP request to a retired v1-era URL.','twitchpress');
-            '87'  => __('Client is not permitted to perform this action. Corresponds with HTTP 403. The endpoint called is not a permitted URL.','twitchpress');
-            '88'  => __('Rate limit exceeded. The request limit for this resource has been reached for the current rate limit window.','twitchpress');
-            '89'  => __('Invalid or expired token. The access token used in the request is incorrect or has expired.','twitchpress');
-            '92'  => __('SSL is required. Only SSL connections are allowed in the API. Update the request to a secure connection. See how to connect using TLS','twitchpress');
-            '93'  => __('This application is not allowed to access or delete your direct messages. Corresponds with HTTP 403. The OAuth token does not provide access to Direct Messages.','twitchpress');
-            '99'  => __('Unable to verify your credentials. Corresponds with HTTP 403. The OAuth credentials cannot be validated. Check that the token is still valid.','twitchpress');
-            '120' => __('Account update failed: value is too long (maximum is nn characters). Corresponds with HTTP 403. Thrown when one of the values passed to the update_profile.json endpoint exceeds the maximum value currently permitted for that field. The error message will specify the allowable maximum number of nn characters.','twitchpress');
-            '130' => __('Over capacity. Corresponds with HTTP 503. Twitter is temporarily over capacity.','twitchpress');
-            '131' => __('Internal error. Corresponds with HTTP 500. An unknown internal error occurred.','twitchpress');
-            '135' => __('Could not authenticate you. Corresponds with HTTP 401. Timestamp out of bounds (often caused by a clock drift when authenticating - check your system clock.','twitchpress');
-            '144' => __('No status found with that ID. Corresponds with HTTP 404. The requested Tweet ID is not found (if it existed, it was probably deleted','twitchpress');
-            '150' => __('You cannot send messages to users who are not following you. Corresponds with HTTP 403. Sending a Direct Message failed.','twitchpress');
-            '151' => __('There was an error sending your message: Corresponds with HTTP 403. Sending a Direct Message failed. The reason value will provide more information.','twitchpress');
-            '160' => __('You\'ve already requested to follow user. Corresponds with HTTP 403. This was a duplicated follow request and a previous request was not yet acknowleged.','twitchpress');
-            '161' => __('You are unable to follow more people at this time. Corresponds with HTTP 403. Thrown when a user cannot follow another user due to some kind of limit','twitchpress');
-            '179' => __('Sorry, you are not authorized to see this status. Corresponds with HTTP 403. Thrown when a Tweet cannot be viewed by the authenticating user, usually due to the Tweet’s author having protected their Tweets.','twitchpress');
-            '185' => __('User is over daily status update limit. Corresponds with HTTP 403. Thrown when a Tweet cannot be posted due to the user having no allowance remaining to post. Despite the text in the error message indicating that this error is only thrown when a daily limit is reached, this error will be thrown whenever a posting limitation has been reached. Posting allowances have roaming windows of time of unspecified duration.','twitchpress');
-            '187' => __('Status is a duplicate. The status text has already been Tweeted by the authenticated account.','twitchpress');
-            '205' => __('You are over the limit for spam reports. Corresponds with HTTP 403. The account limit for reporting spam has been reached. Try again later.','twitchpress');
-            '215' => __('Bad authentication data. Corresponds with HTTP 400. The method requires authentication but it was not presented or was wholly invalid.','twitchpress');
-            '220' => __('Your credentials do not allow access to this resource. Corresponds with HTTP 403. The authentication token in use is restricted and cannot access the requested resource.','twitchpress');
-            '226' => __('This request looks like it might be automated. To protect our users from spam and other malicious activity, we can’t complete this action right now.    We constantly monitor and adjust our filters to block spam and malicious activity on the Twitter platform. These systems are tuned in real-time. If you get this response our systems have flagged the Tweet or DM as possibly fitting this profile. If you feel that the Tweet or DM you attempted to create was flagged in error, please report the details around that to us by filing a ticket at https://support.twitter.com/forms/platform.','twitchpress');
-            '231' => __('User must verify login. Returned as a challenge in xAuth when the user has login verification enabled on their account and needs to be directed to twitter.com to generate a temporary password. Note that xAuth is no longer an available option for authentication on the API.','twitchpress');
-            '251' => __('This endpoint has been retired and should not be used. Corresponds to a HTTP request to a retired URL.','twitchpress');
-            '261' => __('Application cannot perform write actions. Corresponds with HTTP 403. Thrown when the application is restricted from POST, PUT, or DELETE actions. Check the information on your application dashboard. See How to appeal application suspension and other disciplinary actions.','twitchpress');
-            '271' => __('You can’t mute yourself. Corresponds with HTTP 403. The authenticated user account cannot mute itself.','twitchpress');
-            '272' => __('You are not muting the specified user. Corresponds with HTTP 403. The authenticated user account is not muting the account a call is attempting to unmute.','twitchpress');
-            '323' => __('Animated GIFs are not allowed when uploading multiple images. Corresponds with HTTP 400. Only one animated GIF is allowed to be attached to a single Tweet.','twitchpress');
-            '324' => __('The validation of media ids failed. Corresponds with HTTP 400. There was a problem with the media ID submitted with the Tweet.','twitchpress');
-            '325' => __('A media id was not found. Corresponds with HTTP 400. The media ID attached to the Tweet was not found.','twitchpress');
-            '326' => __('To protect our users from spam and other malicious activity, this account is temporarily locked. Corresponds with HTTP 403. The user should log in to https://twitter.com to unlock their account before the user token can be used.','twitchpress');
-            '354' => __('The text of your direct message is over the max character limit. Corresponds with HTTP 403. The message size exceeds the number of characters permitted in a Direct Message.','twitchpress');
-            '385' => __('You attempted to reply to a tweet that is deleted or not visible to you. Corresponds with HTTP 403. A reply can only be sent with reference to an existing public Tweet.','twitchpress');
-            '386' => __('The Tweet exceeds the number of allowed attachment types. Corresponds with HTTP 403. A Tweet is limited to a single attachment resource (media, Quote Tweet, etc.)','twitchpress');
-        );   
-        
+            '3'   => __('Corresponds with HTTP 400. The coordinates provided as parameters were not valid for the request.','twitchpress'),
+            '13'  => __('No location associated with the specified IP address. Corresponds with HTTP 404. It was not possible to derive a location for the IP address provided as a parameter on the geo search request.','twitchpress'),
+            '17'  => __('No user matches for specified terms. Corresponds with HTTP 404. It was not possible to find a user profile matching the parameters specified.','twitchpress'),
+            '32'  => __('Corresponds with HTTP 401. There was an issue with the authentication data for the request.','twitchpress'),
+            '34'  => __('Corresponds with HTTP 404. The specified resource was not found.','twitchpress'),
+            '36'  => __('You cannot report yourself for spam. Corresponds with HTTP 403. You cannot use your own user ID in a report spam call.','twitchpress'),
+            '44'  => __('Corresponds with HTTP 400. The URL value provided is not a URL that can be attached to this Tweet.','twitchpress'),
+            '50'  => __('Corresponds with HTTP 404. The user is not found.','twitchpress'),
+            '63'  => __('User has been suspended. Corresponds with HTTP 403 The user account has been suspended and information cannot be retrieved.','twitchpress'),
+            '64'  => __('Your account is suspended and is not permitted to access this feature. Corresponds with HTTP 403. The access token being used belongs to a suspended user.','twitchpress'),
+            '68'  => __('The Twitter REST API v1 is no longer active. Please migrate to API v1.1. Corresponds to a HTTP request to a retired v1-era URL.','twitchpress'),
+            '87'  => __('Client is not permitted to perform this action. Corresponds with HTTP 403. The endpoint called is not a permitted URL.','twitchpress'),
+            '88'  => __('Rate limit exceeded. The request limit for this resource has been reached for the current rate limit window.','twitchpress'),
+            '89'  => __('Invalid or expired token. The access token used in the request is incorrect or has expired.','twitchpress'),
+            '92'  => __('SSL is required. Only SSL connections are allowed in the API. Update the request to a secure connection. See how to connect using TLS','twitchpress'),
+            '93'  => __('This application is not allowed to access or delete your direct messages. Corresponds with HTTP 403. The OAuth token does not provide access to Direct Messages.','twitchpress'),
+            '99'  => __('Unable to verify your credentials. Corresponds with HTTP 403. The OAuth credentials cannot be validated. Check that the token is still valid.','twitchpress'),
+            '120' => __('Account update failed: value is too long (maximum is nn characters). Corresponds with HTTP 403. Thrown when one of the values passed to the update_profile.json endpoint exceeds the maximum value currently permitted for that field. The error message will specify the allowable maximum number of nn characters.','twitchpress'),
+            '130' => __('Over capacity. Corresponds with HTTP 503. Twitter is temporarily over capacity.','twitchpress'),
+            '131' => __('Internal error. Corresponds with HTTP 500. An unknown internal error occurred.','twitchpress'),
+            '135' => __('Could not authenticate you. Corresponds with HTTP 401. Timestamp out of bounds (often caused by a clock drift when authenticating - check your system clock.','twitchpress'),
+            '144' => __('No status found with that ID. Corresponds with HTTP 404. The requested Tweet ID is not found (if it existed, it was probably deleted','twitchpress'),
+            '150' => __('You cannot send messages to users who are not following you. Corresponds with HTTP 403. Sending a Direct Message failed.','twitchpress'),
+            '151' => __('There was an error sending your message: Corresponds with HTTP 403. Sending a Direct Message failed. The reason value will provide more information.','twitchpress'),
+            '160' => __('You\'ve already requested to follow user. Corresponds with HTTP 403. This was a duplicated follow request and a previous request was not yet acknowleged.','twitchpress'),
+            '161' => __('You are unable to follow more people at this time. Corresponds with HTTP 403. Thrown when a user cannot follow another user due to some kind of limit','twitchpress'),
+            '179' => __('Sorry, you are not authorized to see this status. Corresponds with HTTP 403. Thrown when a Tweet cannot be viewed by the authenticating user, usually due to the Tweet’s author having protected their Tweets.','twitchpress'),
+            '185' => __('User is over daily status update limit. Corresponds with HTTP 403. Thrown when a Tweet cannot be posted due to the user having no allowance remaining to post. Despite the text in the error message indicating that this error is only thrown when a daily limit is reached, this error will be thrown whenever a posting limitation has been reached. Posting allowances have roaming windows of time of unspecified duration.','twitchpress'),
+            '187' => __('Status is a duplicate. The status text has already been Tweeted by the authenticated account.','twitchpress'),
+            '205' => __('You are over the limit for spam reports. Corresponds with HTTP 403. The account limit for reporting spam has been reached. Try again later.','twitchpress'),
+            '215' => __('Bad authentication data. Corresponds with HTTP 400. The method requires authentication but it was not presented or was wholly invalid.','twitchpress'),
+            '220' => __('Your credentials do not allow access to this resource. Corresponds with HTTP 403. The authentication token in use is restricted and cannot access the requested resource.','twitchpress'),
+            '226' => __('This request looks like it might be automated. To protect our users from spam and other malicious activity, we can’t complete this action right now.    We constantly monitor and adjust our filters to block spam and malicious activity on the Twitter platform. These systems are tuned in real-time. If you get this response our systems have flagged the Tweet or DM as possibly fitting this profile. If you feel that the Tweet or DM you attempted to create was flagged in error, please report the details around that to us by filing a ticket at https://support.twitter.com/forms/platform.','twitchpress'),
+            '231' => __('User must verify login. Returned as a challenge in xAuth when the user has login verification enabled on their account and needs to be directed to twitter.com to generate a temporary password. Note that xAuth is no longer an available option for authentication on the API.','twitchpress'),
+            '251' => __('This endpoint has been retired and should not be used. Corresponds to a HTTP request to a retired URL.','twitchpress'),
+            '261' => __('Application cannot perform write actions. Corresponds with HTTP 403. Thrown when the application is restricted from POST, PUT, or DELETE actions. Check the information on your application dashboard. See How to appeal application suspension and other disciplinary actions.','twitchpress'),
+            '271' => __('You can’t mute yourself. Corresponds with HTTP 403. The authenticated user account cannot mute itself.','twitchpress'),
+            '272' => __('You are not muting the specified user. Corresponds with HTTP 403. The authenticated user account is not muting the account a call is attempting to unmute.','twitchpress'),
+            '323' => __('Animated GIFs are not allowed when uploading multiple images. Corresponds with HTTP 400. Only one animated GIF is allowed to be attached to a single Tweet.','twitchpress'),
+            '324' => __('The validation of media ids failed. Corresponds with HTTP 400. There was a problem with the media ID submitted with the Tweet.','twitchpress'),
+            '325' => __('A media id was not found. Corresponds with HTTP 400. The media ID attached to the Tweet was not found.','twitchpress'),
+            '326' => __('To protect our users from spam and other malicious activity, this account is temporarily locked. Corresponds with HTTP 403. The user should log in to https://twitter.com to unlock their account before the user token can be used.','twitchpress'),
+            '354' => __('The text of your direct message is over the max character limit. Corresponds with HTTP 403. The message size exceeds the number of characters permitted in a Direct Message.','twitchpress'),
+            '385' => __('You attempted to reply to a tweet that is deleted or not visible to you. Corresponds with HTTP 403. A reply can only be sent with reference to an existing public Tweet.','twitchpress'),
+            '386' => __('The Tweet exceeds the number of allowed attachment types. Corresponds with HTTP 403. A Tweet is limited to a single attachment resource (media, Quote Tweet, etc.)','twitchpress'),
+        );  
+
         return array( 'titles' => $titles, 'description' => $descriptions );
     }
     
     /**
-    * Rate Limits Array (all  endpoints)
+    * Default Rate Limits Array (all endpoints)
     * 
-    * The API rate limits described in this table refer to  (read) endpoints.
+    * The API rate limits described in this table refer to (read) endpoints.
     * 
     * Note that endpoints not listed in the chart default to 15 requests per allotted user. All request windows are 15 minutes in length.
     * 
     * For POST (create and delete) operations, refer to Twitter’s Account Limits support page in order to understand the daily limits that apply on a per-user basis.
+    * 
+    * APP RATE LIMITS: GET application/rate_limit_status
+    * This endpoints can be used to get application specific rate limits and may be used later in this method. 
     * 
     * @version 1.0
     */
@@ -369,7 +373,7 @@ class Twitter_API
      */
     public function buildOauth($url, $requestMethod)
     {
-        if (!in_array(strtolower($requestMethod); array('post', 'get', 'put', 'delete')))
+        if ( !in_array(strtolower($requestMethod), array('post', 'get', 'put', 'delete')))
         {
             throw new Exception('Request method must be either POST,  or PUT or DELETE');
         }
@@ -381,10 +385,10 @@ class Twitter_API
 
         $oauth = array(
             'oauth_consumer_key' => $consumer_key,
-            'oauth_nonce' => time();
+            'oauth_nonce' => time(),
             'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_token' => $oauth_access_token,
-            'oauth_timestamp' => time();
+            'oauth_timestamp' => time(),
             'oauth_version' => '1.0'
         );
 
@@ -443,12 +447,12 @@ class Twitter_API
             throw new Exception('performRequest parameter must be true or false');
         }
 
-        $header =  array($this->buildAuthorizationHeader($this->oauth); 'Expect:');
+        $header =  array($this->buildAuthorizationHeader($this->oauth), 'Expect:');
 
         $getfield = $this->getGetfield();
         $postfields = $this->getPostfields();
 
-        if (in_array(strtolower($this->requestMethod); array('put', 'delete')))
+        if (in_array(strtolower($this->requestMethod), array('put', 'delete')))
         {
             $curlOptions[CURLOPT_CUSTOMREQUEST] = $this->requestMethod;
         }
