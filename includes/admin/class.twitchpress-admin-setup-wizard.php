@@ -619,7 +619,7 @@ class TwitchPress_Admin_Setup_Wizard {
         update_option( 'twitchpress_main_channel_name',  $main_channel,  true );
                                   
         // Added November 2017 - Generate an App Access Token
-        $maybe_token = $pre_credentials_kraken->request_app_access_token( __FUNCTION__ );                          
+        $pre_credentials_kraken->request_app_access_token( __FUNCTION__ );                          
                                  
         // Confirm the giving main channel is valid. 
         $kraken_calls_obj = new TWITCHPRESS_Kraken_Calls();

@@ -34,6 +34,7 @@ class TWITCHPRESS_Kraken_API {
     protected $twitch_client_code            = null;
     protected $twitch_client_token           = null;
     protected $twitch_global_accepted_scopes = null;
+    protected $twitch_user_token             = null;
     
     // Debugging variables.
     public $twitch_call_name = 'Unknown';
@@ -97,7 +98,10 @@ class TWITCHPRESS_Kraken_API {
     * @version 1.0
     */
     public function __construct(){
+        // Load logging, reporting and debugging service. 
         $this->bugnet = new BugNet();
+        
+        // Set all app credentials for this library to use. 
         $this->set_application_credentials();
     } 
 
@@ -106,15 +110,26 @@ class TWITCHPRESS_Kraken_API {
     * in the WordPress options table. 
     * 
     * @param mixed $app
+    * 
+    * @version 5.0
     */
     public function set_application_credentials( $app = 'main' ) {
+        
         $this->twitch_default_channel = get_option( 'twitchpress_' . $app . '_channel_name' );   
         $this->twitch_channel_id      = get_option( 'twitchpress_' . $app . '_channel_id' );   
         $this->twitch_client_url      = get_option( 'twitchpress_' . $app . '_redirect_uri' );   
         $this->twitch_client_id       = get_option( 'twitchpress_' . $app . '_client_id' ); 
         $this->twitch_client_secret   = get_option( 'twitchpress_' . $app . '_client_secret' );                           
-        $this->twitch_client_code     = get_option( 'twitchpress_' . $app . '_code' );                           
-        $this->twitch_client_token    = get_option( 'twitchpress_' . $app . '_token' );                           
+        $this->twitch_client_code     = get_option( 'twitchpress_' . $app . '_code' ); 
+        
+        // Tokens expire so we will check our current token and update option if needed.  
+        $this->establish_application_token( __FUNCTION__ );
+        
+        // Set token which should be old and valid or new and valid.                           
+        $this->twitch_client_token = get_option( 'twitchpress_' . $app . '_token' );   
+        
+        // Set users token.
+        $this->twitch_user_token = twitchpress_get_user_token( get_current_user_id() );               
     }
     
     /**
@@ -285,25 +300,27 @@ class TWITCHPRESS_Kraken_API {
             return false;
         }
    
-        // We established a legit oAuth2 scenario by an administator, we can begin storing data.
+        // We established a legit oAuth2 scenario by an administator. 
         update_option( 'twitchpress_main_code', $_GET['code'] );
    
         $kraken = new TWITCHPRESS_Kraken_Calls();
-        $new_token = $kraken->generateToken( $_GET['code'] );
-
-        if( !$new_token ) {  
+        
+        // We need a Twitch API user token for the current administrator only. 
+        $new_user_token = $kraken->request_user_access_token( get_current_user_id(), $_GET['code'], __FUNCTION__ );
+                                                                      
+        if( !$new_user_token ) {  
             $bugnet->trace( 'oauth2mainaccount',
                 __LINE__,
                 __FUNCTION__,
                 __FILE__,
                 true,
-                __( 'Token request failed.', 'twitchpress' )
+                __( 'Early token request failed.', 'twitchpress' )
             );     
                    
             return;
         }
 
-        if( !$new_token['token'] ) {        
+        if( !$new_user_token['token'] ) {        
             $bugnet->trace( 'oauth2mainaccount',
                 __LINE__,
                 __FUNCTION__,
@@ -313,10 +330,8 @@ class TWITCHPRESS_Kraken_API {
             );      
                   
             return;
-        }
-        
-        update_option( 'twitchpress_main_token', $new_token['token'] );
-         
+        }                             
+
         TwitchPress_Admin_Notices::add_custom_notice( 'mainkrakenapplicationsetup', __( 'A token has been granted by the Twitch API. Your site is now authorized to make calls to the Twitch API and will attempt to make a call now.')  );
                
         // Confirm the giving main (default) channel is valid. 
@@ -344,7 +359,7 @@ class TWITCHPRESS_Kraken_API {
         twitchpress_update_user_oauth( 
             get_current_user_id(), 
             $_GET['code'], 
-            $new_token['token'], 
+            $new_user_token['token'], 
             $user_objects['users'][0]['_id'] 
         );
         
@@ -474,21 +489,24 @@ class TWITCHPRESS_Kraken_API {
      */
     protected function cURL_get($url, array $get = array(), array $options = array(), $returnStatus = false, $function = '' ){
 
-        // Specify the header
+        // Application
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         
+        // Client ID
+        $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
+        
+        // Token
         $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) 
                         || (array_key_exists('oauth_token', $get) === true))) 
                                 ? array_merge($header, array('Authorization: OAuth ' . $get['oauth_token'])) : $header ;
                                                         // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
-        $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
 
         if (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) || (array_key_exists('oauth_token', $get) === true))) {
             unset($get['oauth_token']);
         }
-        
+
         $cURL_URL = rtrim($url . '?' . http_build_query($get), '?');
-        
+              
         $default = array(
             CURLOPT_URL => $cURL_URL, 
             CURLOPT_HEADER => 0, 
@@ -499,7 +517,7 @@ class TWITCHPRESS_Kraken_API {
             CURLOPT_TIMEOUT => TWITCHPRESS_DEFAULT_TIMEOUT,
             CURLOPT_HTTPHEADER => $header
         );
-        
+               
         // Do we have a certificate to use?  if OpenSSL is available, there will be a certificate
         if ( TWITCHPRESS_CERT_PATH != '' ){
 
@@ -599,7 +617,7 @@ class TWITCHPRESS_Kraken_API {
 
         // Custom build the post fields
         foreach ($post as $field => $value) {
-            $postfields .= $field . '=' . urlencode( $value ) . '&';
+            $postfields .= $field . '=' . $value . '&';
         }
         
         // Strip the trailing &
@@ -619,7 +637,7 @@ class TWITCHPRESS_Kraken_API {
             CURLOPT_FORBID_REUSE => 1,
             CURLOPT_HTTPHEADER => $header
         );
-                   
+                  
         // Do we have a certificate to use?  if OpenSSL is available, there will be a certificate
         if ( TWITCHPRESS_CERT_PATH != '' ){
             // Overwrite outr defaults to include the SSL cert and options
@@ -1339,15 +1357,13 @@ class TWITCHPRESS_Kraken_API {
      * 
      * @link https://dev.twitch.tv/docs/authentication#oauth-authorization-code-flow-user-access-tokens
      * 
-     * This token is meant for authorizing the application and making API calls related to the main channel
-     * and public data. User specific channel access requires Auth Authorization Code Flow (User Access Tokens)
-     * and the token is generated using a different header.
+     * This token is meant for authorizing the application and making API calls that are not channel-auth specific. 
      * 
      * @param $code - [string] String of auth code used to grant authorization
      * 
      * @return array $token - The generated token and the array of all scopes returned with the token, keyed.
      * 
-     * @version 1.0
+     * @version 1.2
      */
     public function request_app_access_token( $requesting_function = null ){
 
@@ -1356,22 +1372,32 @@ class TWITCHPRESS_Kraken_API {
             'client_id'     => $this->twitch_client_id,
             'client_secret' => $this->twitch_client_secret,
             'grant_type'    => 'client_credentials',
-            'scope'         => twitchpress_prepare_scopes( $this->get_global_accepted_scopes(), true ),
+            'scope'         => twitchpress_prepare_scopes( array( 'channel_read', 'channel_check_subscription' ) )
         );
        
         $options = array();
           
         $result = json_decode($this->cURL_post($url, $post, $options, false), true);
-        
+    
         if ( is_array( $result ) && array_key_exists( 'access_token', $result ) )
         {
             $token['token'] = $result['access_token'];
             $token['scopes'] = $result['scope'];
             
             $appending = '';
-            if( $requesting_function == null ) { $appending = $token['token']; }
-            else{ $appending = sprintf( __( 'Requesting function was %s() and the token is %s.', 'twitchpress' ), $requesting_function, $token['token'] ); }
+            if( $requesting_function == null ) 
+            { 
+                $appending = $token['token']; 
+            }
+            else
+            { 
+                $appending = sprintf( __( 'Requesting function was %s() and the token is %s.', 'twitchpress' ), $requesting_function, $token['token'] ); 
+            }
+            
             $this->bugnet->log( __FUNCTION__, sprintf( __( 'Access token returned. %s', 'twitchpress' ), $appending ), array(), true, false );
+            
+            // Store the new token for the entire TwitchPress system to use.
+            $this->update_main_client_token( $token['token'] );
             
             return $token;
         } 
@@ -1387,15 +1413,16 @@ class TWITCHPRESS_Kraken_API {
     }
     
     /**
-     * Generate an Auth key (token) for our session to use if we don't have one.
+     * Generate a visitor/user access token. This also applies to the administrator who
+     * sets the main account because they are also a user.  
      * 
      * @param $code - [string] String of auth code used to grant authorization
      * 
      * @return array $token - The generated token and the array of all scopes returned with the token, keyed.
      * 
-     * @version 2.2
+     * @version 5.0
      */
-    public function generateToken( $code = null, $requesting_function = null ){
+    public function request_user_access_token( $user_id, $code = null, $requesting_function = null ){
 
         if( !$code ) {
             $code = $this->twitch_client_code;
@@ -1403,7 +1430,7 @@ class TWITCHPRESS_Kraken_API {
         
         $url = 'https://api.twitch.tv/kraken/oauth2/token';
         $post = array(
-            'client_id' => $this->twitch_client_id,
+            'client_id' => $this->twitch_client_id,         
             'client_secret' => $this->twitch_client_secret,
             'grant_type' => 'authorization_code',
             'redirect_uri' => $this->twitch_client_url,
@@ -1425,6 +1452,8 @@ class TWITCHPRESS_Kraken_API {
             else{ $appending = sprintf( __( 'Requesting function was %s() and the token is %s.', 'twitchpress' ), $requesting_function, $token['token'] ); }
             $this->bugnet->log( __FUNCTION__, sprintf( __( 'Access token returned. %s', 'twitchpress' ), $appending ), array(), true, false );
             
+            twitchpress_update_user_token( $user_id, $token ); 
+            
             return $token;
         } 
         else 
@@ -1441,36 +1470,66 @@ class TWITCHPRESS_Kraken_API {
     /**
      * Checks a token for validity and access grants available.
      * 
+     * @return array $result if token is still valid, else false.  
+     * 
+     * @version 5.2
+     */    
+    public function check_application_token(){
+        $token = $this->get_main_client_token();
+        $url = 'https://api.twitch.tv/kraken';
+        $post = array( 
+            'oauth_token' => $token, 
+            'client_id'   => $this->twitch_client_id,          
+        );
+
+        $result = json_decode( $this->cURL_get( $url, $post, array(), false, __FUNCTION__ ), true );                   
+    
+        if ( isset( $result['token']['valid'] ) && $result['token']['valid'] )
+        {       
+            return $result;
+        } 
+        else 
+        {
+            $this->bugnet->log( __FUNCTION__, __( 'Invalid token', 'twitchpress' ), array(), true, true );
+            return false;
+        }
+        
+        return false;     
+    }        
+                   
+    /**
+     * Checks a user oAuth2 token for validity.
+     * 
      * @param $authToken - [string] The token that you want to check
      * 
      * @return $authToken - [array] Either the provided token and the array of scopes if it was valid or false as the token and an empty array of scopes
      * 
-     * @version 5.0
+     * @version 5.5
      */    
-    public function checkToken( $authToken = null ){
-        if( !$authToken ) {
-            $authToken = $this->twitch_client_token;
-        }                             
+    public function check_user_token( $user_id ){
+        // Get the giving users token. 
+        $user_token = twitchpress_get_user_token( $user_id );
         
-        $url = 'https://api.twitch.tv/kraken?client_id=' . $this->twitch_client_id;
+        $url = 'https://api.twitch.tv/kraken';
         $post = array(
-            'oauth_token' => $authToken
+            'oauth_token' => $user_token,
+            'client_id'   => $this->twitch_client_id,
         );
         $options = array();
         
         $result = json_decode( $this->cURL_get( $url, $post, $options, false, __FUNCTION__ ), true );                   
-        
+          
         $token = array();
         
         if ( isset( $result['token'] ) && isset( $result['token']['valid'] ) && $result['token']['valid'] )
-        {
-            $token['token'] = $authToken;
+        {      
+            $token['token'] = $user_token;
             $token['scopes'] = $result['token']['authorization']['scopes'];
             $token['name'] = $result['token']['user_name'];
         } 
         else 
         {
-            $this->bugnet->log( __FUNCTION__, __( 'Invalid token', 'twitchpress' ), array(), true, true );
+            $this->bugnet->log( __FUNCTION__, __( 'Invalid user token', 'twitchpress' ), array(), true, true );
             $token['token'] = false;
             $token['scopes'] = array();
             $token['name'] = '';
@@ -1478,23 +1537,57 @@ class TWITCHPRESS_Kraken_API {
         
         return $token;     
     }
-    
-    public function establish_token( $old_token ) { 
-        $result = $this->checkToken( $old_token );  
 
-        if ( !isset( $result['token'] ) || !$result['token'] ){
-            return $this->generateToken( $this->twitch_client_code );
+    /**
+    * Establish an application token.
+    * 
+    * This method will check the existing token.
+    * Existing token invalid, it will request a new one. 
+    * Various values can be replaced during this procedure to help
+    * generate debugging information for users.  
+    * 
+    * @param mixed $old_token
+    * 
+    * @returns array $result if token valid, else returns the return from request_app_access_token(). 
+    * 
+    * @version 5.0
+    */
+    public function establish_application_token( $function ) {     
+        $result = $this->check_application_token();  
+
+        if ( !isset( $result['token']['valid'] ) || !$result['token']['valid'] ){
+            return $this->request_app_access_token( $function . ' + ' . __FUNCTION__ );
         }
 
         return $result;
     }
+    
+    /**
+    * Establish current user token or token on behalf of a user who has
+    * giving permission for extended sessions.
+    * 
+    * @returns array $result if token valid, else returns the return from request_app_access_token(). 
+    * 
+    * @version 5.0
+    */
+    public function establish_user_token( $function, $user_id ) { 
+        // Maybe use an existing token? 
+        $result = $this->check_user_token( $user_id );  
+
+        if ( !isset( $result['token']['valid'] ) || !$result['token']['valid'] ){
+            return $this->request_user_access_token( $user_id );
+        }
+
+        return $result;
+    }
+    
     /**
     * Generate an oAuth2 Twitch API URL for an administrator only. The procedure
     * for public visitors will use different methods for total clarity when it comes to
     * security. 
     * 
     * @author Ryan Bayne
-    * @version 3.0
+    * @version 5.0
     * 
     * @param mixed $permitted_scopes
     * @param mixed $state_array
@@ -1510,14 +1603,14 @@ class TWITCHPRESS_Kraken_API {
         // Primary request handler - value is checked on return from Twitch.tv
         set_transient( 'twitchpress_oauth_' . $local_state['random14'], $local_state, 6000 );
   
-        $scopes_urlencoded = twitchpress_prepare_scopes( $permitted_scopes, true );
+        $scope = twitchpress_prepare_scopes( $permitted_scopes, true );
 
         // Build oauth2 URL.
         $url = 'https://api.twitch.tv/kraken/oauth2/authorize?' .
             'response_type=code' . '&' .
             'client_id=' . $this->twitch_client_id . '&' .
             'redirect_uri=' . $this->twitch_client_url . '&' .
-            'scope=' . $scopes_urlencoded . '&' .
+            'scope=' . $scope . '&' .
             'state=' . $local_state['random14'];
             
         $bugnet->log( __FUNCTION__, sprintf( __( 'The oAuth2 URL is %s.', 'twitchpress' ), $url ), array(), true, false );
@@ -1670,6 +1763,10 @@ class TWITCHPRESS_Kraken_API {
         return get_option( 'twitchpress_main_token' );
     }  
     
+    public function update_main_client_token( $token ) {
+        return update_option( 'twitchpress_main_token', $token );
+    }
+ 
     /**
     * Confirms if the $scope has been permitted for the
     * $side the call applies to.

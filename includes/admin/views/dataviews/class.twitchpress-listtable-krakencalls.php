@@ -63,9 +63,9 @@ class TwitchPress_ListTable_Krakencalls extends WP_List_Table {
         // Loop on individual trace entries. 
         foreach( $get_calls['get']['requests'] as $key => $entry ) {
 
-            // Filter very common
-            if( $entry['function'] == 'getChannelObject_Authd' ){ continue; }
-            if( $entry['function'] == 'checkToken' ){ continue; }
+            // Filter very common functions.
+            if( $entry['function'] == 'get_tokens_channel' ){ continue; }
+            if( $entry['function'] == 'check_user_token' ){ continue; }
             
             ++$entry_counter;
             

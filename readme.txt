@@ -82,6 +82,18 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
+= 1.5.8 NOT RELEASED = 
+* DEV - Scope value removed from request_app_access_token()
+* DEV - request_app_access_token() now updates the stored token.
+* DEV - WP posts will be shareable by default now to avoid confusion. 
+* DEV - Ripple of changes through Kraken 5 library to improve token handling. 
+* DEV - Function generateToken() is now request_user_access_token(). 
+* DEV - $code parameter removed from getChannelObject_Authd(). 
+* DEV - getChannelObject_Authd() replaced with get_tokens_channel().
+* DEV - twitchpress_prepare_scopes() adds + and not literal spaces.
+* DEV - Status section of Help tab now performs more tests. 
+* INFO - 400, 401 and 500 errors returned again but have been addressed.
+* DEV - get_channel_subscribers() no longer uses add_query_args(). 
 
 = 1.5.7 =
 * DEV - Scope missing log entries now include the missing scope in confirm_scope(). 

@@ -268,6 +268,7 @@ class TwitchPress_Admin_Help {
         $channel_display_name = __( 'Not Found', 'twitchpress' );
         $channel_status = __( 'Not Found', 'twitchpress' );
         $channel_game = __( 'Not Found', 'twitchpress' );
+        $current_user_id = get_current_user_id();
         
         // Check for existing cache.
         $cache = get_transient( 'twitchpresshelptabstatus' );
@@ -278,25 +279,25 @@ class TwitchPress_Admin_Help {
         }
         
         // No existing cache found, so test Kraken, generate output, cache output, output output!
-        $output = '';
+        $output = __( '<p>You are viewing real-time data on this request (not cached). The data will be cached for 60 seconds.</p>', 'twitchpress' );  
+;
         $kraken = new TWITCHPRESS_Kraken_Calls();
+
+        // Test Top Game 
+        $output .= '<h2>' . __( 'Test: Get Top Game', 'twitchpress' ) . '</h2>';
+        $channel = $kraken->get_top_games();
+        $output .= $channel['top'][0]['game']['name'];        
         
-        // Token
-        $token = $kraken->checkToken();
-        $output .= '<h2>' . __( 'Existing Token Check', 'twitchpress' ) . '</h2>';
-        if( is_string( $token['token'] ) ) 
-        {
-            $output .= __( 'The existing token passed and is ready.', 'twitchpress' );        
-        } 
-        elseif( $token['token'] === false ) 
-        {
-            $output .= __( 'The existing token was rejected. TwitchPress will now request a new token.', 'twitchpress' );
-            $new_token = $kraken->generateToken();
-        }
-        
-        // Get authenticated channel object. 
-        $output .= '<h2>' . __( 'Get Main Channel Test', 'twitchpress' ) . '</h2>';
-        $channel = $kraken->getChannelObject_Authd();
+        // Test Check Users Token
+        $output .= '<h2>' . __( 'Test: Check Current Users Token', 'twitchpress' ) . '</h2>';
+        $token_result = $kraken->check_user_token( $current_user_id );
+        $output .= __( 'Result: ' ) . $token_result['name'];
+
+        // Test Get Users Channel
+        $output .=  '<h2>Test: Get Current Users Channel</h2>';
+        $current_user_token = twitchpress_get_user_token( $current_user_id );
+        $channel = $kraken->get_tokens_channel( $current_user_token );
+        $output .= __( 'Result:  ' ) . $channel['display_name'];
         
         if( !$channel ) 
         {
@@ -313,7 +314,7 @@ class TwitchPress_Admin_Help {
             if( isset( $channel['status'] ) ) { $channel_status = $channel['status']; }
             if( isset( $channel['game'] ) ) { $channel_game = $channel['game']; }
             
-            $output .= '<h3>' . __( 'Result: Ready!', 'twitchpress' ) . '</h3>'; 
+            $output .= '<h3>' . __( 'Overall Result: Ready!', 'twitchpress' ) . '</h3>'; 
             $output .= __( 'TwitchPress is communicating with Twitch.tv. Here\'s some of your main channels information...to prove it!', 'twitchpress' );    
             $output .= '<ul>';
             $output .= '<li><strong>Display Name: </strong>' . $channel_display_name . '</li>';
@@ -322,11 +323,10 @@ class TwitchPress_Admin_Help {
             $output .= '</ul>';
         }
         
+        // Avoid making these requests for every admin page request. 
         set_transient( 'twitchpresshelptabstatus', $output, 60 );
         
-        print $output;  
-        
-        _e( '<p>You are viewing real-time results on this request (not cached). The results will be cached for 60 seconds to reduce the risk of flooding the Twitch API.</p>', 'twitchpress' );  
+        print $output;       
     }
 }
 

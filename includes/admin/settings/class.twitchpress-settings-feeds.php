@@ -211,7 +211,7 @@ class TwitchPress_Settings_Feeds extends TwitchPress_Settings_Page {
                     'title'   => __( 'Posts', 'twitchpress' ),
                     'desc'    => __( 'Allow the standard WP post type to be shared.', 'twitchpress' ),
                     'id'      => 'twitchpress_shareable_posttype_post',
-                    'default' => 'no',
+                    'default' => 'yes',
                     'type'    => 'checkbox'
                 ),
 

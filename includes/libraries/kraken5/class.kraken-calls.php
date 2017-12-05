@@ -40,7 +40,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     * 
     * @param mixed $users
     * 
-    * @version 5.6
+    * @version 5.7
     */
     public function get_users( $users ) {
         
@@ -56,12 +56,10 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         }
 
         $url = 'https://api.twitch.tv/kraken/users?login=' . $users_string;
-        $url.= '&client_id=' . $this->twitch_client_id;
-        $options = array();
-        $get = array();
+        $get = array( 'client_id' => $this->twitch_client_id );
         
         // Build our cURL query and store the array
-        $usersObject = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__ ), true);
+        $usersObject = json_decode( $this->cURL_get( $url, $get, array(), false, __FUNCTION__ ), true );
 
         return $usersObject;        
     }
@@ -75,7 +73,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $userObject - [array] Returned object for the query
      * 
-     * @version 5.5
+     * @version 5.6
      */ 
     public function getUserObject_Authd( $token, $code ){
         
@@ -84,30 +82,29 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
          
         // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
+        $auth = $this->establish_token( __FUNCTION__ );
         $token = $auth['token'];
                
-        $url = 'https://api.twitch.tv/kraken/user?client_id=' . $this->twitch_client_id;
-        $options = array();
-        $get = array('oauth_token' => $token );
+        $url = 'https://api.twitch.tv/kraken/user';
+        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
                           
         // Build our cURL query and store the array
-        $userObject = json_decode( $this->cURL_get( $url, $get, $options, false, __FUNCTION__ ), true );
+        $userObject = json_decode( $this->cURL_get( $url, $get, array(), false, __FUNCTION__ ), true );
 
         return $userObject;
     }
     
     /**
-     * Grabs an authenticated channel object using an authentication key to determine what channel to grab
+     * Gets the channel object that belongs to the giving token.
      * 
      * @param $token - [string] Authentication key used for the session
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $object - [array] Keyed array of all channel data
      * 
-     * @version 5.2
+     * @version 5.3
      */ 
-    public function getChannelObject_Authd( $token = null, $code = null ){        
+    public function get_tokens_channel( $token = null ){        
                                  
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_read', 'channel', __FUNCTION__ );
@@ -116,20 +113,11 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         if( !$token ) {
             $token = $this->twitch_client_token;
         }
-        
-        if( !$code ) {
-            $code = $this->twitch_client_code;
-        }
-        
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
-        
-        $url = 'https://api.twitch.tv/kraken/channel';
-        $get = array( 'oauth_token' => $token );
-        $options = array();
 
-        $object = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__ ), true);
+        $url = 'https://api.twitch.tv/kraken/channel';
+        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
+
+        $object = json_decode($this->cURL_get($url, $get, array(), false, __FUNCTION__ ), true);
         
         if (!is_array($object)){
             $object = array(); // Catch to make sure that an array is returned no matter what, technically our fail state
@@ -140,6 +128,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         
     /**
     * Returns posts from the feed of the giving channel.
+    * 
+    * @link https://dev.twitch.tv/docs/v5/reference/channel-feed#get-multiple-feed-posts
     * 
     * @param $chan - [string] Channel name to grab video objects from
     * @param $limit - [int] Limit of channel objects to return
@@ -152,18 +142,16 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     * @version 5.3
     */ 
     public function getFeedPosts( $chan, $limit = -1, $offset = 0, $returnTotal = false ) {
-
-        // Init some vars
         $feedpostsObjects = array();     
         $feedposts = array();
-        $options = array();
+       
         $url = 'https://api.twitch.tv/kraken/feed/' . $chan . '/posts';
 
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $feedposts = $this->get_iterated( $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $feedposts = $this->get_iterated( $url, array(), $limit, $offset, 'videos', null, null, null, null, null, null, null, null, null, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -213,7 +201,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     * @param mixed $returnStatus
     * 
     * @author Ryan R. Bayne
-    * @version 5.0
+    * @version 5.2
     */
     public function postFeedPost( $postparam = array(), $options = array() ){
 
@@ -221,12 +209,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'channel_feed_edit', 'both', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
 
-        $url = 'https://api.twitch.tv/kraken/feed/';
-        $url.= $this->twitch_channel_id;
-        $url.= '/posts';
-        $url.= '?client_id=' . $this->twitch_client_id; 
-                          
-        $post = array( 'oauth_token' => $this->twitch_client_token );
+        $url = 'https://api.twitch.tv/kraken/feed/' . $this->twitch_channel_id . '/posts';
+        $post = array( 'oauth_token' => $this->twitch_client_token, 'client_id' => $this->twitch_client_id );
         $post = array_merge( $post, $postparam );
                     
         $returned_status = $this->cURL_post( $url, $post, $options, true, __FUNCTION__ );
@@ -235,62 +219,6 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
 
         return $returned_status;  
     }  
-        
-    /**
-     * Gets a specified user's block list. List sorted by recency, newest first.
-     * 
-     * @param $chan - [string] Channel name to grab blocked users list from
-     * @param $limit - [int] Limit of users to grab, -1 is unlimited
-     * @param $offset - [int] The starting offset of the query
-     * @param $token - [string] Authentication key used for the session
-     * @param $code - [string] Code used to generate an Authentication key
-     * @param $returnTotal - [bool] Returns a _total row in the array
-     * 
-     * @return $blockedUsers - Unkeyed array of all blocked users to limit
-     * 
-     * @version 5.3
-     */ 
-    public function getBlockedUsers($chan, $limit = -1, $offset = 0, $token, $code, $returnTotal = false) {
-    
-        // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
-        $confirm_scope = $this->confirm_scope( 'user_blocks_read', 'user', __FUNCTION__ );
-        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
-            
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
-        
-        $url = 'https://api.twitch.tv/kraken/users/' . $chan . '/blocks';
-        $options = array(); // For things where I don't put in any default data, I will leave the end user the capability to configure here
-        $usernames = array();
-        $usernamesObject = array();
-        $counter = 0;
-        
-        // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
-        $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
-        
-        $usernamesObject = $this->get_iterated( $url, $options, $limit, $offset, 'blocks', $token, null, null, null, null, null, null, null, null, $returningTotal);
-
-        // Include the total if we were asked to return it (In limitless cases))
-        if ($returnTotal && ($limit == -1) && ($offset == 0)) {
-            $usernames['_total'] = count($usernamesObject);
-        }
-        
-        // Set the array
-        foreach ($usernamesObject as $key => $user){
-            if ($key == '_total'){
-                // It isn't really the user, but this stops code changes
-                $usernames[$key] = $user;
-                continue;
-            }
-            
-            $usernames[$counter] = $user['user'][TWITCH_KEY_NAME];
-            $counter ++;
-        }
-        
-        // Return out our unkeyed or empty array
-        return $usernames;
-    }
     
     /**
      * Adds a user to a channel's blocked list
@@ -310,15 +238,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'user_blocks_edit', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
                 
         $url = 'https://api.twitch.tv/kraken/users/' . $chan . '/blocks/' . $username;
-        $options = array();
-        $post = array('oauth_token' => $token);
+        $post = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id);
             
-        $result = $this->cURL_put($url, $post, $options, true);
+        $result = $this->cURL_put($url, $post, array(), true);
         
         // What did we get returned status wise?
         if ($result = 200){                                                                    
@@ -341,7 +268,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $success - [bool] Result of the query
      * 
-     * @version 1.4
+     * @version 1.5
      */ 
     public function removeBlockedUser($chan, $username, $token, $code){
 
@@ -349,16 +276,15 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'user_blocks_edit', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/users/' . $chan . '/blocks/' . $username;
-        $options = array();
-        $post = array(
-            'oauth_token' => $token);
+
+        $post = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
             
-        $success = $this->cURL_delete($url, $post, $options);
+        $success = $this->cURL_delete($url, $post, array() );
         
         if ($success == '204'){
             // Successfully removed ' . $username . ' from ' . $chan . '\'s list of blocked users',
@@ -368,7 +294,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
             // Do error here
         }
         
-        // Bascally we either deleted or they were never there
+        // Basically we either deleted or they were never there
         return true;  
     }
     
@@ -380,15 +306,13 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $object - [array] Keyed array of all publically available channel data
      * 
-     * @version 5.0
+     * @version 5.3
      */
     public function getChannelObject( $channel_id ){
+        $url = 'https://api.twitch.tv/kraken/channels/' . $channel_id;
+        $get = array( 'client_id'   => $this->twitch_client_id );
 
-        $url = 'https://api.twitch.tv/kraken/channels/' . $channel_id . '?client_id=' . $this->twitch_client_id;
-        $get = array();
-        $options = array();
-        
-        $object = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $object = json_decode($this->cURL_get($url, $get, array(), false), true);
         
         if (!is_array($object)){
             $object = array(); // Catch to make sure that an array is returned no matter what, technically our fail state
@@ -417,12 +341,11 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'channel_read', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/editors';
-        $options = array(); // For things where I don't put in any default data, I will leave the end user the capability to configure here
         $counter = 0;
         $editors = array();
         $editorsObject = array();
@@ -430,7 +353,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
     
-        $editorsObject = $this->get_iterated( $url, $options, $limit, $offset, 'users', $token, null, null, null, null, null, null, null, null, $returningTotal);
+        $editorsObject = $this->get_iterated( $url, array(), $limit, $offset, 'users', $token, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -469,9 +392,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'channel_editor', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan;
         $updatedObjects = array();
@@ -515,7 +438,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $result - True on success, else false on failure.
      * 
-     * @version 1.5
+     * @version 5.0
      */ 
     public function resetStreamKey($chan, $token, $code){   
 
@@ -523,15 +446,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'channel_stream', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/stream_key';
-        $options = array();
-        $post = array('oauth_token' => $token);
+        $post = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
         
-        $result = $this->cURL_delete($url, $post, $options, true);
+        $result = $this->cURL_delete($url, $post, array(), true);
         
         if ($result == 204){
             $result = true;
@@ -552,7 +474,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $return - True on success, else false
      * 
-     * @version 1.5
+     * @version 5.0
      */ 
     public function startCommercial($chan, $token, $code, $length = 30){
 
@@ -560,9 +482,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'channel_commercial', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         // Check the length to see if it is valid
         if ($length % 30 == 0){
@@ -570,13 +492,13 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         }
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/commercial';
-        $options = array();
         $post = array(
             'oauth_token' => $token,
-            'length' => $length
+            'length' => $length,
+            'client_id' => $this->twitch_client_id
         );
         
-        $result = $this->cURL_post($url, $post, $options, true);
+        $result = $this->cURL_post($url, $post, array(), true);
         
         if ($result == 204){
             // Commercial successfully started
@@ -601,13 +523,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     public function chat_getEmoticonsGlobal($limit = -1, $offset = 0, $returnTotal = false){
 
         $url = 'https://api.twitch.tv/kraken/chat/emoticons';
-        $options = array();
         $object = array();
         
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $objects = $this->get_iterated( $url, $options, $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $objects = $this->get_iterated( $url, array(), $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -641,13 +562,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     public function chat_getEmoticons($user, $limit = -1, $offset = 0, $returnTotal = false){
 
         $url = 'https://api.twitch.tv/kraken/chat/' . $user . '/emoticons';
-        $options = array();
         $object = array();
         
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $objects = $this->get_iterated( $url, $options, $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $objects = $this->get_iterated( $url, array(), $limit, $offset, 'emoticons', null, null, null, null, null, null, null, null, null, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -676,14 +596,15 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $offest - [int] The offset to start the query from
      * 
      * @return $object - [array] Keyed array of all returned data for the badges
+     * 
+     * @version 5.0
      */     
     public function chat_getBadges($chan){        
 
         $url = 'https://api.twitch.tv/kraken/chat/' . $chan . '/badges';
-        $options = array();
-        $get = array();
+        $get = array( 'client_id' => $this->twitch_client_id );
         
-        $object = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $object = json_decode($this->cURL_get($url, $get, array(), false), true);
         
         return $object;                
     }
@@ -695,6 +616,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $chatToken - [string] complete login token for chat login
+     * 
+     * @version 1.0
      */
     public function chat_generateToken($token, $code){
 
@@ -704,9 +627,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         
         $prefix = 'oauth:';
 
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $chatToken = $prefix . $token;
 
@@ -723,18 +646,19 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $follows - [array] An unkeyed array of all followers to limit
+     * 
+     * @version 1.0
      */ 
     public function getFollowers($chan, $limit = -1, $offset = 0, $sorting = 'desc', $returnTotal = false){
 
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/follows';
-        $options = array();
         $followersObject = array();
         $followers = array();
         
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
              
-        $followersObject = $this->get_iterated( $url, $options, $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $followersObject = $this->get_iterated( $url, array(), $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -766,13 +690,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $channels - [array] An unkeyed array of all followed channels to limit
+     * 
+     * @version 1.0
      */ 
     public function getFollows($username, $limit = -1, $offset = 0, $sorting = 'desc', $sortBy = 'created_at', $returnTotal = false){
         
         // Init some vars       
         $channels = array();
         $url = 'https://api.twitch.tv/kraken/users/' . $username . '/follows/channels';
-        $options = array();
         
         // Chck our sortby option
         $sortBy = ($sortBy == 'last_broadcast') ? $sortBy : 'created_at';
@@ -781,7 +706,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $channelsObject = $this->get_iterated( $url, $options, $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal, $sortBy);
+        $channelsObject = $this->get_iterated( $url, array(), $limit, $offset, 'follows', null, null, null, null, null, null, null, null, null, $returningTotal, $sortBy);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -811,6 +736,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $user          - [string] The user to check the relationship for
      * 
      * @return $following - [mixed] False if the user is not following or the user object if the user is
+     * 
+     * @version 1.0
      */ 
     public function checkUserFollowsChannel($targetChannel, $user){
         $targetChannel = strval($targetChannel);
@@ -840,6 +767,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $success - [bool] Success of the query
+     * 
+     * @version 5.0
      */ 
     public function followChan($user, $chan, $token, $code){
 
@@ -847,15 +776,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'user_follows_edit', 'user', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/users/' . $user . '/follows/channels/' . $chan;
-        $options = array();
-        $post = array('oauth_token' => $token);
+        $post = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
         
-        $result = $this->cURL_put($url, $post, $options, true);
+        $result = $this->cURL_put($url, $post, array(), true);
 
         if ($result == 200){
             // Sucessfully followed channel
@@ -877,6 +805,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @return $success - [bool] Success of the query
+     * 
+     * @version 5.1
      */ 
     public function unfollowChan($user, $chan, $token, $code){
         
@@ -884,15 +814,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'user_follows_edit', 'user', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
 
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/users/' . $user . '/follows/channels/' . $chan;
-        $options = array();
-        $delete = array('oauth_token' => $token);
+        $delete = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
         
-        $result = $this->cURL_delete($url, $delete, $options, true);
+        $result = $this->cURL_delete($url, $delete, array(), true);
 
         if ($result == 204){
             return true;
@@ -902,7 +831,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     }
     
     /**
-     * Grabs a list of most popular games being streamed on twitch
+     * Grabs a list of most popular games being streamed on twitch with iteration
+     * to perform the request multiple times. This is to fulfill the requested number of
+     * games where initial request does not meet demand.  
      * 
      * @param $limit - [int] Set the limit of objects to grab
      * @param $offset - [int] Sets the initial offset to start the query from
@@ -910,18 +841,19 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $returnTotal - [bool] Sets iteration to not ignore the _total key
      * 
      * @return $object - [array] A complete array of all channel objects in order based on the sorting rules
+     * 
+     * @version 1.0
      */ 
-    public function getLargestGame($limit = -1, $offset = 0, $hls = false, $returnTotal = false){
+    public function get_top_games_iterated($limit = -1, $offset = 0, $hls = false, $returnTotal = false){
         // Init some vars       
         $gamesObject = array();
         $games = array();        
         $url = 'https://api.twitch.tv/kraken/games/top';
-        $options = array();
-        
+
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $gamesObject = $this->get_iterated( $url, $options, $limit, $offset, 'top', null, $hls, null, null, null, null, null, null, null, $returningTotal);
+        $gamesObject = $this->get_iterated( $url, array(), $limit, $offset, 'top', null, $hls, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -943,19 +875,44 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         
         return $games;
     }
-    
+
+    /**
+     * Grabs a list of most popular games being streamed on twitch
+     * 
+     * @param $limit - [int] Set the limit of objects to grab
+     * @param $offset - [int] Sets the initial offset to start the query from
+     * @param $hls - [bool] Sets the query only to grab streams using HLS
+     * @param $returnTotal - [bool] Sets iteration to not ignore the _total key
+     * 
+     * @return $object - [array] A complete array of all channel objects in order based on the sorting rules
+     * 
+     * @version 5.0
+     */ 
+    public function get_top_games(){
+        $url = 'https://api.twitch.tv/kraken/games/top';
+        $get = array( 'client_id'   => $this->twitch_client_id );
+        $object = json_decode($this->cURL_get($url, $get, array(), false), true);
+        
+        if (!is_array($object)){
+            $object = array();
+        }
+        
+        return $object;
+    }
+        
     /**
      * Grabs All currently registered Ingest servers and some base stats
      * 
      * @return $ingests - [array] All returned ingest servers and the information associated with them
+     * 
+     * @version 5.0
      */
     public function getIngests(){
         $ingests = array();
         $url = 'https://api.twitch.tv/kraken/ingests';
-        $get = array();
-        $options = array();
-        
-        $result = json_decode($this->cURL_get($url, $get, $options), true);
+        $get = array( 'client_id' => $this->twitch_client_id );
+
+        $result = json_decode($this->cURL_get($url, $get, array()), true);
 
         if (is_array($result) && !empty($result)){
             foreach ($result as $key => $value){
@@ -986,12 +943,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $get = array(
             'query' => $query,
             'type' => 'suggest',
-            'live' => $live);
-        $options = array();
+            'live' => $live, 
+            'client_id' => $this->twitch_client_id );
         $result = array();
         $object = array();
         
-        $result = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $result = json_decode($this->cURL_get($url, $get, array(), false), true);
 
         foreach ($result as $key => $value){
             if ($key !== '_links'){
@@ -1018,10 +975,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      */ 
     public function getStreamObject( $channel_id ){
         $url = 'https://api.twitch.tv/kraken/streams/' . $channel_id;
-        $get = array();
-        $options = array();
-        
-        $result = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $get = array( 'client_id' => $this->twitch_client_id );
+
+        $result = json_decode($this->cURL_get($url, $get, array(), false), true);
         
         if ($result['stream'] != null){
             $object = $result['stream'];
@@ -1050,7 +1006,6 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     public function getStreamsObjects($game = null, $channels = array(), $limit = -1, $offset = 0, $embedable = false, $hls = false, $client_id = null, $returnTotal = false){
         // Init some vars       
         $url = 'https://api.twitch.tv/kraken/streams';
-        $options = array();
         $streamsObject = array();
         $streams = array();
         
@@ -1058,7 +1013,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $streamsObject = $this->get_iterated( $url, $options, $limit, $offset, 'streams', null, $hls, null, $channels, $embedable, $client_id, null, null, $game, $returningTotal);
+        $streamsObject = $this->get_iterated( $url, array(), $limit, $offset, 'streams', null, $hls, null, $channels, $embedable, $client_id, null, null, $game, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -1099,13 +1054,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         // Init some vars
         $featured = array();          
         $url = 'https://api.twitch.tv/kraken/streams/featured';
-        $options = array();
-        
+
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $featuredObject = $this->get_iterated( $url, $options, $limit, $offset, 'featured', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $featuredObject = $this->get_iterated( $url, array(), $limit, $offset, 'featured', null, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -1141,7 +1095,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $videos - [array] array of all followed streams online
      * 
-     * @version 1.2
+     * @version 1.3
      */
     public function getFollowedStreams($limit = -1, $offset = 0, $token, $code, $hls = false, $returnTotal = false){
  
@@ -1149,18 +1103,17 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'user_read', 'user', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $streams = array();
         $url = 'https://api.twitch.tv/kraken/streams/followed';
-        $options = array();
-        
+
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
-        $streamsObject = $this->get_iterated( $url, $options, $limit, $offset, 'streams', $token, $hls, null, null, null, null, null, null, null, $returningTotal);
+        $streamsObject = $this->get_iterated( $url, array(), $limit, $offset, 'streams', $token, $hls, null, null, null, null, null, null, null, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -1190,15 +1143,15 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $hls - [bool] Limit sear to channels only using hls
      * 
      * @return $statistics - [array] (keyed) The current Twitch Statistics 
+     * 
+     * @version 1.0
      */ 
     public function getTwitchStatistics($hls = false){
         $statistics = array();
         $url = 'https://api.twitch.tv/kraken/streams/summary';
-        $get = array(
-            'hls' => $hls);
-        $options = array();
-        
-        $result = json_decode($this->cURL_get($url, $get, $options), true);
+        $get = array( 'hls' => $hls, 'client_id' => $this->twitch_client_id);
+
+        $result = json_decode($this->cURL_get($url, $get, array()), true);
 
         if (is_array($result) && !empty($result)){
             $statistics = $result;
@@ -1213,15 +1166,16 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $id - [string] String ID of the video to get
      * 
      * @return $object - [array] Video object returned from the query, key is the ID
+     * 
+     * @version 1.0
      */
     public function getVideo_ID($id){
         // init some vars
         $object = array();
         $url = 'https://api.twitch.tv/kraken/videos/' . $id;
-        $get = array();
-        $options = array();
+        $get = array( 'client_id' => $this->twitch_client_id );
         
-        $result = json_decode($this->cURL_get($url, $get, $options, false), true);
+        $result = json_decode($this->cURL_get($url, $get, array(), false), true);
         
         // A safe way of checking that the video was returned
         if (!empty($result) && array_key_exists('_id', $result)){
@@ -1245,20 +1199,19 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $videoObjects - [array] array of all returned video objects, Key is ID
      * 
-     * @version 1.2
+     * @version 1.3
      */ 
     public function getVideo_channel($chan, $limit = -1, $offset = 0, $boradcastsOnly = false, $returnTotal = false){
         // Init some vars
         $videoObjects = array();     
         $videos = array();
-        $options = array();
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/videos';
         
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $videos = $this->get_iterated( $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, $boradcastsOnly, null, null, $returningTotal);
+        $videos = $this->get_iterated( $url, array(), $limit, $offset, 'videos', null, null, null, null, null, null, $boradcastsOnly, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -1289,6 +1242,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $videosObject - [array] All video objects returned by the query, Key is ID
+     * 
+     * @version 1.0
      */ 
     public function getVideo_followed($limit = -1, $offset = 0, $token, $code, $returnTotal = false){
 
@@ -1296,21 +1251,20 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'user_read', 'user', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; } 
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         // Init some vars       
         $videosObject = array();            
         $videos = array();
         $url = 'https://api.twitch.tv/kraken/videos/followed';
-        $options = array();
-        
+
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $videos = $this->get_iterated( $url, $options, $limit, $offset, 'videos', $token, null, null, null, null, null, null, null, null, $returningTotal);
+        $videos = $this->get_iterated( $url, array(), $limit, $offset, 'videos', $token, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)) {
@@ -1341,6 +1295,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $returnTotal - [bool] Returns a _total row in the array
      * 
      * @return $videosObject - [array] Array of all returned video objects, Key is ID
+     * 
+     * @version 1.0
      */ 
     public function getTopVideos($game = '', $limit = -1, $offset = 0, $period = 'week', $returnTotal = false){
         // check the period to make sure it is valid
@@ -1352,13 +1308,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $videosObject = array();
         $videos = array();
         $url = 'https://api.twitch.tv/kraken/videos/top';
-        $options = array();
 
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
             
         // Build our cURL query and store the array
-        $videos = $this->get_iterated( $url, $options, $limit, $offset, 'videos', null, null, null, null, null, null, null, $period, $game, $returningTotal);
+        $videos = $this->get_iterated( $url, array(), $limit, $offset, 'videos', null, null, null, null, null, null, null, $period, $game, $returningTotal);
 
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -1389,17 +1344,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $token - [string] Authentication key used for the session
      * @param $code - [string] Code used to generate an Authentication key
      * 
-     * @version 5.5
+     * @version 5.6
      */ 
     public function get_channel_subscribers( $chan, $limit = -1, $offset = 0, $direction = 'asc', $token = null, $code = null ){
         
         if( $this->twitch_sandbox_mode ) { return $this->get_channel_subscriptions_sandbox(); }
                                                                                                     
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions';                          
-                                                                                                             
-        // Optional Query String Parameters as explained in API Version 5 documentation.                     
-        $url = add_query_arg( array( 'limit' => $limit, 'offset' => $offset, 'direction' => $direction ) );  
-                                                                                                             
+                                                                                        
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.              
         $confirm_scope = $this->confirm_scope( 'channel_subscriptions', 'channel', __FUNCTION__ );               
         if( is_wp_error( $confirm_scope) ) 
@@ -1412,10 +1364,15 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         if( !$token ){ $token = $this->twitch_client_token; }                                                
         if( !$code ){ $code = $this->twitch_client_code; }                                                   
          
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
-        $get = array('oauth_token' => $token);
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
+        
+        $get = array( 'oauth_token' => $token, 
+                      'limit'       => $limit, 
+                      'offset'      => $offset, 
+                      'direction'   => $direction, 
+                      'client_id' => $this->twitch_client_id);
          
         return json_decode( $this->cURL_get($url, $get, array( /* cURL options */), false, __FUNCTION__ ), true);
     }
@@ -1472,15 +1429,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
+        if( !$token ) {
+            $token = $this->twitch_client_token;
+        }
         
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions/' . $user_id;
-        $options = array();
-        $get = array('oauth_token' => $token);
+        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
         
-        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, false, __FUNCTION__ ), true );
+        $subscribed = json_decode( $this->cURL_get( $url, $get, array(), false, __FUNCTION__ ), true );
 
         // only check results here to log them and return the original response.
         if( isset( $subscribed['error'] ) ) 
@@ -1575,16 +1531,11 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
             $code = $this->twitch_client_code;    
         }
         
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
-        
         $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan;
-        $options = array();
-        $get = array( 'oauth_token' => $token );   
+        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );   
 
         // Build our cURL query and store the array
-        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, true, __FUNCTION__ ), true );
+        $subscribed = json_decode( $this->cURL_get( $url, $get, array(), true, __FUNCTION__ ), true );
 
         // Check the return
         if ( $subscribed == 403 ){      
@@ -1639,7 +1590,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $subscribed - [array] subscription data.
      * 
-     * @version 5.0
+     * @version 5.1
      */ 
     public function getUserSubscription( $user_id, $chan, $token = false, $code = false ){   
       
@@ -1654,17 +1605,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         if( !$token ) {
             $code = $this->twitch_client_code;    
         }
-        
-        // Validate token, if not valid this will generate one.                                                                                                           
-        $auth = $this->establish_token( $token );
-        $token = $auth['token'];
-        
+
         $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan;
-        $options = array();
-        $get = array( 'oauth_token' => $token );   
+        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );   
 
         // Build our cURL query and store the array
-        $subscribed = json_decode( $this->cURL_get( $url, $get, $options, false, __FUNCTION__ ), true );
+        $subscribed = json_decode( $this->cURL_get( $url, $get, array(), false, __FUNCTION__ ), true );
                  
         return $subscribed;
     }
@@ -1682,13 +1628,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         // Init some vars       
         $teams = array();        
         $url = 'https://api.twitch.tv/kraken/teams';
-        $options = array();
         
         // Check if we are returning a total and if we are in a limitless return (We can just count at that point and we will always have the correct number)
         $returningTotal = (($limit != -1) || ($offset != 0)) ? $returnTotal : false;
         
         // Build our cURL query and store the array
-        $teamsObject = $this->get_iterated( $url, $options, $limit, $offset, 'teams', null, null, null, null, null, null, null, null, null, $returningTotal);
+        $teamsObject = $this->get_iterated( $url, array(), $limit, $offset, 'teams', null, null, null, null, null, null, null, null, null, $returningTotal);
         
         // Include the total if we were asked to return it (In limitless cases))
         if ($returnTotal && ($limit == -1) && ($offset == 0)){
@@ -1718,11 +1663,10 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      */ 
     public function getTeam( $team ){
         $url = 'https://api.twitch.tv/kraken/teams/' . $team;
-        $options = array();
         $get = array();
         
         // Build our cURL query and store the array
-        $teamObject = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__), true);
+        $teamObject = json_decode($this->cURL_get($url, $get, array(), false, __FUNCTION__), true);
 
         return $teamObject;
     }    
@@ -1730,15 +1674,14 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     /**
      * Revoke access token for account. 
      * 
-     * @todo This function now requires clientid appended to URL ?client_id=' . $client_id
+     * @version 5.0
      */ 
     public function revoke_access_tokens(){
-        $url = 'https://api.twitch.tv/kraken/oauth2/revoke?client_id=' . $this->twitch_client_id . '&token=' . $this->twitch_client_token;
-        $options = array();
-        $get = array();
+        $url = 'https://api.twitch.tv/kraken/oauth2/revoke';
+        $get = array( 'token' => $this->twitch_client_token, 'client_id' => $this->twitch_client_id );
         
         // Build our cURL query and store the array
-        $userObject = json_decode($this->cURL_get($url, $get, $options, false, __FUNCTION__), true);
+        $userObject = json_decode($this->cURL_get($url, $get, array(), false, __FUNCTION__), true);
 
         return $userObject;          
     }    
