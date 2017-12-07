@@ -96,14 +96,12 @@ class TwitchPress_Admin_Settings {
 
     /**
      * Save the settings.
-     * 
-     * @version 1.0
      */
     public static function save() {
         global $current_tab;
 
         if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'twitchpress-settings' ) ) {
-            die( __( 'Failed to save TwitchPress setting because the pages nonce would not be verified. Please revisit the page (do not refresh), then update your settings again and submit to retry.', 'twitchpress' ) );
+            die( __( 'Action failed. Please refresh the page and retry.', 'twitchpress' ) );
         }
             
         // Trigger actions

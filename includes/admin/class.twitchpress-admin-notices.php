@@ -231,13 +231,11 @@ class TwitchPress_Admin_Notices {
                                        
     /**
      * Hide a notice if the GET variable is set.
-     * 
-     * @version 1.0
      */
     public static function hide_notices() {
         if ( isset( $_GET['twitchpress-hide-notice'] ) && isset( $_GET['_twitchpress_notice_nonce'] ) ) {
             if ( ! wp_verify_nonce( $_GET['_twitchpress_notice_nonce'], 'twitchpress_hide_notices_nonce' ) ) {
-                wp_die( __( 'Hide notice failed. Please refresh the page and retry.', 'twitchpress' ) );
+                wp_die( __( 'Action failed. Please refresh the page and retry.', 'twitchpress' ) );
             }
 
             if ( ! current_user_can( 'manage_twitchpress' ) ) {

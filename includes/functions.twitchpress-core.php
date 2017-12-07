@@ -395,10 +395,34 @@ function twitchpress_update_user_token( $user_id, $token ) {
 }
 
 /**
+* Update users oauth2 token_refresh string.
+* 
+* @param integer $user_id
+* @param boolean $token
+* 
+* @version 1.0
+*/
+function twitchpress_update_user_token_refresh( $user_id, $token ) { 
+    update_user_meta( $user_id, 'twitchpress_token_refresh', $token );    
+}
+
+/**
+* Get the token_refresh string for extending a session. 
+* 
+* @param integer $user_id
+* @param boolean $single
+* 
+* @version 1.0
+*/
+function twitchpress_get_user_token_refresh( $user_id, $single = true ) {
+    return get_user_meta( $user_id, 'twitchpress_token_refresh', $single );
+}
+
+/**
 * Update users Twitch ID (in Kraken version 5 user ID and channel ID are the same).
 * 
-* @param mixed $user_id
-* @param mixed $twitch_user_id
+* @param integer $user_id
+* @param integer $twitch_user_id
 * 
 * @version 1.0
 */
@@ -413,9 +437,9 @@ function twitchpress_update_user_twitchid( $user_id, $twitch_user_id ) {
 * We always store the Twitch user ID that the code and token matches. This
 * will help to avoid mismatched data.
 * 
-* @param mixed $user_id
-* @param mixed $code
-* @param mixed $token
+* @param integer $user_id
+* @param string $code
+* @param string $token
 * 
 * @version 1.0
 */
@@ -884,17 +908,15 @@ function twitchpress_are_errors_allowed() {
 * @param mixed $scopes_array
 * @param mixed $for_url
 * 
-* @version 1.0
+* @version 1.2
 */
 function twitchpress_prepare_scopes( $scopes_array, $for_url = true ) {
         $scopes_string = '';
         foreach ( $scopes_array as $s ){
-            $scopes_string .= $s . ' ';
+            $scopes_string .= $s . '+';
         }
 
-        $prepped_scopes = rtrim( $scopes_string, ' ' );
-        
-        if( $for_url ) { $prepped_scopes = urlencode( $prepped_scopes ); }
+        $prepped_scopes = rtrim( $scopes_string, '+' );
         
         return $prepped_scopes;
 }
