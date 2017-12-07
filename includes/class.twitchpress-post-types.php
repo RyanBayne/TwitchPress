@@ -357,9 +357,8 @@ class TwitchPress_Post_types {
         
         // Display checkbox option to share post content to Twitch.
         $post_type = get_post_type($post);
-     
         $twitch_share = get_option( 'twitchpress_shareable_posttype_' . $post_type );
-        if ( $twitch_share == 'yes' ) { 
+        if ( $twitch_share == 'yes' ) {
             echo '<div class="misc-pub-section misc-pub-section-last" style="border-top: 1px solid #eee;">';
             wp_nonce_field( plugin_basename(__FILE__), 'nonce_twitchpress_share_post_option' );
             echo '<input type="checkbox" name="twitchpress_share_post_option" id="twitchpress_share_post_option" value="share" /> <label for="twitchpress_share_post_option">Share to Twitch Feed</label><br />';

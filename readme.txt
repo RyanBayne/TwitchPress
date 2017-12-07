@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.5.7
+Stable tag: 1.5.6
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -82,30 +82,10 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
-= 1.5.8 NOT RELEASED = 
-* DEV - Scope value removed from request_app_access_token()
-* DEV - request_app_access_token() now updates the stored token.
-* DEV - WP posts will be shareable by default now to avoid confusion. 
-* DEV - Ripple of changes through Kraken 5 library to improve token handling. 
-* DEV - Function generateToken() is now request_user_access_token(). 
-* DEV - $code parameter removed from getChannelObject_Authd(). 
-* DEV - getChannelObject_Authd() replaced with get_tokens_channel().
-* DEV - twitchpress_prepare_scopes() adds + and not literal spaces.
-* DEV - Status section of Help tab now performs more tests. 
-* INFO - 400, 401 and 500 errors returned again but have been addressed.
-* DEV - get_channel_subscribers() no longer uses add_query_args(). 
-
-= 1.5.7 =
-* DEV - Scope missing log entries now include the missing scope in confirm_scope(). 
-
 = 1.5.6 = 
 * DEV - Improved some HTTP error descriptions to make more sense. 
 * DEV - Twitch API HTTP status logs now have a code description appeneded to the current line. 
 * FIX - Corrected shortcode attribute value in twitchpress_channel_status(). 
-* DEV - generateToken() now returns false if no token is generated.
-* DEV - Created twitchpress_prepare_scopes() for preparing scopes being added to headers or URL.
-* DEV - generate_authorization_url() now uses the new twitchpress_prepare_scopes() function. 
-* FIX - Checkboxes on Permissions Scopes view no longer default to yes (checked) when the option does not exist. 
 
 = 1.5.5 = 
 * DEV - Finished error description array in Twitch API library. 
