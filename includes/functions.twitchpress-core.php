@@ -301,11 +301,11 @@ function twitchpress_was_valid_token_returned( $returned_value ){
         return false;
     }
     
-    if( !isset( $returned_value['token'] ) ) {
+    if( !isset( $returned_value['access_token'] ) ) {
         return false;
     }
 
-    if( !twitchpress_validate_token( $returned_value['token'] ) ) {
+    if( !twitchpress_validate_token( $returned_value['access_token'] ) ) {
         return false;
     }
     

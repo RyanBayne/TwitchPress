@@ -97,7 +97,7 @@ Please configure and submit the Permissions Scopes view to initiate new scope se
 * DEV - Added new user meta "twitchpress_token_refresh". 
 * DEV - Removed wp_setcookie_twitchoauth2_ongoing() (not in use or complete). 
 * DEV - administrator_main_account_listener() now uses establish_user_token() instead of request_user_access_token().
- 
+*
 
 = 1.5.7 =
 * DEV - Scope missing log entries now include the missing scope in confirm_scope(). 
