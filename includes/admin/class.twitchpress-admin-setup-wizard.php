@@ -257,10 +257,10 @@ class TwitchPress_Admin_Setup_Wizard {
         <form method="post">
             <table class="form-table">
                 <tr>
-                    <th scope="row"><label for="twitchpress_main_channel_name"><?php _e( 'Channel Name', 'twitchpress' ); ?></label></th>
+                    <th scope="row"><label for="twitchpress_main_channel_name"><?php _e( 'Main Channel Name', 'twitchpress' ); ?></label></th>
                     <td>
                         <input type="text" id="twitchpress_main_channel_name" name="twitchpress_main_channel_name" class="input-text" value="<?php echo get_option( 'twitchpress_main_channel_name' );?>" />
-                        <label for="twitchpress_main_channel_name"><?php _e( 'example: ZypheREvolved, StarCitizen, TESTSquadron', 'twitchpress' ); ?></label>
+                        <label for="twitchpress_main_channel_name"><?php _e( 'example: ZypheREvolved, StarCitizen, nookyyy', 'twitchpress' ); ?></label>
                     </td>
                 </tr>               
                 <tr>
@@ -597,7 +597,7 @@ class TwitchPress_Admin_Setup_Wizard {
         
         // Kraken requires one or more permissions in the scope. 
         if( !isset( $_POST['twitchpress_scopes'] ) ) {
-            TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist', sprintf( __( 'Please check the box for one or more permissions. Your permissions scope tells the Twitch API how much access to give. The less boxes you check the more Twitch.tv will restrict.'), esc_html( $main_channel ) ) );
+            TwitchPress_Admin_Notices::add_custom_notice( 'wizardchanneldoesnotexist', sprintf( __( 'Please select one or more scopes. Each will enable services and features using the permissions each scope gives. It is best practice to avoid requesting permissions your site does not need.'), esc_html( $main_channel ) ) );
             return;
         }
    

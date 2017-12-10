@@ -1595,7 +1595,7 @@ class TWITCHPRESS_Kraken_API {
                 twitchpress_update_user_token( $user_id, $user_access_token_array['access_token'] );
                 twitchpress_update_user_token_refresh( $user_id, $user_access_token_array['refresh_token'] );
                        
-                return $user_access_token_array['token'];
+                return $user_access_token_array['access_token'];
             }
         }
     }

@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.5.7
+Stable tag: 1.6.1
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -82,11 +82,16 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
-= 1.5.8 BETA = 
+= 1.6.1 = 
+* DEV - Deleted class.twitchpress-admin-main-views.php (not in use).
+* DEV - Delete "includes/admin/mainviews/" as it was never used.
+* FIX - User token fix. 
+
+= 1.6.0 = 
 * DEV - Scope value removed from request_app_access_token()
 * DEV - request_app_access_token() now updates the stored token.
 * DEV - WP posts will be shareable by default now to avoid confusion. 
-* DEV - Ripple of changes through Kraken 5 library to improve token handling. 
+* FIX - Ripple of changes through Kraken 5 library to improve token handling. 
 * DEV - Function generateToken() is now request_user_access_token(). 
 * DEV - $code parameter removed from getChannelObject_Authd(). 
 * DEV - getChannelObject_Authd() replaced with get_tokens_channel().
@@ -97,7 +102,8 @@ Please configure and submit the Permissions Scopes view to initiate new scope se
 * DEV - Added new user meta "twitchpress_token_refresh". 
 * DEV - Removed wp_setcookie_twitchoauth2_ongoing() (not in use or complete). 
 * DEV - administrator_main_account_listener() now uses establish_user_token() instead of request_user_access_token().
-*
+* TEX - Changed "Channel Name" on Setup Wizard to "Main Channel Name".
+* TEX - Changed "ZypheREvolved, StarCitizen, TESTSquadron" to "ZypheREvolved, StarCitizen, nookyyy". 
 
 = 1.5.7 =
 * DEV - Scope missing log entries now include the missing scope in confirm_scope(). 

@@ -1403,7 +1403,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @param $user_id - [string] Username of the user check against
      * @param $chan - [string] Channel name of the channel to check against
-     * @param $token - [string] Authentication key used for the session
+     * @param $token - [string] Channel owners own user token, not the visitors.
      * @param $code - [string] Code used to generate an Authentication key
      * 
      * @returns $subscribed - [mixed] the subscription details (array) or error details (array) or null if Twitch returns null.
