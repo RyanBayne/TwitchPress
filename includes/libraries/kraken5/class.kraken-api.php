@@ -450,7 +450,7 @@ class TWITCHPRESS_Kraken_API {
         $scope['user_blocks_edit']['userdesc']           = __( 'Ability to ignore or unignore other users.', 'twitchpress' );
         $scope['user_blocks_read']['userdesc']           = __( 'Access to your list of ignored users.', 'twitchpress' );
         $scope['user_follows_edit']['userdesc']          = __( 'Permission to manage your followed channels.', 'twitchpress' );
-        $scope['channel_read']['userdesc']               = __( 'Read your non-public channel information., including email address and stream key.', 'twitchpress' );
+        $scope['channel_read']['userdesc']               = __( 'Read your non-public channel information. Including email address and stream key.', 'twitchpress' );
         $scope['channel_editor']['userdesc']             = __( 'Ability to update meta data like game, status, etc.', 'twitchpress' );
         $scope['channel_commercial']['userdesc']         = __( 'Access to trigger commercials on channel.', 'twitchpress' );
         $scope['channel_stream']['userdesc']             = __( 'Ability to reset your channel’s stream key.', 'twitchpress' );
@@ -1515,7 +1515,7 @@ class TWITCHPRESS_Kraken_API {
         } 
         else 
         {
-            $this->bugnet->log( __FUNCTION__, __( 'Invalid user token', 'twitchpress' ), array(), true, true );
+            $this->bugnet->log( __FUNCTION__, __( 'Token has expired', 'twitchpress' ), array(), true, true );
             $token['token'] = false;
             $token['scopes'] = array();
             $token['name'] = '';
@@ -1762,13 +1762,13 @@ class TWITCHPRESS_Kraken_API {
     */
     public function get_user_scopes() {
         $visitor_scopes = array();
- 
+        
         foreach( $this->twitch_scopes as $scope ) {
             if( get_option( 'twitchpress_visitor_scope_' . $scope ) == 'yes' ) {
                 $visitor_scopes[] = $scope;
             }
         }       
-        
+
         return $visitor_scopes;        
     }
 

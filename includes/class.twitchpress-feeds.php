@@ -34,7 +34,7 @@ class TwitchPress_Feeds {
     * authored content with Twitch.tv channel feeds.
     * 
     * @author Ryan Bayne
-    * @version 2.0
+    * @version 2.1
     * 
     * @param mixed $ID post ID
     * @param mixed $post the post object
@@ -98,7 +98,10 @@ class TwitchPress_Feeds {
         
         $enhanced_content = twitchpress_prepare_post_to_feed_content( $original_content );
         
-        $result = $kraken->postFeedPost( $enhanced_content, array() );
+        // Establish which token is to be used, main client token or the current users own token. 
+        $token = twitchpress_get_user_token( get_current_user_id() );
+        
+        $result = $kraken->postFeedPost( $enhanced_content, $token );
         
         // Kraken returns a status of "200" on success. 
         if( '200' == $result ) 

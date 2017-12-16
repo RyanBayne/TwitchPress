@@ -154,14 +154,7 @@ class TwitchPress_Admin_Help {
             'content'   => '',
             'callback'  => array( $this, 'status' ),
         ) );
-                
-        $screen->add_help_tab( array(
-            'id'        => 'twitchpress_calltests_tab',
-            'title'     => __( 'Call Tests', 'twitchpress' ),
-            'content'   => '',
-            'callback'  => array( $this, 'calltests' ),
-        ) );
-                        
+              
     }
     
     public function faq() {
@@ -270,9 +263,10 @@ class TwitchPress_Admin_Help {
     * This focuses on the services main Twitch application credentials only.
     * 
     * @author Ryan Bayne
-    * @version 2.1
+    * @version 2.2
     */
     public function status() {
+        $overall_result = true;
         $channel_display_name = __( 'Not Found', 'twitchpress' );
         $channel_status = __( 'Not Found', 'twitchpress' );
         $channel_game = __( 'Not Found', 'twitchpress' );
@@ -297,24 +291,33 @@ class TwitchPress_Admin_Help {
         $output .= $channel['top'][0]['game']['name'];        
         
         // Test Check Users Token
-        $output .= '<h2>' . __( 'Test: Establish Current Users Token', 'twitchpress' ) . '</h2>';
+        $output .= '<h2>' . __( 'Test: Get Current Users Token', 'twitchpress' ) . '</h2>';
         $token_result = $kraken->establish_user_token( __FUNCTION__, $current_user_id );
         if( $token_result ){$output .= __( 'Result: User has a token!' ); }
-        else{ $output .= __( 'Result: User does not have a token!' ); }
+        else{ $output .= __( 'Result: User does not have a token!' ); $overall_result = false; }
 
+        // Test Check Users Token
+        $output .= '<h2>' . __( 'Test: Validate Current Users Token', 'twitchpress' ) . '</h2>';
+        $token_result = $kraken->check_user_token( $current_user_id );
+        if( isset( $token_result['token'] ) && isset( $token_result['scopes'] ) && isset( $token_result['name'] ) ) {
+            $output .= __( 'Result: User token is valid. ' );    
+        }else{$output .= __( 'Result: Users token does not appear to be valid. ' ); $overall_result = false; }
+ 
         // Test Get Users Channel
         $output .=  '<h2>Test: Get Current Users Channel</h2>';
         $current_user_token = twitchpress_get_user_token( $current_user_id );
         $channel = $kraken->get_tokens_channel( $current_user_token );
 
-        if( !$channel['display_name'] ) 
+        if( !isset( $channel['display_name'] ) || !$channel['display_name'] ) 
         {
-            $output .= __( 'Attempt failed and the likley reason is: ', 'twitchpress' );    
+            $output .= __( 'Could not get channel because: ', 'twitchpress' );
+            $overall_result = false;    
         }
         elseif( is_numeric( $channel['status'] ) )
         {
             $output .= '<h3>' . __( 'Result: Error ', 'twitchpress' ) . $channel['status'] . '</h3>'; 
-            $output .= kraken_httpstatuses( $channel['status'], 'wiki' );    
+            $output .= kraken_httpstatuses( $channel['status'], 'wiki' ); 
+            $overall_result = false;   
         } 
         else 
         { 
@@ -322,8 +325,6 @@ class TwitchPress_Admin_Help {
             if( isset( $channel['status'] ) ) { $channel_status = $channel['status']; }
             if( isset( $channel['game'] ) ) { $channel_game = $channel['game']; }
             
-            $output .= '<h3>' . __( 'Overall Result: Ready!', 'twitchpress' ) . '</h3>'; 
-            $output .= __( 'TwitchPress is communicating with Twitch.tv. Here\'s some of your main channels information...to prove it!', 'twitchpress' );    
             $output .= '<ul>';
             $output .= '<li><strong>Display Name: </strong>' . $channel_display_name . '</li>';
             $output .= '<li><strong>Status: </strong>' . $channel_status . '</li>';
@@ -331,60 +332,26 @@ class TwitchPress_Admin_Help {
             $output .= '</ul>';
         }
         
+        // Test Check Application Token
+        $output .= '<h2>' . __( 'Test: Check Application Token', 'twitchpress' ) . '</h2>';
+        $app_token_result = $kraken->check_application_token();
+        if( isset( $app_token_result['token']['authorization']['scopes'] ) ) {
+            $output .= __( 'Result: Application token is valid.' );    
+        } else {
+            $output .= __( 'Result: Application token is not valid.' );  
+            $overall_result = false;  
+        }
+        
+        if( !$overall_result ) {
+            $output .= '<h3>' . __( 'Overall Result: Not Ready!', 'twitchpress' ) . '</h3>';
+        } else {
+            $output .= '<h3>' . __( 'Overall Result: Ready!', 'twitchpress' ) . '</h3>';            
+        }
+        
         // Avoid making these requests for every admin page request. 
         set_transient( 'twitchpresshelptabstatus', $output, 60 );
         
         print $output;       
-    }
-    
-    /**
-    * Test a range of calls to monitor to help detect any issues especially
-    * with calls that are rarely used and do not generate much statistics. 
-    * 
-    * @version 1.0
-    */
-    public function calltests() {        
-
-        $channel_display_name = __( 'Not Found', 'twitchpress' );
-        $channel_status = __( 'Not Found', 'twitchpress' );
-        $channel_game = __( 'Not Found', 'twitchpress' );
-        $current_user_id = get_current_user_id();
-
-        $kraken = new TWITCHPRESS_Kraken_Calls();
-
-        // Test Top Game 
-        echo '<h2>' . __( 'Test: Get Top Game', 'twitchpress' ) . '</h2>';
-        $games = $kraken->get_top_games();
-        //echo '<pre>'; var_dump( $games['top'][0] ); echo '</pre>';       
-        echo $games['top'][0]['game']['name'];       
-        
-        
-        // Test Get Users Token value, does not do any validation or refresh. 
-        echo  '<h2>Test: Get Current Users Token</h2>';
-        $current_user_token = twitchpress_get_user_token( $current_user_id );
-        echo $current_user_token;
-                
-                
-        // Test Check Users Token
-        echo '<h2>' . __( 'Test: Check Current Users Token', 'twitchpress' ) . '</h2>';
-        $token_result = $kraken->check_user_token( $current_user_id );
-        echo '<pre>'; var_dump( $token_result ); echo '</pre>';
-        
-        
-        // Test Get Users Channel
-        echo  '<h2>Test: Get Current Users Channel</h2>';
-        $channel = $kraken->get_tokens_channel( $current_user_token );
-        echo '<pre>'; var_dump( $channel ); echo '</pre>';
-        
-        
-        // Test Check Application Token
-        echo '<h2>' . __( 'Test: Check Application Token', 'twitchpress' ) . '</h2>';
-        $app_token_result = $kraken->check_application_token();
-        //echo '<pre>'; var_dump( $app_token_result ); echo '</pre>';
-        //echo '<pre>'; var_dump( $app_token_result['token'] ); echo '</pre>';
-        //echo '<pre>'; var_dump( $app_token_result['token']['authorization'] ); echo '</pre>';
-        echo '<pre>'; var_dump( $app_token_result['token']['authorization']['scopes'] ); echo '</pre>';
-
     }
 }
 
