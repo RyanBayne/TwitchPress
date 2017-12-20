@@ -669,7 +669,7 @@ class TwitchPress_Admin_Setup_Wizard {
         } 
 
         // Confirm storage of application and that oAuth2 is next.        
-        TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored. TwitchPress will now send you to Twitch.tv to authorize your account.' ) );
+        TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored and your WordPress site is ready to communicate with Twitch.' ) );
         
         // Create a Twitch API oAuth2 URL
         $post_credentials_kraken = new TWITCHPRESS_Kraken_API();

@@ -197,19 +197,19 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     * @param mixed $returnStatus
     * 
     * @author Ryan R. Bayne
-    * @version 5.2
+    * @version 6.0
     */
-    public function postFeedPost( $postparam = array(), $options = array() ){
+    public function postFeedPost( $postparam = array(), $token ){
 
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_feed_edit', 'both', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
 
         $url = 'https://api.twitch.tv/kraken/feed/' . $this->twitch_channel_id . '/posts';
-        $post = array( 'oauth_token' => $this->twitch_client_token, 'client_id' => $this->twitch_client_id );
+        $post = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
         $post = array_merge( $post, $postparam );
                     
-        $returned_status = $this->cURL_post( $url, $post, $options, true, __FUNCTION__ );
+        $returned_status = $this->cURL_post( $url, $post, array(), true, __FUNCTION__ );
         
         unset($url,$post,$options,$postparam);
 

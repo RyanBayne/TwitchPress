@@ -96,12 +96,14 @@ class TwitchPress_Admin_Settings {
 
     /**
      * Save the settings.
+     * 
+     * @version 1.2
      */
     public static function save() {
         global $current_tab;
 
         if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'twitchpress-settings' ) ) {
-            die( __( 'Action failed. Please refresh the page and retry.', 'twitchpress' ) );
+            wp_die( __( 'Action failed. Please refresh the page and retry.', 'twitchpress' ) );
         }
             
         // Trigger actions
@@ -637,16 +639,6 @@ class TwitchPress_Admin_Settings {
                 default :
                     $value = twitchpress_clean( $raw_value );
                     break;
-            }
-
-            /**
-             * Fire an action when a certain 'type' of field is being saved.
-             * @deprecated 2.4.0 - doesn't allow manipulation of values!
-             */
-            if ( has_action( 'twitchpress_update_option_' . sanitize_title( $option['type'] ) ) ) {
-                _deprecated_function( 'The twitchpress_update_option_X action', '2.4.0', 'twitchpress_admin_settings_sanitize_option filter' );
-                do_action( 'twitchpress_update_option_' . sanitize_title( $option['type'] ), $option );
-                continue;
             }
 
             /**

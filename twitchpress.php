@@ -4,9 +4,9 @@
  * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch stream and channel management services to WordPress. 
- * Version: 1.6.1
+ * Version: 1.6.2
  * Author: Ryan Bayne
- * Author URI: https://ryanbayne.wordpress.com
+ * Author URI: https://zypherevolved.wordpress.com/
  * Requires at least: 4.4
  * Tested up to: 4.9
  * License: GPL3
@@ -41,14 +41,14 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.6.1';
+    public $version = '1.6.2';
 
     /**
      * Minimum WP version.
      *
      * @var string
      */
-    public $min_wp_version = '4.4';
+    public $min_wp_version = '4.7';
     
     /**
      * The single instance of the class.
