@@ -89,6 +89,7 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
+
 = 1.6.3 NOT RELEASED - GENERAL STABILITY CHANGES = 
 * DEVS - Isset applied to display_name to avoid notice.
 * DEVS - Changed die() to wp_die() in class.twitchpress-admin-settings.php function save().
