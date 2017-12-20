@@ -67,13 +67,13 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
     
     /**
      * Save settings.
+     * 
+     * @version 1.2
      */
-    public function save() {
+    public function save() {      
         global $current_section;
         $settings = $this->get_settings( $current_section );
         TwitchPress_Admin_Settings::save_fields( $settings );
-        twitchpress_redirect_tracking( $_SERVER['REQUEST_URI'], __LINE__, __FUNCTION__ );
-        exit;
     }  
     
     /**

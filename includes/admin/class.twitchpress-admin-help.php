@@ -351,7 +351,9 @@ class TwitchPress_Admin_Help {
         // Avoid making these requests for every admin page request. 
         set_transient( 'twitchpresshelptabstatus', $output, 60 );
         
-        print $output;       
+        print $output;    
+        
+        print sprintf( __( 'Please check Twitch.tv status %s before creating fault reports.' ), '<a target="_blank" href="https://twitchstatus.com/">here</a>' );   
     }
 }
 

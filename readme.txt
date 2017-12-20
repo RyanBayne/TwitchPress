@@ -89,8 +89,15 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
-= 1.6.3 BETA = 
+
+= 1.6.3 NOT RELEASED - GENERAL STABILITY CHANGES = 
 * DEVS - Isset applied to display_name to avoid notice.
+* DEVS - Changed die() to wp_die() in class.twitchpress-admin-settings.php function save().
+* BUGS - Notice will now be displayed when saving General settings. 
+* DEVS - Removed twitchpress_redirect_tracking() and exit() line from class.twitchpress-settings-general.php. 
+* INFO - The redirect for refresh in general settings prevented notice output. No reason for the redirect/refresh. 
+* DONE - Submitting the Sync Values view will no longer request a new application token which resulted in a notice. 
+* DONE - Added twitchstatus.com link to the Status section in Help tab to encourage indepedent investigation. 
 
 = 1.6.2 = 
 * DONE - Improved the Status section in Help tab. 
