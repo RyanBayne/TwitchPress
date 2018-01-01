@@ -6,7 +6,7 @@
  * Description: Add Twitch stream and channel management services to WordPress. 
  * Version: 1.6.2
  * Author: Ryan Bayne
- * Author URI: https://zypherevolved.wordpress.com/
+ * Author URI: https://twitchpress.wordpress.com/
  * Requires at least: 4.4
  * Tested up to: 4.9
  * License: GPL3
@@ -212,6 +212,7 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-post-types.php' );                
         include_once( 'includes/class.twitchpress-install.php' );
         include_once( 'includes/class.twitchpress-ajax.php' );
+        include_once( 'includes/libraries/allapi/class.all-api.php' );
         include_once( 'includes/libraries/kraken5/functions.kraken-statuses.php' );
         include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-api.php' );
         include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-calls.php' );        

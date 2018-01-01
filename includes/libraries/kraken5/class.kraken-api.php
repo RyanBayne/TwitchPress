@@ -1,8 +1,7 @@
 <?php
 /**
- * The main Twitch API updated for Kraken version after it's original
- * download from GitHub.
-
+ * The main Twitch API updated for Kraken version after it's original download from GitHub.
+ * 
  * Do not use this class unless you accept the Twitch Developer Services Agreement
  * @link https://www.twitch.tv/p/developer-agreement
  * 
