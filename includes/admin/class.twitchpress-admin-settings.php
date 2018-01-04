@@ -462,6 +462,8 @@ class TwitchPress_Admin_Settings {
                     break;
 
                 // Checkbox input
+                case 'scopecheckbox' :
+                case 'scopecheckboxpublic':
                 case 'checkbox' :
 
                     $option_value    = self::get_option( $value['id'], $value['default'] );
@@ -501,8 +503,11 @@ class TwitchPress_Admin_Settings {
                             <legend class="screen-reader-text"><span><?php echo esc_html( $value['title'] ) ?></span></legend>
                         <?php
                     }
-
-                    ?>
+                    ?>  
+                    
+                    <?php if( $value['type'] == 'scopecheckbox' ) { echo twitchpress_scopecheckbox_required_icon( $value['scope'] ); } ?>
+                    <?php if( $value['type'] == 'scopecheckboxpublic' ) { echo twitchpress_scopecheckboxpublic_required_icon( $value['scope'] ); } ?>
+                    
                         <label for="<?php echo $value['id'] ?>">
                             <input
                                 name="<?php echo esc_attr( $value['id'] ); ?>"
@@ -512,8 +517,11 @@ class TwitchPress_Admin_Settings {
                                 value="1"
                                 <?php checked( $option_value, 'yes'); ?>
                                 <?php echo implode( ' ', $custom_attributes ); ?>
-                            /> <?php echo $description ?>
-                        </label> <?php echo $tooltip_html; ?>
+                            /> 
+                            
+                            <?php echo $description ?>
+                        </label>                          
+                        <?php echo $tooltip_html; ?>
                     <?php
 
                     if ( ! isset( $value['checkboxgroup'] ) || 'end' == $value['checkboxgroup'] ) {
