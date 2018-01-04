@@ -920,3 +920,55 @@ function twitchpress_prepare_scopes( $scopes_array, $for_url = true ) {
         
         return $prepped_scopes;
 }
+
+function twitchpress_scopecheckbox_required_icon( $scope ){
+    global $system_scopes_status;
+ 
+    $required = false; 
+    
+    // Do not assume every extension has set this global properly. 
+    if( !is_array( $system_scopes_status ) || empty( $system_scopes_status ) ) { return ''; }
+    
+    // Check if $scope is required for the admins main account. 
+    foreach( $system_scopes_status['admin'] as $extension_slug => $scope_information )
+    {
+        if( in_array( $scope, $scope_information['required'] ) ) { $required = true; break; }                      
+    }    
+    
+    if( $required ) 
+    {
+        $icon = '<span class="dashicons dashicons-yes"></span>';
+    }
+    else
+    {
+        $icon = '<span class="dashicons dashicons-no"></span>';
+    }
+    
+    return $icon;
+}
+
+function twitchpress_scopecheckboxpublic_required_icon( $scope ){
+    global $system_scopes_status;
+                 
+    $required = false; 
+    
+    // Do not assume every extension has set this global properly. 
+    if( !is_array( $system_scopes_status ) || empty( $system_scopes_status ) ) { return ''; }
+
+    // Check if $scope is required for visitors accounts. 
+    foreach( $system_scopes_status['public'] as $extension_slug => $scope_information )
+    {
+        if( in_array( $scope, $scope_information['required'] ) ) { $required = true; break; }     
+    }
+
+    if( $required ) 
+    {
+        $icon = '<span class="dashicons dashicons-yes"></span>';
+    }
+    else
+    {
+        $icon = '<span class="dashicons dashicons-no"></span>';
+    }
+    
+    return $icon;
+}
