@@ -96,8 +96,7 @@ abstract class TwitchPress_Settings_Page {
      * Output the settings.
      */
     public function output() {
-        $settings = $this->get_settings();
-              
+        $settings = $this->get_settings();      
         TwitchPress_Admin_Settings::output_fields( $settings );
     }
 

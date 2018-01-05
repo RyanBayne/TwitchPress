@@ -35,11 +35,13 @@ class TwitchPress_Admin_Tools_Views {
      * Returns the definitions for the tables to show in admin.
      *
      * @return array
+     * 
+     * @version 1.2
      */
     public static function get_tabs() {
         $tabviews = array();
         
-        // Basic List Tables
+        // Basic List Tables (copy this array to create a new tab)
         $tabviews['basic_list_tables'] = array(
             'title'  => __( 'Quick Tools', 'twitchpress' ),
             'toolstabviews' => array(
@@ -50,7 +52,7 @@ class TwitchPress_Admin_Tools_Views {
                     'callback'    => array( __CLASS__, 'get_toolstabview' )
                 )
             )
-        );          
+        );                    
       
         $tabviews = apply_filters( 'twitchpress_admin_toolsviews', $tabviews );
 

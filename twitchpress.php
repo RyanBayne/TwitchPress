@@ -6,7 +6,7 @@
  * Description: Add Twitch stream and channel management services to WordPress. 
  * Version: 1.6.2
  * Author: Ryan Bayne
- * Author URI: https://zypherevolved.wordpress.com/
+ * Author URI: https://twitchpress.wordpress.com/
  * Requires at least: 4.4
  * Tested up to: 4.9
  * License: GPL3
@@ -212,6 +212,7 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-post-types.php' );                
         include_once( 'includes/class.twitchpress-install.php' );
         include_once( 'includes/class.twitchpress-ajax.php' );
+        include_once( 'includes/libraries/allapi/class.all-api.php' );
         include_once( 'includes/libraries/kraken5/functions.kraken-statuses.php' );
         include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-api.php' );
         include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-calls.php' );        
@@ -244,15 +245,34 @@ final class WordPressTwitchPress {
         register_deactivation_hook( __FILE__, array( 'TwitchPress_Uninstall', 'deactivate' ) );
 
         add_action( 'init', array( $this, 'init' ), 0 );
-        add_action( 'init', array( $this, 'output_errors' ), 1 );
+        add_action( 'init', array( $this, 'output_errors' ), 1 );    
     }
     
     public function init() {
+
         // Before init action.
         do_action( 'before_twitchpress_init' );    
-        
+
         // Init action.
-        do_action( 'twitchpress_init' );        
+        do_action( 'twitchpress_init' ); 
+        
+        // Collect required scopes from extensions and establish system requirements. 
+        global $system_scopes_status;
+        $system_scopes_status = array();
+        
+        // Scopes for admin only or main account functionality that is always used. 
+        $system_scopes_status['admin']['core']['required'] = array();
+        
+        // Scopes for admin only or main account features that may not be used.
+        $system_scopes_status['admin']['core']['optional'] = array(); 
+                    
+        // Scopes for functionality that is always used. 
+        $system_scopes_status['public']['core']['required'] = array();
+        
+        // Scopes for features that may not be used.
+        $system_scopes_status['public']['core']['optional'] = array(); 
+        
+        $system_scopes_status = apply_filters( 'twitchpress_update_system_scopes_status', $system_scopes_status );  
     }
     
     /**

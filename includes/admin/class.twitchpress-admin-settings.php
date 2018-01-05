@@ -62,6 +62,7 @@ class TwitchPress_Admin_Settings {
             $settings[] = include( 'settings/class.twitchpress-settings-feeds.php' );
             $settings[] = include( 'settings/class.twitchpress-settings-kraken.php' ); 
             $settings[] = include( 'settings/class.twitchpress-settings-users.php' );    
+            $settings[] = include( 'settings/class.twitchpress-settings-otherapi.php' );    
 
             if( defined( 'TWITCHPRESS_SHOW_SETTINGS_BOT' ) ) {
                     
@@ -101,7 +102,7 @@ class TwitchPress_Admin_Settings {
      */
     public static function save() {
         global $current_tab;
-        echo '<pre>'; var_dump( __FUNCTION__ ); echo '</pre>';
+
         if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'twitchpress-settings' ) ) {
             wp_die( __( 'Action failed. Please refresh the page and retry.', 'twitchpress' ) );
         }
@@ -316,7 +317,7 @@ class TwitchPress_Admin_Settings {
                         do_action( 'twitchpress_settings_' . sanitize_title( $value['id'] ) . '_after' );
                     }
                     break;
-
+                
                 // Standard text inputs and subtypes like 'number'
                 case 'text':
                 case 'email':
@@ -461,6 +462,8 @@ class TwitchPress_Admin_Settings {
                     break;
 
                 // Checkbox input
+                case 'scopecheckbox' :
+                case 'scopecheckboxpublic':
                 case 'checkbox' :
 
                     $option_value    = self::get_option( $value['id'], $value['default'] );
@@ -500,8 +503,11 @@ class TwitchPress_Admin_Settings {
                             <legend class="screen-reader-text"><span><?php echo esc_html( $value['title'] ) ?></span></legend>
                         <?php
                     }
-
-                    ?>
+                    ?>  
+                    
+                    <?php if( $value['type'] == 'scopecheckbox' ) { echo twitchpress_scopecheckbox_required_icon( $value['scope'] ); } ?>
+                    <?php if( $value['type'] == 'scopecheckboxpublic' ) { echo twitchpress_scopecheckboxpublic_required_icon( $value['scope'] ); } ?>
+                    
                         <label for="<?php echo $value['id'] ?>">
                             <input
                                 name="<?php echo esc_attr( $value['id'] ); ?>"
@@ -511,8 +517,11 @@ class TwitchPress_Admin_Settings {
                                 value="1"
                                 <?php checked( $option_value, 'yes'); ?>
                                 <?php echo implode( ' ', $custom_attributes ); ?>
-                            /> <?php echo $description ?>
-                        </label> <?php echo $tooltip_html; ?>
+                            /> 
+                            
+                            <?php echo $description ?>
+                        </label>                          
+                        <?php echo $tooltip_html; ?>
                     <?php
 
                     if ( ! isset( $value['checkboxgroup'] ) || 'end' == $value['checkboxgroup'] ) {
@@ -543,6 +552,8 @@ class TwitchPress_Admin_Settings {
      *
      * @param  array $value The form field value array
      * @return array The description and tip as a 2 element array
+     * 
+     * @version 1.0
      */
     public static function get_field_description( $value ) {
         $description  = '';

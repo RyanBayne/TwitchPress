@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.6.2
+Stable tag: 1.6.3
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -89,8 +89,7 @@ Translator needed to localize the Channel Solution for Twitch.
 Please configure and submit the Permissions Scopes view to initiate new scope settings. 
 
 == Changelog ==
-
-= 1.6.3 NOT RELEASED - GENERAL STABILITY CHANGES = 
+= 1.6.3 = 
 * DEVS - Isset applied to display_name to avoid notice.
 * DEVS - Changed die() to wp_die() in class.twitchpress-admin-settings.php function save().
 * BUGS - Notice will now be displayed when saving General settings. 
@@ -98,6 +97,8 @@ Please configure and submit the Permissions Scopes view to initiate new scope se
 * INFO - The redirect for refresh in general settings prevented notice output. No reason for the redirect/refresh. 
 * DONE - Submitting the Sync Values view will no longer request a new application token which resulted in a notice. 
 * DONE - Added twitchstatus.com link to the Status section in Help tab to encourage indepedent investigation. 
+* DEVS - Changed scope checkboxes to a new input type that allows an icon to be displayed indicating required status. 
+* INFO - Scope list now indicates which scopes are required with a tick and all others with a cross. 
 
 = 1.6.2 = 
 * DONE - Improved the Status section in Help tab. 
