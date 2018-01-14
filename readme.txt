@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.6.3
+Stable tag: 1.6.5
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -56,7 +56,8 @@ with the Twitch API.
 * Ultimate Member integration.
 
 = Changelog Code = 
-* DONE - Basic changes that do not require testing. 
+* DONE - Basic changes that do not require testing.
+* DEVS - Script changes that developers need to be aware of. 
 * TEXT - A note to translators that text has changed. 
 * BUGS - Fixed faults or faults still being investigated. 
 * INFO - Helpful information regarding recent changes. 
@@ -86,9 +87,36 @@ Translator needed to localize the Channel Solution for Twitch.
 
 == Upgrade Notice ==
 
-Please configure and submit the Permissions Scopes view to initiate new scope settings. 
+New setup step added. Please open the Help tab and go to the Installation section. Click on the Authorize Main Channel button. 
 
 == Changelog ==
+= 1.6.5 = 
+* DEVS - The $code value in class.kraken-api.php is no longer url escaped. 
+* DEVS - oAuth part removed from Setup Wizard when submitting application credentials. 
+* DEVS - twitchpress_setup_application_save() no longer stores channel ID as current users Twitch ID. 
+* DEVS - Help tab has been updated to display User and App statuses with the permitted scope for each.
+* DONE - Added textareas to the Result column of the API Requests table to compact rows. 
+* DONE - API Requests time column now shows the time that has passed and now raw time() value. 
+* DEVS - API calls for checking app token using check_application_token() will no longer be logged as it is too common. 
+* DONE - Use of get_top_games() in Help section is now logged better by adding the using function. 
+* DEVS - Status sections in Help tab are now cached for 120 seconds due to the increasing number of calls within the feature. 
+* DEVS - checkUserSubscription() no longer defaults token to the application token despite being a user side request. 
+* DEVS - $code parameter removed from checkUserSubscription() as is no longer in use. 
+* DEVS - $code parameter removed from getUserSubscription() as it is no longer in use. 
+* DONE - User Status section in the Help tab now displays subscription data. 
+* BUGS - The is_user_subscribed_to_main_channel() function was using WordPress user ID where Twitch user ID should be used. 
+* DEVS - Removed $code parameter from checkUserSubscription() 
+* DONE - Removed the Change Log link in Help tab. There is no currently an external change log.
+* DEVS - Changed multiple if to elseif in administrator_main_account_listener) to reduce the script time as currently multiple if are being checked in all situations. 
+* DEVS - Credential related functions moved from functions.twitchpress-core.php to the new functions.twitchpress-credentials.php 
+* DEVS - twitchpress_update_user_twitchid() no longer updates twitchpress_auth_time which has not been used as far as I can tell. 
+* INFO - The new functions.twitchpress-credentials.php file intends to clear up some confusion with credential management. 
+* DEVS - Added security check to the Setup Wizard (now requires user to have activate_plugins capability to enter the wizard). 
+* DEVS - Renamed checkUserSubscription() to get_users_subscription_apicall()
+
+= 1.6.4 = 
+* BUGS - Introduced a bug to scope checkboxes in 1.6.3 
+
 = 1.6.3 = 
 * DEVS - Isset applied to display_name to avoid notice.
 * DEVS - Changed die() to wp_die() in class.twitchpress-admin-settings.php function save().
@@ -123,7 +151,7 @@ Please configure and submit the Permissions Scopes view to initiate new scope se
 * DEV - twitchpress_prepare_scopes() adds + and not literal spaces.
 * DEV - Status section of Help tab now performs more tests. 
 * INFO - 400, 401 and 500 errors returned again but have been addressed.
-* DEV - get_channel_subscribers() no longer uses add_query_args(). 
+* DEV - get-channel-subscribers() no longer uses add_query_args(). 
 * DEV - Added new user meta "twitchpress_token_refresh". 
 * DEV - Removed wp_setcookie_twitchoauth2_ongoing() (not in use or complete). 
 * DEV - administrator_main_account_listener() now uses establish_user_token() instead of request_user_access_token().

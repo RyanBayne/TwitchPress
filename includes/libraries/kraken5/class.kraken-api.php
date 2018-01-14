@@ -193,7 +193,7 @@ class TWITCHPRESS_Kraken_API {
     * 
     * Add methods between returns, where arguments satisfy minimum security. 
     * 
-    * @version 1.4
+    * @version 2.0
     */
     public static function administrator_main_account_listener() {
         
@@ -216,7 +216,9 @@ class TWITCHPRESS_Kraken_API {
         // This listener is for requests started on administration side only.  
         if( !is_user_logged_in() ) {         
             return;
-        }        
+        }      
+        
+        $wp_user_id = get_current_user_id();  
         
         // This is not a listener for processing WordPress logins.
         // This $_GET is set by TwitchPress_Login_Extension.
@@ -248,7 +250,7 @@ class TWITCHPRESS_Kraken_API {
                         __FUNCTION__,
                         __FILE__,
                         false,
-                        __( 'TwitchPress Main Account Listener: Starting listener for oAuth2 on main account by administrator.', 'twitchpress' )
+                        __( 'TwitchPress Main Channel Listener: Starting listener for oAuth2 on main channel by administrator.', 'twitchpress' )
         );
                      
         if( !isset( $_GET['code'] ) ) {       
@@ -257,38 +259,46 @@ class TWITCHPRESS_Kraken_API {
         }          
 
         // We require the local state value stored in transient. 
-        if( !$transient_state = get_transient( 'twitchpress_oauth_' . $_GET['state'] ) ) {       
+        elseif( !$transient_state = get_transient( 'twitchpress_oauth_' . $_GET['state'] ) ) {       
             $return = true;
             $return_reason .= __( 'TwitchPress Main Account Listener: No matching transient.', 'twitchpress' );
-        }   
+        }  
+        
+        // Ensure the reason for this request is an attempt to set the main channels credentials
+        elseif( !isset( $transient_state['reason'] ) ) {
+            $return = true;
+            $return_reason .= __( 'TwitchPress Main Account Listener: Reason not provided for this request.', 'twitchpress' );            
+        }              
          
         // Ensure we have the admin view or page the user needs to be sent to. 
-        if( !isset( $transient_state['redirectto'] ) ) {         
+        elseif( $transient_state['reason'] !== 'mainchannelsetup' ) {         
+            $return = true;
+            $return_reason .= __( 'TwitchPress Main Account Listener: Request reason rejected for this procedure.', 'twitchpress' );    
+        }
+                 
+        // Ensure we have the admin view or page the user needs to be sent to. 
+        elseif( !isset( $transient_state['redirectto'] ) ) {         
             $return = true;
             $return_reason .= __( 'TwitchPress Main Account Listener: The redirectto value does not exist.', 'twitchpress' );    
         } 
           
         // For this procedure the userrole MUST be administrator.
-        if( !isset( $transient_state['userrole'] ) ) {        
+        elseif( !isset( $transient_state['userrole'] ) ) {        
             $return = true;
             $return_reason .= __( 'TwitchPress Main Account Listener: this request is not an expected operation related to the main account.', 'twitchpress' );    
         }          
         
-        if( !isset( $transient_state['userrole'] ) || 'administrator' !== $transient_state['userrole'] ) {        
+        elseif( !isset( $transient_state['userrole'] ) || 'administrator' !== $transient_state['userrole'] ) {        
             $return = true;
             $return_reason .= __( 'TwitchPress Main Account Listener: User is not an administrator.', 'twitchpress' );    
         }         
                 
-        // Validate the code as a measure to prevent URL spamming that gets further than here.
-        if( !twitchpress_validate_code( $_GET['code'] ) ) {        
+        // NEW IF - Validate the code as a measure to prevent URL spamming that gets further than here.
+        elseif( !twitchpress_validate_code( $_GET['code'] ) ) {        
             $return = true;
             $return_reason .= __( 'TwitchPress Main Account Listener: Code is invalid.', 'twitchpress' );
         }
-        else
-        {
-            $code = $_GET['code'];
-        }
-        
+
         // If we have a return reason, add it to the trace then do the return. 
         if( $return === true ) {
             // We can end the trace here early but more trace entries will follow. 
@@ -301,30 +311,25 @@ class TWITCHPRESS_Kraken_API {
             );
             
             return false;
-        }
-   
-        // We established a legit oAuth2 scenario by an administator. 
-        update_option( 'twitchpress_main_code', esc_url( $code ) );
-   
-        // Update current users meta with the main code also. 
-        twitchpress_update_user_code( get_current_user_id(), $code ); 
+        } 
         
+        // Generate oAuth token for the current user and the main channel. 
         $kraken = new TWITCHPRESS_Kraken_Calls();
+        $token_array = $kraken->request_user_access_token( $_GET['code'], __FUNCTION__ );
         
-        // We need a Twitch API user token for the current administrator only. 
-        $token = $kraken->establish_user_token( __FUNCTION__, get_current_user_id() );
+        // Update current user although this is a main channel procedure.
+        // This is to enforce the user as the owner of the logged in Twitch account and the main channel. 
+        twitchpress_update_user_code( $wp_user_id, $_GET['code'] );       
+        twitchpress_update_user_token( $wp_user_id, $token_array['access_token'] );
+        twitchpress_update_user_token_refresh( $wp_user_id, $token_array['refresh_token'] );        
 
-        if( !$token ) {        
-            $bugnet->trace( 'oauth2mainaccount',
-                __LINE__,
-                __FUNCTION__,
-                __FILE__,
-                true,
-                __( 'No existing token could be used and Kraken did not return a fresh one.', 'twitchpress' )
-            );      
-                  
-            return;     
-        }                             
+        // Start storing main channel credentials.  
+        update_option( 'twitchpress_main_code', $_GET['code'] );// old value, being phased out.
+        twitchpress_update_main_channels_code( $_GET['code'] ); 
+        twitchpress_update_main_channels_wpowner_id( $wp_user_id );
+        twitchpress_update_main_channels_token( $token_array['access_token'] ); 
+        twitchpress_update_main_channels_refresh_token( $token_array['refresh_token'] );
+        twitchpress_update_main_channels_scope( $token_array['scope'] );                                    
         
         TwitchPress_Admin_Notices::add_custom_notice( 'mainkrakenapplicationsetup', __( 'Twitch.tv provided a token to allow this site to access your channel based on the permissions (scopes) you selected.')  );
                
@@ -351,8 +356,8 @@ class TWITCHPRESS_Kraken_API {
         // Store all possible details in user meta. 
         twitchpress_update_user_oauth( 
             get_current_user_id(), 
-            $code, 
-            $token, 
+            $_GET['code'], 
+            $token_array['access_token'], 
             $user_objects['users'][0]['_id'] 
         );
         
@@ -505,7 +510,7 @@ class TWITCHPRESS_Kraken_API {
             CURLOPT_TIMEOUT => TWITCHPRESS_DEFAULT_TIMEOUT,
             CURLOPT_HTTPHEADER => $header
         );
-               
+    
         // Do we have a certificate to use?  if OpenSSL is available, there will be a certificate
         if ( TWITCHPRESS_CERT_PATH != '' ){
 
@@ -1280,10 +1285,14 @@ class TWITCHPRESS_Kraken_API {
     * @param mixed $error_no
     * @param mixed $arguments
     * 
-    * @version 1.0
+    * @version 1.2
     */
     private function store_curl_get( $function, $result, $httpdstatus, $header, $get, $url, $curl_url, $error_string, $error_no, $arguments = array() ) {
 
+        $excluded_functions = array( 'check_application_token' );
+        
+        if( in_array( $function, $excluded_functions ) ) { return; }
+        
         $default_arguments = array(
             'function'     => $function,
             'result'       => $result,
@@ -1385,7 +1394,7 @@ class TWITCHPRESS_Kraken_API {
             $this->bugnet->log( __FUNCTION__, sprintf( __( 'Access token returned. %s', 'twitchpress' ), $appending ), array(), true, false );
             
             // Store the new token for the entire TwitchPress system to use.
-            $this->update_main_client_token( $token['token'] );
+            $this->update_main_client_token( $token['token'], $token['scopes'] );
             
             return $token;
         } 
@@ -1458,7 +1467,7 @@ class TWITCHPRESS_Kraken_API {
      * @version 5.2
      */    
     public function check_application_token(){
-        $token = $this->get_main_client_token();
+        $token = get_option( 'twitchpress_app_token' );
         $url = 'https://api.twitch.tv/kraken';
         $post = array( 
             'oauth_token' => $token, 
@@ -1473,7 +1482,7 @@ class TWITCHPRESS_Kraken_API {
         } 
         else 
         {
-            $this->bugnet->log( __FUNCTION__, __( 'Invalid token', 'twitchpress' ), array(), true, true );
+            $this->bugnet->log( __FUNCTION__, __( 'Invalid app token', 'twitchpress' ), array(), true, true );
             return false;
         }
         
@@ -1489,10 +1498,10 @@ class TWITCHPRESS_Kraken_API {
      * 
      * @version 5.5
      */    
-    public function check_user_token( $user_id ){
+    public function check_user_token( $wp_user_id ){
         
         // Get the giving users token. 
-        $user_token = twitchpress_get_user_token( $user_id );
+        $user_token = twitchpress_get_user_token( $wp_user_id );
         if( !$user_token ){ return false;}
         
         $url = 'https://api.twitch.tv/kraken';
@@ -1674,7 +1683,7 @@ class TWITCHPRESS_Kraken_API {
         
         // Primary request handler - value is checked on return from Twitch.tv
         set_transient( 'twitchpress_oauth_' . $local_state['random14'], $local_state, 6000 );
-  
+
         $scope = twitchpress_prepare_scopes( $permitted_scopes, true );
 
         // Build oauth2 URL.
@@ -1793,6 +1802,10 @@ class TWITCHPRESS_Kraken_API {
  
     public function get_main_default_channel() {
         return get_option( 'twitchpress_main_channel_name' );     
+    }    
+    
+    public function get_main_channel_name() {
+        return get_option( 'twitchpress_main_channel_name' );     
     }
     
     public function get_main_channel_id() {
@@ -1811,10 +1824,20 @@ class TWITCHPRESS_Kraken_API {
         return get_option( 'twitchpress_main_token' );
     }  
     
-    public function update_main_client_token( $token ) {
-        return update_option( 'twitchpress_main_token', $token );
+    /**
+    * Stores the main application token and main application scopes
+    * as an option value.
+    * 
+    * @param mixed $token
+    * @param mixed $scopes
+    * 
+    * @version 2.0
+    */
+    public function update_main_client_token( $token, $scopes ) {
+        update_option( 'twitchpress_main_token', $token );
+        update_option( 'twitchpress_main_token_scopes', $scopes );
     }
- 
+    
     /**
     * Confirms if the $scope has been permitted for the
     * $side the call applies to.

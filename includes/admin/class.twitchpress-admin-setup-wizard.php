@@ -198,6 +198,8 @@ class TwitchPress_Admin_Setup_Wizard {
             ?><h1><?php _e( 'Invalid Step!', 'twitchpress' ); ?></h1><p><?php _e( 'You have attempted to visit a setup step that does not exist. I would like to know how this happened so that I can improve the plugin. Please tell me what you did before this message appeared. If you were just messing around, then stop it you naughty hacker!', 'twitchpress' ); ?></p><?php 
         } elseif( !method_exists( $this, $this->steps[ $this->step ]['view'][1] ) ) {
             ?><h1><?php _e( 'Something Has Gone Very Wrong!', 'twitchpress' ); ?></h1><p><?php _e( 'You have attempted to visit a step in the setup process that may not be ready yet! This should not have happened. Please report it to me.', 'twitchpress' ); ?></p><?php             
+        } elseif( !current_user_can( 'activate_plugins' ) ) {
+            ?><h1><?php _e( 'Administrators Only', 'twitchpress' ); ?></h1><p><?php _e( 'Only administrators can complete the installation of TwitchPress.', 'twitchpress' ); ?></p><?php                         
         } else {
             TwitchPress_Admin_Notices::output_custom_notices();
             call_user_func( $this->steps[ $this->step ]['view'] );
@@ -579,7 +581,7 @@ class TwitchPress_Admin_Setup_Wizard {
     /**
      * Save application settings and then forwards user to kraken oauth2.
      * 
-     * @version 1.2
+     * @version 2.0
      */
     public function twitchpress_setup_application_save() {          
         check_admin_referer( 'twitchpress-setup' );
@@ -612,15 +614,25 @@ class TwitchPress_Admin_Setup_Wizard {
             }
         }
  
-        // Store the application credentials and information related to the where the app is created. 
-        update_option( 'twitchpress_main_redirect_uri',  $redirect_uri,  true );
-        update_option( 'twitchpress_main_client_id',     $client_id,     true );
-        update_option( 'twitchpress_main_client_secret', $client_secret, true );
+        // Store the main channel name for using on UI. 
         update_option( 'twitchpress_main_channel_name',  $main_channel,  true );
+       
+        // Store the application credentials and information related to the where the app is created. 
+        update_option( 'twitchpress_main_redirect_uri',  $redirect_uri,  true );// depreciated use twitchpress_app_redirect
+        update_option( 'twitchpress_main_client_id',     $client_id,     true );// depreciated
+        update_option( 'twitchpress_main_client_secret', $client_secret, true );// depreciated
+ 
+        // New values going forward in 2018, the above will populate the main channel credentials.  
+        update_option( 'twitchpress_app_id',       $client_id,     true );
+        update_option( 'twitchpress_app_secret',   $client_id,     true );
+        update_option( 'twitchpress_app_redirect', $redirect_uri,  true );
                                   
-        // Added November 2017 - Generate an App Access Token (forces new token and does not consider an existing token)
-        $token_result = $pre_credentials_kraken->request_app_access_token( __FUNCTION__ );                          
-        
+        // Request new app Access Token (replaces any existing token)
+        $token_result = $pre_credentials_kraken->request_app_access_token( __FUNCTION__ );                         
+
+        update_option( 'twitchpress_app_token', $token_result['token'], false );
+        update_option( 'twitchpress_app_token_scopes', $token_result['scopes'], false );
+                   
         // Confirm the giving main channel is valid. 
         $kraken_calls_obj = new TWITCHPRESS_Kraken_Calls();
         
@@ -636,7 +648,7 @@ class TwitchPress_Admin_Setup_Wizard {
 
         // The current user has logged into what we will assume is their own personal account, for now.
         // So add the channel/user ID to their user meta.  
-        update_user_meta( get_current_user_id(), 'twitchpress_twitch_id', $twitch_user_id );
+        //update_user_meta( get_current_user_id(), 'twitchpress_twitch_id', $twitch_user_id );
                
         // The user ID is the same as the channel ID on Twitch.tv just because.
         // We store the admins selected channel as the account that manages the app.
@@ -672,20 +684,23 @@ class TwitchPress_Admin_Setup_Wizard {
         TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored and your WordPress site is ready to communicate with Twitch.' ) );
         
         // Create a Twitch API oAuth2 URL
-        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+        // REMOVVE $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
         
-        $state = array( 'redirectto' => admin_url( '/?page=twitchpress-setup&step=folders' ),
-                        'userrole'   => 'administrator',
-                        'outputtype' => 'admin',
-        );
+        //REMOVVE $state = array( 'redirectto' => admin_url( '/?page=twitchpress-setup&step=folders' ),
+        //REMOVVE                 'userrole'   => 'administrator',
+        //REMOVVE                 'outputtype' => 'admin',
+        //REMOVVE );
         
-        $oAuth2_URL = $post_credentials_kraken->generate_authorization_url( $_POST['twitchpress_scopes'], $state );
+        // REMOVE $oAuth2_URL = $post_credentials_kraken->generate_authorization_url( $_POST['twitchpress_scopes'], $state );
         
         // Cleanup
         unset( $existing_channelpost_id, $pre_credentials_kraken, $post_credentials_kraken, $state, $kraken_calls_obj, $user_objects );
         
         // Send administrator to Twitch.tv to authorize an account.
-        wp_redirect( $oAuth2_URL );
+        // REMOVE wp_redirect( $oAuth2_URL );
+        
+        check_admin_referer( 'twitchpress-setup' );
+        wp_redirect( esc_url_raw( $this->get_next_step_link() ) );
         exit;
     }
 

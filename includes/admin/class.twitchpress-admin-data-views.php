@@ -5,7 +5,7 @@
  * @author      TwitchPress
  * @category    Admin
  * @package     WPSeed/Admin
- * @version     1.0.0
+ * @version     2.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,9 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
                
 if ( ! class_exists( 'TwitchPress_Admin_Data_Views' ) ) :
             
-/**
- * TwitchPress_Admin_Data_Views Class.
- */
 class TwitchPress_Admin_Data_Views {
 
     /**
@@ -35,6 +32,8 @@ class TwitchPress_Admin_Data_Views {
      * Returns the definitions for the tables to show in admin.
      *
      * @return array
+     * 
+     * @version 2.0
      */
     public static function get_tabs() {
         $tabviews = array();
@@ -83,22 +82,48 @@ class TwitchPress_Admin_Data_Views {
             )
         );        
         
-        // Kraken5 Requests
+        // API Requests (general request details)
         $tabviews['kraken5requests_list_tables'] = array(
-            'title'  => __( 'Twitch API Requests', 'twitchpress' ),
+            'title'  => __( 'API Requests', 'twitchpress' ),
             'datatabviews' => array(
                 "all_kraken5requests" => array(
                     'title'       => __( 'All Requests', 'twitchpress' ),
                     'description' => '',
                     'hide_title'  => true,
                     'callback'    => array( __CLASS__, 'get_maintabview' )
-                )/*,                    
+                )/*, Use this to add a view category for quick filtering                   
                 "get_kraken5requests" => array(
-                    'title'       => __( 'GET Requests', 'twitchpress' ),
+                    'title'       => __( 'Twitch Requests', 'twitchpress' ),
                     'description' => '',
                     'hide_title'  => true,
                     'callback'    => array( __CLASS__, 'get_maintabview' )
                 ),*/
+            )
+        );       
+         
+        // API Results (Raw curl response)
+        $tabviews['apiresponses_list_tables'] = array(
+            'title'  => __( 'API Responses', 'twitchpress' ),
+            'datatabviews' => array(
+                "all_apiresponses" => array(
+                    'title'       => __( 'All Responses', 'twitchpress' ),
+                    'description' => '',
+                    'hide_title'  => true,
+                    'callback'    => array( __CLASS__, 'get_maintabview' )
+                )
+            )
+        );      
+           
+        // API Errors 
+        $tabviews['apierrors_list_tables'] = array(
+            'title'  => __( 'API Errors', 'twitchpress' ),
+            'datatabviews' => array(
+                "all_apierrors" => array(
+                    'title'       => __( 'All Errors', 'twitchpress' ),
+                    'description' => '',
+                    'hide_title'  => true,
+                    'callback'    => array( __CLASS__, 'get_maintabview' )
+                )
             )
         );
       

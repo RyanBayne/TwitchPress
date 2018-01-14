@@ -884,10 +884,10 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @version 5.0
      */ 
-    public function get_top_games(){
+    public function get_top_games( $using_function ){
         $url = 'https://api.twitch.tv/kraken/games/top';
         $get = array( 'client_id' => $this->twitch_client_id );
-        $object = json_decode($this->cURL_get($url, $get, array(), false), true);
+        $object = json_decode($this->cURL_get($url, $get, array(), false, $using_function ), true);
         
         if (!is_array($object)){
             $object = array();
@@ -1337,8 +1337,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $limit - [int] Limit of channel objects to return
      * @param $offset - [int] Maximum number of objects to return
      * @param $direction - [string] Sorting direction, valid options are 'asc' and 'desc'
-     * @param $token - [string] Authentication key used for the session
-     * @param $code - [string] Code used to generate an Authentication key
+     * @param $token - [string] Token related to the channel being queried for sub data.
+     * @param $code - [string] Code related to the channel being queried for sub data.
      * 
      * @version 5.6
      */ 
@@ -1404,26 +1404,21 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * @param $user_id - [string] Username of the user check against
      * @param $chan - [string] Channel name of the channel to check against
      * @param $token - [string] Channel owners own user token, not the visitors.
-     * @param $code - [string] Code used to generate an Authentication key
      * 
      * @returns $subscribed - [mixed] the subscription details (array) or error details (array) or null if Twitch returns null.
      * 
-     * @version 5.3
+     * @version 5.4
      */ 
-    public function getChannelSubscription( $user_id, $chan_id, $token, $code ){
+    public function getChannelSubscription( $twitch_user_id, $chan_id, $token ){
         
         // I witnessed a possible empty string in $user resulting in wrong URL endpoint.
-        if( $user_id === '' ){ $this->bugnet->log_error( __FUNCTION__, __( 'User ID not giving when checking channel subscription.', 'twitchpress' ), array(), true ); }            
+        if( !$twitch_user_id ){ $this->bugnet->log_error( __FUNCTION__, __( 'Twitch user ID not giving.', 'twitchpress' ), array(), true ); }            
                                                                    
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'channel', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        if( !$token ) {
-            $token = $this->twitch_client_token;
-        }
-        
-        $url = 'https://api.twitch.tv/kraken/channels/' . $chan_id . '/subscriptions/' . $user_id;
+        $url = 'https://api.twitch.tv/kraken/channels/' . $chan_id . '/subscriptions/' . $twitch_user_id;
         $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );
         
         $subscribed = json_decode( $this->cURL_get( $url, $get, array(), false, __FUNCTION__ ), true );
@@ -1431,12 +1426,12 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         // only check results here to log them and return the original response.
         if( isset( $subscribed['error'] ) ) 
         {
-            $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Failed to get subscription data for user ID %s from channel ID %s.', 'twitchpress' ), $user_id, $chan_id ), array(), false );
+            $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Error on GET subscription - User ID %s - Channel ID %s.', 'twitchpress' ), $twitch_user_id, $chan_id ), array(), false );
             return $subscribed;
         } 
         elseif( isset( $subscribed['sub_plan'] ) )
         {
-            $this->bugnet->log( __FUNCTION__, sprintf( __( 'Subscription data returned for user ID %s from channel ID %s.', 'twitchpress' ), $user_id, $chan_id ), array(), false, false );
+            $this->bugnet->log( __FUNCTION__, sprintf( __( 'Good Subscription GET - User ID %s - Channel ID %s.', 'twitchpress' ), $twitch_user_id, $chan_id ), array(), false, false );
             return $subscribed;   
         }
         elseif( $subscribed === null )
@@ -1448,7 +1443,7 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         // We should never arrive here. 
         // These lines were added to debugging the new "null" response which the documentation says nothing about for this endpint. 
         // This bug may be the cause of 500 errors on returning from Twitch.
-        $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Unexpected response from request for subscribers data. User ID: %s Channel ID: %s.', 'twitchpress' ), $user_id, $chan_id ), array(), false );
+        $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'Unexpected response from request for subscribers data. User ID: %s Channel ID: %s.', 'twitchpress' ), $twitch_user_id, $chan_id ), array(), false );
         
         if( is_array( $subscribed ) ) 
         {
@@ -1474,19 +1469,19 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     * 
     * @param mixed $user_id
     * 
-    * @version 2.0
+    * @version 3.0
     */
     public function is_user_subscribed_to_main_channel( $user_id ) {
+
         if( !$credentials = twitchpress_get_user_twitch_credentials( $user_id ) ) {
             return null;    
         }        
-        
+
         // Returns boolean, false if no subscription else true.     
-        return $this->checkUserSubscription( 
-            $user_id, 
-            $this->twitch_default_channel, 
-            $credentials['token'], 
-            $credentials['code'] 
+        return $this->get_users_subscription_apicall( 
+            twitchpress_get_user_twitchid_by_wpid($user_id), 
+            twitchpress_get_main_channels_twitchid(), 
+            $credentials['token'] 
         );    
     }
     
@@ -1500,9 +1495,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
      * 
      * @return $subscribed - [bool] the status of the user subscription
      * 
-     * @version 5.0
+     * @version 5.5
      */ 
-    public function checkUserSubscription( $user_id, $chan_id, $token = false, $code = false ){
+    public function get_users_subscription_apicall( $twitch_user_id, $chan_id, $user_token = false ){
 
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'user', __FUNCTION__ );
@@ -1511,17 +1506,9 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
             $this->bugnet->log_error( __FUNCTION__, sprintf( __( 'TwitchPress Error: The function %s() requires the channel_check_subscription scope to be permitted.', 'twitchpress' ), __FUNCTION__ ), array(), true ); 
             return $confirm_scope; 
         }
-        
-        if( !$token ) {
-            $token = $this->twitch_client_token;
-        }
-        
-        if( !$token ) {
-            $code = $this->twitch_client_code;    
-        }
-        
-        $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan_id;
-        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );   
+                               
+        $url = 'https://api.twitch.tv/kraken/users/' . $twitch_user_id . '/subscriptions/' . $chan_id;
+        $get = array( 'oauth_token' => $user_token, 'client_id' => $this->twitch_client_id );   
 
         // Build our cURL query and store the array
         $subscribed = json_decode( $this->cURL_get( $url, $get, array(), true, __FUNCTION__ ), true );
@@ -1572,31 +1559,23 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
     /**
      * Gets the a users subscription data for specified channel from the user side.
      * 
-     * @param $user_id - [string] User ID of the user check against
-     * @param $chan    - [string] Channel name of the channel to check against
-     * @param $token   - [string] Authentication key used for the session
+     * @param $twitch_user_id - [string] User ID of the user check against
+     * @param $chan_id    - [string] Channel name of the channel to check against
+     * @param $user_token   - [string] Authentication key used for the session
      * @param $code    - [string] Code used to generate an Authentication key
      * 
      * @return $subscribed - [array] subscription data.
      * 
      * @version 5.1
      */ 
-    public function getUserSubscription( $user_id, $chan_id, $token = false, $code = false ){   
+    public function getUserSubscription( $twitch_user_id, $chan_id, $user_token = false ){   
       
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'user', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
         
-        if( !$token ) {
-            $token = $this->twitch_client_token;
-        }
-        
-        if( !$token ) {
-            $code = $this->twitch_client_code;    
-        }
-
-        $url = 'https://api.twitch.tv/kraken/users/' . $user_id . '/subscriptions/' . $chan_id;
-        $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );   
+        $url = 'https://api.twitch.tv/kraken/users/' . $twitch_user_id . '/subscriptions/' . $chan_id;
+        $get = array( 'oauth_token' => $user_token, 'client_id' => $this->twitch_client_id );   
 
         // Build our cURL query and store the array
         $subscribed = json_decode( $this->cURL_get( $url, $get, array(), false, __FUNCTION__ ), true );
@@ -1673,7 +1652,8 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
         $userObject = json_decode($this->cURL_get($url, $get, array(), false, __FUNCTION__), true);
 
         return $userObject;          
-    }    
+    }  
+      
 }
 
 endif;

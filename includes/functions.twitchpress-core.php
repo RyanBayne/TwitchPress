@@ -311,144 +311,7 @@ function twitchpress_was_valid_token_returned( $returned_value ){
     
     return true;
 }                     
-
-/**
-* Checks if the giving user has Twitch API credentials.
-* 
-* @returns boolean false if no credentials else true
-* 
-* @param mixed $user_id
-* 
-* @version 1.0
-*/
-function twitchpress_is_user_authorized( $user_id ) { 
-    if( !get_user_meta( $user_id, 'twitchpress_code', true ) ) {
-        return false;
-    }    
-    if( !get_user_meta( $user_id, 'twitchpress_token', true ) ) {
-        return false;
-    }    
-    return true;
-}
-
-/**
-* Gets a giving users Twitch credentials from user meta and if no user
-* is giving defaults to the current logged in user. 
-* 
-* @returns mixed array if user has credentials else false.
-* @param mixed $user_id
-* 
-* @version 1.0
-*/
-function twitchpress_get_user_twitch_credentials( $user_id ) {
-    
-    if( !$user_id ) {
-        return false;
-    } 
-    
-    if( !$code = twitchpress_get_user_code( $user_id ) ) {  
-        return false;
-    }
-    
-    if( !$token = twitchpress_get_user_token( $user_id ) ) {  
-        return false;
-    }
-
-    return array(
-        'code'  => $code,
-        'token' => $token
-    );
-}
-
-function twitchpress_get_user_code( $user_id ) {
-    return get_user_meta( $user_id, 'twitchpress_code', true );    
-}
-
-function twitchpress_get_user_token( $user_id ) {
-    return get_user_meta( $user_id, 'twitchpress_token', true );    
-}
-
-/**
-* Update giving users oauth2 code.
-* 
-* @param mixed $user_id
-* @param mixed $code
-* 
-* @version 1.0
-*/
-function twitchpress_update_user_code( $user_id, $code ) { 
-    update_user_meta( $user_id, 'twitchpress_auth_time', time() );
-    update_user_meta( $user_id, 'twitchpress_code', $code );    
-}
-
-/**
-* Update users oauth2 token.
-* 
-* @param mixed $user_id
-* @param mixed $token
-* 
-* @version 1.0
-*/
-function twitchpress_update_user_token( $user_id, $token ) { 
-    update_user_meta( $user_id, 'twitchpress_auth_time', time() );
-    update_user_meta( $user_id, 'twitchpress_token', $token );    
-}
-
-/**
-* Update users oauth2 token_refresh string.
-* 
-* @param integer $user_id
-* @param boolean $token
-* 
-* @version 1.0
-*/
-function twitchpress_update_user_token_refresh( $user_id, $token ) { 
-    update_user_meta( $user_id, 'twitchpress_token_refresh', $token );    
-}
-
-/**
-* Get the token_refresh string for extending a session. 
-* 
-* @param integer $user_id
-* @param boolean $single
-* 
-* @version 1.0
-*/
-function twitchpress_get_user_token_refresh( $user_id, $single = true ) {
-    return get_user_meta( $user_id, 'twitchpress_token_refresh', $single );
-}
-
-/**
-* Update users Twitch ID (in Kraken version 5 user ID and channel ID are the same).
-* 
-* @param integer $user_id
-* @param integer $twitch_user_id
-* 
-* @version 1.0
-*/
-function twitchpress_update_user_twitchid( $user_id, $twitch_user_id ) {
-    update_user_meta( $user_id, 'twitchpress_auth_time', time() );
-    update_user_meta( $user_id, 'twitchpress_id', $twitch_user_id );    
-}
-
-/**
-* Updates user code and token for Twitch.tv API.
-* 
-* We always store the Twitch user ID that the code and token matches. This
-* will help to avoid mismatched data.
-* 
-* @param integer $user_id
-* @param string $code
-* @param string $token
-* 
-* @version 1.0
-*/
-function twitchpress_update_user_oauth( $user_id, $code, $token, $twitch_user_id ) {
-    twitchpress_update_user_code( $user_id, $code );
-    twitchpress_update_user_token( $user_id, $token ); 
-    twitchpress_update_user_twitchid( $user_id, $twitch_user_id );     
-}
-
+      
 /**
 * Schedule an event for syncing feed posts into WP.
 * 
@@ -645,24 +508,6 @@ function twitchpress_activate_channel_feedtowp_sync( $channel_post_id ) {
 }
 
 /**
-* Get the main/default/official channel ID for the WP site.
-* 
-* @version 1.0
-*/
-function twitchpress_get_main_channels_twitchid() {
-    return get_option( 'twitchpress_main_channel_id' );   
-}
-
-/**
-* Get the main/default/official channels related post ID.
-* 
-* @version 1.0
-*/
-function twitchpress_get_main_channels_postid() {
-    return get_option( 'twitchpress_main_channel_postid' );   
-}
-
-/**
 * Check if giving post name (slug) already exists in wp_posts.
 * 
 * @param mixed $post_name
@@ -720,24 +565,6 @@ function twitchpress_channelid_in_postmeta( $channel_id ) {
 */
 function twitchpress_convert_created_at_to_timestamp( $date_time_string ) {  
     return date_timestamp_get( date_create( $date_time_string ) );      
-}
-
-/**
-* Get a Twitch users Twitch ID.
-* 
-* @version 1.0
-* 
-* @return integer from Twitch user object or false if failure detected.
-*/
-function twitchpress_get_user_twitchid( $twitch_username ) {
-    $kraken = new TWITCHPRESS_Kraken_Calls();
-    $user_object = $kraken->get_users( $twitch_username );
-    if( isset( $user_object['users'][0]['_id'] ) && is_numeric( $user_object['users'][0]['_id'] ) ) {
-        return $user_object['users'][0]['_id'];
-    } else {
-        return false;
-    }
-    unset( $kraken );   
 }
 
 /**
@@ -972,3 +799,86 @@ function twitchpress_scopecheckboxpublic_required_icon( $scope ){
     
     return $icon;
 }
+
+/**
+* Get a Twitch users Twitch ID.
+* 
+* @version 1.0
+* 
+* @return integer from Twitch user object or false if failure detected.
+*/
+function twitchpress_get_user_twitchid( $twitch_username ) {
+    $kraken = new TWITCHPRESS_Kraken_Calls();
+    $user_object = $kraken->get_users( $twitch_username );
+    if( isset( $user_object['users'][0]['_id'] ) && is_numeric( $user_object['users'][0]['_id'] ) ) {
+        return $user_object['users'][0]['_id'];
+    } else {
+        return false;
+    }
+    unset( $kraken );   
+}
+
+/**
+* CSS for API Requests table.
+* 
+* @version 1.0
+*/
+function twitchpress_css_listtable_apirequests() {
+    if( !isset( $_GET['page'] ) ) { return; }
+    if( !isset( $_GET['tab'] ) ) { return; }
+    if( $_GET['page'] !== 'twitchpress_data' ) { return; }
+    if( $_GET['tab'] !== 'kraken5requests_list_tables' ) { return; }
+    
+    echo '<style type="text/css">';
+    echo '.wp-list-table .column-time { width: 10%; }';
+    echo '.wp-list-table .column-function { width: 20%; }';
+    echo '.wp-list-table .column-header { width: 30%; }';
+    echo '.wp-list-table .column-url { width: 20%; }';
+    echo '</style>';
+    
+}
+add_action('admin_head', 'twitchpress_css_listtable_apirequests');
+
+/**
+* CSS for API Errors table.
+* 
+* @version 1.0
+*/
+function twitchpress_css_listtable_apiresponses() {
+    if( !isset( $_GET['page'] ) ) { return; }
+    if( !isset( $_GET['tab'] ) ) { return; }
+    if( $_GET['page'] !== 'twitchpress_data' ) { return; }
+    if( $_GET['tab'] !== 'apiresponses_list_tables' ) { return; }
+    
+    echo '<style type="text/css">';
+    echo '.wp-list-table .column-time { width: 10%; }';
+    echo '.wp-list-table .column-httpdstatus { width: 10%; }';
+    echo '.wp-list-table .column-function { width: 20%; }';
+    echo '.wp-list-table .column-error_no { width: 10%; }';
+    echo '.wp-list-table .column-result { width: 50%; }';
+    echo '</style>';
+    
+}
+add_action('admin_head', 'twitchpress_css_listtable_apiresponses');
+
+/**
+* CSS for API Errors table.
+* 
+* @version 1.0
+*/
+function twitchpress_css_listtable_apierrors() {
+    if( !isset( $_GET['page'] ) ) { return; }
+    if( !isset( $_GET['tab'] ) ) { return; }
+    if( $_GET['page'] !== 'twitchpress_data' ) { return; }
+    if( $_GET['tab'] !== 'apierrors_list_tables' ) { return; }
+    
+    echo '<style type="text/css">';
+    echo '.wp-list-table .column-time { width: 10%; }';
+    echo '.wp-list-table .column-function { width: 20%; }';
+    echo '.wp-list-table .column-error_string { width: 30%; }';
+    echo '.wp-list-table .column-error_no { width: 10%; }';
+    echo '.wp-list-table .column-curl_url { width: 40%; }';
+    echo '</style>';
+    
+}
+add_action('admin_head', 'twitchpress_css_listtable_apierrors');

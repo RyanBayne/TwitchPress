@@ -151,7 +151,69 @@ class TwitchPress_Tools {
     public function get_categories() {
         return $tool_categories = array( 'posts', 'users', 'comments', 'plugins', 'security', 'seo', 'social', 'integration' );    
     }
-    
+
+    /**
+    * This tool is to be run by the owner of the site and the main channel. 
+    * 
+    * The oAuth procedure will be complete and a user token generated.
+    * 
+    * The token and refresh token is stored as the main channel token for features.
+    * 
+    * The WP users ID is also stored to indicate a relationship between WP user and owner. 
+    * 
+    * @version 1.0 
+    */
+    public function tool_authorize_main_channel() {
+        /**
+        * Description of values.
+        * 
+        * title       - give the tool a name.
+        * description - describe what the tool does.
+        * version     - tools must be versioned to give users warning
+        * author      - we have to know who to come to for help with a tool
+        * url         - link to a tutorial or other documentation
+        * category    - a way to group tools
+        * capability  - apply security using a core or custom capability
+        * option      - add option name if configuration required to use tool
+        */
+        $tool_info = array(
+            'title'       => __( 'Authorize Main Channel', 'multitool' ),
+            'description' => __( 'Only the site owner and owner of the main Twitch channel should use this tool. This tool will add permissions for more features to run i.e. getting the main channels subscribers.', 'multitool' ),
+            'version'     => '1.1',
+            'author'      => 'Ryan Bayne',
+            'url'         => '',
+            'category'    => 'users',
+            'capability'  => 'activate_plugins',
+            'option'      => null,
+            'function'    => __FUNCTION__,
+            'plugin'      => 'TwitchPress',
+        );
+        
+        if( $this->return_tool_info ){ return $tool_info; }     
+        
+        if( !current_user_can( $tool_info['capability'] ) ) { return; }
+        
+        /*
+            Your tools unique code goes here. Make it do something!
+        */
+        
+        // Create a Twitch API oAuth2 URL
+        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+                                             
+        $state = array( 'redirectto' => admin_url( '/?page=twitchpress' ),
+                        'userrole'   => 'administrator',
+                        'outputtype' => 'admin',
+                        'reason'     => 'mainchannelsetup',
+                        'function'   => __FUNCTION__
+        );
+        
+        // Generate the oAuth URL that we will forward the user to. 
+        $all_scopes = $post_credentials_kraken->twitch_scopes;
+        $oAuth2_URL = $post_credentials_kraken->generate_authorization_url( $all_scopes, $state );
+        wp_redirect( $oAuth2_URL );
+        exit;
+    }
+        
     /**
     * Display a list of the latest subscribers. A maximum of 100.
     * 
@@ -305,7 +367,333 @@ class TwitchPress_Tools {
         
         TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', __( 'All BugNet Tracing data has been deleted from caches.', 'twitchpress' ), 'twitchpress' );            
     }                                                
-          
+
+    /**
+    * Tests the Twitch channel subscription update procedure
+    * and generates extra output for debugging.
+    * 
+    * @version 1.0 
+    */
+    public function tool_debug_sub_update() {
+        /**
+        * Description of values.
+        * 
+        * title       - give the tool a name.
+        * description - describe what the tool does.
+        * version     - tools must be versioned to give users warning
+        * author      - we have to know who to come to for help with a tool
+        * url         - link to a tutorial or other documentation
+        * category    - a way to group tools
+        * capability  - apply security using a core or custom capability
+        * option      - add option name if configuration required to use tool
+        */
+        $tool_info = array(
+            'title'       => __( 'Debug Sub Update', 'multitool' ),
+            'description' => __( 'Gets the current users subscription details from the main channel and generates output for debugging problems.', 'multitool' ),
+            'version'     => '1.0',
+            'author'      => 'Ryan Bayne',
+            'url'         => '',
+            'category'    => 'developers',
+            'capability'  => 'activate_plugins',
+            'option'      => null,
+            'function'    => __FUNCTION__,
+            'plugin'      => 'TwitchPress',
+        );
+        
+        if( $this->return_tool_info ){ return $tool_info; }     
+        
+        if( !current_user_can( $tool_info['capability'] ) ) { return; }
+        
+        /*
+            Run indepth subscription update attempt with extra output. 
+        */
+
+        // Setup Logging and Tracing
+        global $bugnet;
+        
+        // Create Class Objects
+        $kraken = new TWITCHPRESS_Kraken_Calls();
+
+        // Build the output for the entire procedure. 
+        $output = __( 'Debugging Subscription Update Procedure', 'twitchpress' );
+
+        // This test only uses the current user. 
+        $user_id = get_current_user_id();
+        $user_info = get_userdata( $user_id );
+        $output .= sprintf( __( '<p><strong>User ID: %s</strong></p>', 'twitchpress' ), $user_id );
+        
+        // Get the main channel Twitch ID.
+        $channel_id = $kraken->get_main_channel_id();
+        $output .= sprintf( __( '<p><strong>Main Channel ID: %s</strong></p>', 'twitchpress' ), $channel_id );
+        
+        // Get main account token.     
+        $channel_token = $kraken->get_main_client_token();
+        $output .= sprintf( __( '<p><strong>Main Token: %s</strong></p>', 'twitchpress' ), $channel_token );
+
+        // Get main account code. 
+        $channel_code = $kraken->get_main_client_code();
+        $output .= sprintf( __( '<p><strong>Main Code: %s</strong></p>', 'twitchpress' ), $channel_code );
+
+        // Setup a call name for tracing. 
+        $kraken->twitch_call_name = __( 'Debug Update Subscription', 'twitchpress' );
+        
+        // Get current users Twitch ID.
+        $users_twitch_id = get_user_meta( $user_id, 'twitchpress_twitch_id', true );
+        $output .= sprintf( __( '<p><strong>Users Twitch ID: %s</strong></p>', 'twitchpress' ), $users_twitch_id );
+        
+        // Get possible existing sub plan from a earlier sub sync.
+        $local_sub_plan = get_user_meta( $user_id, 'twitchpress_sub_plan_' . $kraken->get_main_channel_id(), true  );
+        $output .= sprintf( __( '<p><strong>Existing Sub Plan Value: %s</strong></p>', 'twitchpress' ), $local_sub_plan );
+
+        // Check channel subscription from channel side (does not require scope permission).
+        $output .= sprintf( __( '<p><strong>Calling Twitch.tv for Subscription Details</strong></p>', 'twitchpress' ), $local_sub_plan );        
+        $twitch_sub_response = $kraken->getChannelSubscription( $users_twitch_id, $channel_id, $channel_token, $channel_code );
+                
+        // If Twitch user is a subscriber to channel do_action() early here, maybe a simple thank you notice. 
+        if( isset( $twitch_sub_response['error'] ) || $twitch_sub_response === null ) 
+        {   
+
+            // Prepare error code/status to improve log entry.
+            $status = '';
+            if( isset( $twitch_sub_response['status']) )
+            {
+                $status = $twitch_sub_response['status']; 
+                $output .= sprintf( __( '<p><strong>Error Returned: %s</strong></p>', 'twitchpress' ), $status );                
+            }             
+            else
+            {
+                $status = 'Null';
+                $output .= sprintf( __( '<p><strong>Null Value Returned by Twitch.tv</strong></p>', 'twitchpress' ), '' );        
+            }
+                         
+            if( twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
+            {   
+                // Delete users subscription for the channel we are checking.    
+                delete_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id );  
+                delete_user_meta( $user_id, 'twitchpress_sub_plan_name_' . $channel_id );  
+                
+                $output .= sprintf( __( '<p><strong>Removed Expired Sub Data</strong></p>', 'twitchpress' ), '' );
+
+                TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+                return;
+            }
+            else
+            {
+                // Invalid sub plan found in users data. 
+                $output .= sprintf( __( '<p><strong>Sub Plan Invalid: %s</strong></p>', 'twitchpress' ), $local_sub_plan );        
+            }       
+
+            TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+            return;
+        }
+        elseif( isset( $twitch_sub_response['sub_plan'] ) )
+        {
+            // Sub plan value returned. 
+            $output .= sprintf( __( '<p><strong>Sub Plan Value Returned: </strong></p>', 'twitchpress' ), $twitch_sub_response['sub_plan'] );
+            
+            // Updated Sub Status
+            update_user_meta( $user_id, 'twitchpress_substatus_mainchannel', true );
+            $output .= sprintf( __( '<p><strong>Updated User Meta Sub Status to TRUE</strong></p>', 'twitchpress' ), '' );
+                     
+            if( !twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
+            {      
+                // User is being registered as a Twitch sub for the first time.
+                update_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id, $twitch_sub_response['sub_plan'] );
+                update_user_meta( $user_id, 'twitchpress_sub_plan_name_' . $channel_id, $twitch_sub_response['sub_plan_name'] );
+                
+                $output .= sprintf( __( '<p><strong>New Twitch Subscriber Confirmed</strong></p>', 'twitchpress' ), '' );
+                
+                TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+                return; 
+            } 
+            elseif( twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
+            {  
+                // User is not a newely detected subscriber and has sub history stored in WP, check for sub plan change. 
+     
+                if( $twitch_sub_response['sub_plan'] !== $local_sub_plan )
+                { 
+                    // User has changed their subscription plan and are still subscribing.
+                    update_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id, $twitch_sub_response['sub_plan'] );                        
+                    update_user_meta( $user_id, 'twitchpress_sub_plan_name_' . $channel_id, $twitch_sub_response['sub_plan'] );                        
+                    
+                    $output .= sprintf( __( '<p><strong>Sub Plan Change Confirmed</strong></p>', 'twitchpress' ), '' );                }
+                else
+                {          
+                    // User is subscribing to the same plan since last sync. 
+                    $output .= sprintf( __( '<p><strong>Activate Subscription Unchanged</strong></p>', 'twitchpress' ), '' );
+                }
+
+                TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+                return;
+            } 
+        }      
+
+        $output .= sprintf( __( '<p><strong>Bad State</strong></p>', 'twitchpress' ), '' );
+        
+        TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+        return; 
+    }   
+    
+    public function tool_update_zyphers_sub() {
+
+        /**
+        * Description of values.
+        * 
+        * title       - give the tool a name.
+        * description - describe what the tool does.
+        * version     - tools must be versioned to give users warning
+        * author      - we have to know who to come to for help with a tool
+        * url         - link to a tutorial or other documentation
+        * category    - a way to group tools
+        * capability  - apply security using a core or custom capability
+        * option      - add option name if configuration required to use tool
+        */
+        $tool_info = array(
+            'title'       => __( 'Update ZypheRs Sub', 'multitool' ),
+            'description' => __( 'Update Zyphers sub using Twitch ID 120841817 for channel ID 20519306.', 'multitool' ),
+            'version'     => '1.0',
+            'author'      => 'Ryan Bayne',
+            'url'         => '',
+            'category'    => 'developers',
+            'capability'  => 'activate_plugins',
+            'option'      => null,
+            'function'    => __FUNCTION__,
+            'plugin'      => 'TwitchPress',
+        );
+        
+        if( $this->return_tool_info ){ return $tool_info; }     
+        
+        if( !current_user_can( $tool_info['capability'] ) ) { return; }
+        
+        /*
+            Run indepth subscription update attempt with extra output. 
+        */
+
+        // Setup Logging and Tracing
+        global $bugnet;
+        
+        // Create Class Objects
+        $kraken = new TWITCHPRESS_Kraken_Calls();
+
+        // Build the output for the entire procedure. 
+        $output = __( 'Debugging Subscription Update Procedure', 'twitchpress' );
+
+        // This test only uses the current user. 
+        $user_id = get_current_user_id();
+        $user_info = get_userdata( $user_id );
+        $output .= sprintf( __( '<p><strong>User ID: %s</strong></p>', 'twitchpress' ), $user_id );
+        
+        // Get the main channel Twitch ID.
+        $channel_id = $kraken->get_main_channel_id();
+        $output .= sprintf( __( '<p><strong>Main Channel ID: %s</strong></p>', 'twitchpress' ), $channel_id );
+        
+        // Get main account token.     
+        $channel_token = $kraken->get_main_client_token();
+        $output .= sprintf( __( '<p><strong>Main Token: %s</strong></p>', 'twitchpress' ), $channel_token );
+
+        // Get main account code. 
+        $channel_code = $kraken->get_main_client_code();
+        $output .= sprintf( __( '<p><strong>Main Code: %s</strong></p>', 'twitchpress' ), $channel_code );
+
+        // Setup a call name for tracing. 
+        $kraken->twitch_call_name = __( 'Debug Update Subscription', 'twitchpress' );
+        
+        // Get current users Twitch ID.
+        $users_twitch_id = get_user_meta( $user_id, 'twitchpress_twitch_id', true );
+        $output .= sprintf( __( '<p><strong>Users Twitch ID: %s</strong></p>', 'twitchpress' ), $users_twitch_id );
+        
+        // Get possible existing sub plan from a earlier sub sync.
+        $local_sub_plan = get_user_meta( $user_id, 'twitchpress_sub_plan_' . $kraken->get_main_channel_id(), true  );
+        $output .= sprintf( __( '<p><strong>Existing Sub Plan Value: %s</strong></p>', 'twitchpress' ), $local_sub_plan );
+
+        // Check channel subscription from channel side (does not require scope permission).
+        $output .= sprintf( __( '<p><strong>Calling Twitch.tv for Subscription Details</strong></p>', 'twitchpress' ), $local_sub_plan );        
+        $twitch_sub_response = $kraken->getChannelSubscription( '120841817', '20519306', $channel_token, $channel_code );
+                
+        // If Twitch user is a subscriber to channel do_action() early here, maybe a simple thank you notice. 
+        if( isset( $twitch_sub_response['error'] ) || $twitch_sub_response === null ) 
+        {   
+
+            // Prepare error code/status to improve log entry.
+            $status = '';
+            if( isset( $twitch_sub_response['status']) )
+            {
+                $status = $twitch_sub_response['status']; 
+                $output .= sprintf( __( '<p><strong>Error Returned: %s</strong></p>', 'twitchpress' ), $status );                
+            }             
+            else
+            {
+                $status = 'Null';
+                $output .= sprintf( __( '<p><strong>Null Value Returned by Twitch.tv</strong></p>', 'twitchpress' ), '' );        
+            }
+                         
+            if( twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
+            {   
+                // Delete users subscription for the channel we are checking.    
+                delete_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id );  
+                delete_user_meta( $user_id, 'twitchpress_sub_plan_name_' . $channel_id );  
+                
+                $output .= sprintf( __( '<p><strong>Removed Expired Sub Data</strong></p>', 'twitchpress' ), '' );
+
+                TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+                return;
+            }
+            else
+            {
+                // Invalid sub plan found in users data. 
+                $output .= sprintf( __( '<p><strong>Sub Plan Invalid: %s</strong></p>', 'twitchpress' ), $local_sub_plan );        
+            }       
+
+            TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+            return;
+        }
+        elseif( isset( $twitch_sub_response['sub_plan'] ) )
+        {
+            // Sub plan value returned. 
+            $output .= sprintf( __( '<p><strong>Sub Plan Value Returned: </strong></p>', 'twitchpress' ), $twitch_sub_response['sub_plan'] );
+            
+            // Updated Sub Status
+            update_user_meta( $user_id, 'twitchpress_substatus_mainchannel', true );
+            $output .= sprintf( __( '<p><strong>Updated User Meta Sub Status to TRUE</strong></p>', 'twitchpress' ), '' );
+                     
+            if( !twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
+            {      
+                // User is being registered as a Twitch sub for the first time.
+                update_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id, $twitch_sub_response['sub_plan'] );
+                update_user_meta( $user_id, 'twitchpress_sub_plan_name_' . $channel_id, $twitch_sub_response['sub_plan_name'] );
+                
+                $output .= sprintf( __( '<p><strong>New Twitch Subscriber Confirmed</strong></p>', 'twitchpress' ), '' );
+                
+                TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+                return; 
+            } 
+            elseif( twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
+            {  
+                // User is not a newely detected subscriber and has sub history stored in WP, check for sub plan change. 
+     
+                if( $twitch_sub_response['sub_plan'] !== $local_sub_plan )
+                { 
+                    // User has changed their subscription plan and are still subscribing.
+                    update_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id, $twitch_sub_response['sub_plan'] );                        
+                    update_user_meta( $user_id, 'twitchpress_sub_plan_name_' . $channel_id, $twitch_sub_response['sub_plan'] );                        
+                    
+                    $output .= sprintf( __( '<p><strong>Sub Plan Change Confirmed</strong></p>', 'twitchpress' ), '' );                }
+                else
+                {          
+                    // User is subscribing to the same plan since last sync. 
+                    $output .= sprintf( __( '<p><strong>Activate Subscription Unchanged</strong></p>', 'twitchpress' ), '' );
+                }
+
+                TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+                return;
+            } 
+        }      
+
+        $output .= sprintf( __( '<p><strong>Bad State</strong></p>', 'twitchpress' ), '' );
+        
+        TwitchPress_Admin_Notices::add_custom_notice( 'displayerrorsno', $output );            
+        return;    
+    }       
 }
 
 endif;

@@ -9,14 +9,14 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 }
 
 /**
- * TwitchPress_ListTable_Krakencalls.
+ * List table for viewing API error data.
  *
  * @author      Ryan Bayne
  * @category    Admin
  * @package     TwitchPress/Views
- * @version     1.0.0
+ * @version     1.0
  */
-class TwitchPress_ListTable_Krakencalls extends WP_List_Table {
+class TwitchPress_ListTable_APIErrors extends WP_List_Table {
 
     /**
      * Max items.
@@ -33,15 +33,15 @@ class TwitchPress_ListTable_Krakencalls extends WP_List_Table {
     public function __construct() {
 
         parent::__construct( array(
-            'singular'  => __( 'Request', 'wpseed' ),
-            'plural'    => __( 'Requests', 'wpseed' ),
+            'singular'  => __( 'Error', 'wpseed' ),
+            'plural'    => __( 'Errors', 'wpseed' ),
             'ajax'      => false
         ) );
         
         // Apply default items to the $items object.
         $this->default_items();
-    }
-
+    }   
+    
     /**
     * Setup default items. 
     * 
@@ -167,6 +167,14 @@ class TwitchPress_ListTable_Krakencalls extends WP_List_Table {
             case 'curl_url' :
                 echo '<pre>'; print_r( $item['curl_url'] ); echo '</pre>';
             break;            
+  
+            case 'error_string' :
+                echo '<textarea rows="4" cols="50">' . print_r( $item['error_string'], true ) . '</textarea>';
+            break;            
+
+            case 'error_no' :
+                echo '<pre>'; print_r( $item['error_no'] ); echo '</pre>';
+            break;
                         
         }
     }
@@ -175,18 +183,15 @@ class TwitchPress_ListTable_Krakencalls extends WP_List_Table {
      * Get columns.
      *
      * @return array
-     * 
-     * @version 2.0
      */
     public function get_columns() {
 
         $columns = array(
             'time'         => __( 'Date/Time', 'wpseed' ),
-            'function'     => __( 'function', 'wpseed' ),
-            'header'       => __( 'header', 'wpseed' ),
-            //'get'          => __( 'get', 'wpseed' ),
-            'url'          => __( 'Endpoint', 'wpseed' ),
-            //'curl_url'     => __( 'curl_url', 'wpseed' ),
+            'function'     => __( 'Function', 'wpseed' ),
+            'error_string' => __( 'Error Message', 'wpseed' ),
+            'error_no'     => __( 'Error Code', 'wpseed' ),
+            'curl_url'     => __( 'curl_url', 'wpseed' ),
         );
             
         return $columns;
@@ -199,7 +204,7 @@ class TwitchPress_ListTable_Krakencalls extends WP_List_Table {
 
         $this->_column_headers = array( $this->get_columns(), array(), $this->get_sortable_columns() );
         $current_page          = absint( $this->get_pagenum() );
-        $per_page              = apply_filters( 'twitchpress_listtable_krakencalls_items_per_page', 20 );
+        $per_page              = apply_filters( 'twitchpress_listtable_apierrors_items_per_page', 20 );
 
         $this->get_items( $current_page, $per_page );
 

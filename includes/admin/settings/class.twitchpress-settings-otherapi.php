@@ -136,7 +136,6 @@ class TwitchPress_Settings_OtherAPI extends TwitchPress_Settings_Page {
         // The All API library will start an oAuth2 if required.  
         $all_api = new TWITCHPRESS_All_API();
         $all_api->application_being_updated( $service, $url, $id, $secret );
-        unset( $all_api );
     }
     
     /** 

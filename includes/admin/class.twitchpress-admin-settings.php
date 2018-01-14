@@ -463,10 +463,11 @@ class TwitchPress_Admin_Settings {
 
                 // Checkbox input
                 case 'scopecheckbox' :
-                case 'scopecheckboxpublic':
+                case 'scopecheckboxpublic' :
                 case 'checkbox' :
-
+                
                     $option_value    = self::get_option( $value['id'], $value['default'] );
+                    
                     $visbility_class = array();
 
                     if ( ! isset( $value['hide_if_checked'] ) ) {
@@ -625,6 +626,8 @@ class TwitchPress_Admin_Settings {
 
             // Format the value based on option type.
             switch ( $option['type'] ) {
+                case 'scopecheckbox' :
+                case 'scopecheckboxpublic' :
                 case 'checkbox' :
                     $value = is_null( $raw_value ) ? 'no' : 'yes';
                     break;

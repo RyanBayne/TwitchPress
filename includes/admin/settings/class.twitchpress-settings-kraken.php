@@ -66,8 +66,8 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
         
         // Re-apply for application token and admin users token if scopes or app credentials are being submitted.
         if( !isset( $_GET['section']) || $_GET['section'] == 'entermaincredentials' || $_GET['section'] == 'default' ) {
-            $kraken = new TWITCHPRESS_Kraken_API();
-            $kraken->start_twitch_session_admin( 'main' );
+            //$kraken = new TWITCHPRESS_Kraken_API();
+            //$kraken->start_twitch_session_admin( 'main' );
         }
     }
 

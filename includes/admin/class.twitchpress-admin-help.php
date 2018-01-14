@@ -49,9 +49,11 @@ class TwitchPress_Admin_Help {
         $screen->set_help_sidebar(
             '<p><strong>' . __( 'For more information:', 'twitchpress' ) . '</strong></p>' .
             '<p><a href="https://github.com/ryanbayne/twitchpress/wiki" target="_blank">' . __( 'About TwitchPress', 'twitchpress' ) . '</a></p>' .
-            '<p><a href="https://github.com/ryanbayne/twitchpress" target="_blank">' . __( 'Github project', 'twitchpress' ) . '</a></p>' .
-            '<p><a href="https://github.com/ryanbayne/twitchpress/blob/master/CHANGELOG.txt" target="_blank">' . __( 'Change Log', 'twitchpress' ) . '</a></p>' .
-            '<p><a href="https://twitchpress.wordpress.com" target="_blank">' . __( 'Blog', 'twitchpress' ) . '</a></p>'
+            '<p><a href="https://github.com/ryanbayne/twitchpress" target="_blank">' . __( 'GitHub', 'twitchpress' ) . '</a></p>' .
+            '<p><a href="https://twitchpress.wordpress.com" target="_blank">' . __( 'Blog', 'twitchpress' ) . '</a></p>'.
+            '<p><a href="https://www.reddit.com/r/twitchpress/" target="_blank">' . __( 'Reddit', 'twitchpress' ) . '</a></p>' .
+            '<p><a href="https://discord.gg/VU7EjRu" target="_blank">' . __( 'Discord', 'twitchpress' ) . '</a></p>' .
+            '<p><a href="https://twitchpress.tv/zypherevolved" target="_blank">' . __( 'Twitch', 'twitchpress' ) . '</a></p>'
         );
                 
         $screen->add_help_tab( array(
@@ -67,15 +69,21 @@ class TwitchPress_Admin_Help {
             '<p><a href="' . TWITCHPRESS_GITHUB . '/issues?state=open' . '" class="button button-primary">' . __( 'Report a bug', 'twitchpress' ) . '</a></p>',
         ) );
         
+        $nonce = wp_create_nonce( 'tool_action' );
+        
         $screen->add_help_tab( array(
-            'id'        => 'twitchpress_wizard_tab',
-            'title'     => __( 'Setup wizard', 'twitchpress' ),
+            'id'        => 'twitchpress_installation_tab',
+            'title'     => __( 'Installation', 'twitchpress' ),
             'content'   =>
-                '<h2>' . __( 'Setup wizard', 'twitchpress' ) . '</h2>' .
-                '<p>' . __( 'If you need to access the setup wizard again, please click on the button below.', 'twitchpress' ) . '</p>' .
-                '<p><a href="' . admin_url( 'index.php?page=twitchpress-setup' ) . '" class="button button-primary">' . __( 'Setup wizard', 'twitchpress' ) . '</a></p>',
+                '<h2>' . __( '1. Setup Wizard (Developer or Owner)', 'twitchpress' ) . '</h2>' .
+                '<p>' . __( 'You must complete the Setup Wizard and you can go through it again to correct mistakes in the plugins initial configuration.', 'twitchpress' ) . '</p>' .
+                '<p><a href="' . admin_url( 'index.php?page=twitchpress-setup' ) . '" class="button button-primary">' . __( 'Setup wizard', 'twitchpress' ) . '</a></p>' .
+                '<h2>' . __( '2. Authorize Main Channel (Owner Only)', 'twitchpress' ) . '</h2>' .
+                '<p>' . __( 'This step is for the owner of this WordPress and the main Twitch channel. They need to logout of their Twitch account. Click the button below and then complete the oAuth procedure. This will generate a user token that will also be stored as the main channel token. The main channel token is used for channel management features.', 'twitchpress' ) . '</p>' .
+                '<p><a href="' . admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=tool_authorize_main_channel' ) . '" class="button button-primary">' . __( 'Authorize Main Account', 'twitchpress' ) . '</a></p>',
+            'callback'  => array( $this, 'installation' ),
         ) );   
-  
+                                   
         $screen->add_help_tab( array(
             'id'        => 'twitchpress_contribute_tab',
             'title'     => __( 'Contribute', 'twitchpress' ),
@@ -147,16 +155,101 @@ class TwitchPress_Admin_Help {
             'content'   => '',
             'callback'  => array( $this, 'faq' ),
         ) );
-        
+                
         $screen->add_help_tab( array(
-            'id'        => 'twitchpress_status_tab',
-            'title'     => __( 'Status', 'twitchpress' ),
+            'id'        => 'twitchpress_user_status_tab',
+            'title'     => __( 'Twitch User Status', 'twitchpress' ),
             'content'   => '',
-            'callback'  => array( $this, 'status' ),
+            'callback'  => array( $this, 'user_status' ),
+        ) );    
+                    
+        $screen->add_help_tab( array(
+            'id'        => 'twitchpress_app_status_tab',
+            'title'     => __( 'Twitch App Status', 'twitchpress' ),
+            'content'   => '',
+            'callback'  => array( $this, 'app_status' ),
+        ) );
+                
+        $screen->add_help_tab( array(
+            'id'        => 'twitchpress_channel_status_tab',
+            'title'     => __( 'Twitch Channel Status', 'twitchpress' ),
+            'content'   => '',
+            'callback'  => array( $this, 'channel_status' ),
+        ) );
+                
+        $screen->add_help_tab( array(
+            'id'        => 'twitchpress_testing_tab',
+            'title'     => __( 'Test Area', 'twitchpress' ),
+            'content'   => 'Sometimes new approaches will be tested here before making changes to the core. If you see errors please report them on GitHub or Discord.',
+            'callback'  => array( $this, 'testing' ),
         ) );
               
     }
     
+    public function installation() {
+        
+        $output = '';
+        
+        $kraken = new TWITCHPRESS_Kraken_Calls();
+
+        // Test Top Game 
+        $channel = $kraken->get_top_games( __FUNCTION__ );
+        
+        // Get main channel as a Twitch user.         
+        $twitch_user = $kraken->get_users( $kraken->get_main_channel_name() );
+                
+        // Test Get Application Token
+        $token_result = $kraken->establish_application_token( __FUNCTION__ );
+
+        if( !isset( $channel['top'][0]['game']['name'] ) ) {
+            $output .= __( '<h2>No Application Code</h2>', 'twitchpress' );
+            $output .= __( '<p>Could not get the current Top Game from Twitch.tv which indicates application details are missing. Please complete the Setup Wizard.</p>', 'twitchpress' );  
+        }        
+        elseif( !$kraken->get_main_channel_name() ) {
+            $output .= __( '<h2>Main Channel Not Setup</h2>', 'twitchpress' );
+            $output .= __( '<p>The main Twitch channel is usually owned by the website owner. The owner must go through the Authorize Main Channel procedure and provide a higher level of access to their account than a user would.</p>', 'twitchpress' );  
+        }
+        elseif( !$token_result ){
+            $output .= __( '<h2>No Application Token</h2>', 'twitchpress' );
+            $output .= __( '<p>All the cool features will not work until we have a token. Please ensure your application was setup properly in the Setup Wizard.</p>', 'twitchpress' );  
+        }
+        
+        elseif( !$token_result ){
+            $output .= __( '<h2>No Application Token</h2>', 'twitchpress' );
+            $output .= __( '<p>All the cool features will not work until we have a token. Please ensure your application was setup properly in the Setup Wizard.</p>', 'twitchpress' );  
+        }
+        elseif( !$token_result ){
+            $output .= __( '<h2>No Application Token</h2>', 'twitchpress' );
+            $output .= __( '<p>All the cool features will not work until we have a token. Please ensure your application was setup properly in the Setup Wizard.</p>', 'twitchpress' );  
+        }
+        elseif( !$token_result ){
+            $output .= __( '<h2>No Application Token</h2>', 'twitchpress' );
+            $output .= __( '<p>All the cool features will not work until we have a token. Please ensure your application was setup properly in the Setup Wizard.</p>', 'twitchpress' );  
+        }
+         
+        
+        else {
+            $output .= __( '<h2>TwitchPress Is Ready</h2>', 'twitchpress' );
+            $output .= __( '<p>Only a small number of tests were carried out but it seems the plugin is setup and ready to add new superpowers your WordPress.</p>', 'twitchpress' );  
+        }
+
+        // Check for existing cache.
+        $cache = get_transient( 'twitchpress_help_tab_installation_status' );
+        if( $cache ) 
+        {
+            $output .= __('<p>You are viewing cached data. Please refresh in 2 minutes.</p>', 'twitchpress' );
+        }
+        else
+        {
+            // No existing cache found, so test Kraken, generate output, cache output, output output!
+            $output .= __( '<p>You are viewing fresh results. The data will be cached for 120 seconds.</p>', 'twitchpress' );  
+        }
+            
+        // Avoid making these requests for every admin page request. 
+        set_transient( 'twitchpress_help_tab_installation_status', $output, 120 );
+
+        print $output;    
+    }
     public function faq() {
         $questions = array(
             0 => __( '-- Select a question --', 'appointments' ),
@@ -263,54 +356,57 @@ class TwitchPress_Admin_Help {
     * This focuses on the services main Twitch application credentials only.
     * 
     * @author Ryan Bayne
-    * @version 2.2
+    * @version 2.3
     */
-    public function status() {
+    public function user_status() {
+        
+        // Check for existing cache.
+        $cache = get_transient( 'twitchpresshelptabuserstatus' );
+        if( $cache ) 
+        {
+            _e( '<p>You are viewing cached results that are 120 seconds old. Refresh soon to update this data.</p>', 'twitchpress' ); 
+            print $cache;
+            return;
+        }
+        else
+        {
+            // No existing cache found, so test Kraken, generate output, cache output, output output!
+            _e( '<p>You are viewing real-time data on this request (not cached). The data will be cached for 120 seconds.</p>', 'twitchpress' );  
+        }
+        
+        // Define variable.
         $overall_result = true;
         $channel_display_name = __( 'Not Found', 'twitchpress' );
         $channel_status = __( 'Not Found', 'twitchpress' );
         $channel_game = __( 'Not Found', 'twitchpress' );
-        $current_user_id = get_current_user_id();
+        $current_user_wp_id = get_current_user_id();
+        $output = '';
         
-        // Check for existing cache.
-        $cache = get_transient( 'twitchpresshelptabstatus' );
-        if( $cache ) {
-            print $cache;
-            _e( '<p>You are viewing cached results which could be up to 60 seconds old. Refresh one minute after any changes you make to get the real status.</p>', 'twitchpress' ); 
-            return;
-        }
-        
-        // No existing cache found, so test Kraken, generate output, cache output, output output!
-        $output = __( '<p>You are viewing real-time data on this request (not cached). The data will be cached for 60 seconds.</p>', 'twitchpress' );  
-
         $kraken = new TWITCHPRESS_Kraken_Calls();
 
-        // Test Top Game 
-        $output .= '<h2>' . __( 'Test: Get Top Game', 'twitchpress' ) . '</h2>';
-        $channel = $kraken->get_top_games();
-        $output .= $channel['top'][0]['game']['name'];        
-        
-        // Test Check Users Token
-        $output .= '<h2>' . __( 'Test: Get Current Users Token', 'twitchpress' ) . '</h2>';
-        $token_result = $kraken->establish_user_token( __FUNCTION__, $current_user_id );
-        if( $token_result ){$output .= __( 'Result: User has a token!' ); }
-        else{ $output .= __( 'Result: User does not have a token!' ); $overall_result = false; }
+        // Test Get Users Token
+        $output .= '<h2>' . __( 'Test: Get Your Token', 'twitchpress' ) . '</h2>';
+        $token_result = $kraken->establish_user_token( __FUNCTION__, $current_user_wp_id );
 
-        // Test Check Users Token
-        $output .= '<h2>' . __( 'Test: Validate Current Users Token', 'twitchpress' ) . '</h2>';
-        $token_result = $kraken->check_user_token( $current_user_id );
+        if( $token_result ){$output .= __( 'Result: You have a token!' ); }
+        else{ $output .= __( 'Result: You do not have a token!' ); $overall_result = false; }
+
+        // Test Validate Users Token
+        $output .= '<h2>' . __( 'Test: Validating Your Token', 'twitchpress' ) . '</h2>';
+        $token_result = $kraken->check_user_token( $current_user_wp_id );
+        
         if( isset( $token_result['token'] ) && isset( $token_result['scopes'] ) && isset( $token_result['name'] ) ) {
-            $output .= __( 'Result: User token is valid. ' );    
-        }else{$output .= __( 'Result: Users token does not appear to be valid. ' ); $overall_result = false; }
+            $output .= __( 'Result: Your token is valid. ' );    
+        }else{$output .= __( 'Result: Your token does not appear to be valid. ' ); $overall_result = false; }
  
         // Test Get Users Channel
-        $output .=  '<h2>Test: Get Current Users Channel</h2>';
-        $current_user_token = twitchpress_get_user_token( $current_user_id );
+        $output .=  '<h2>Test: Get Your Channel</h2>';
+        $current_user_token = twitchpress_get_user_token( $current_user_wp_id );
         $channel = $kraken->get_tokens_channel( $current_user_token );
 
         if( !isset( $channel['display_name'] ) || !$channel['display_name'] ) 
         {
-            $output .= __( 'Could not get channel because: ', 'twitchpress' );
+            $output .= __( 'Could not get your channel because: ', 'twitchpress' );
             $overall_result = false;    
         }
         elseif( is_numeric( $channel['status'] ) )
@@ -326,21 +422,201 @@ class TwitchPress_Admin_Help {
             if( isset( $channel['game'] ) ) { $channel_game = $channel['game']; }
             
             $output .= '<ul>';
+            $output .= '<li><strong>Channel ID: </strong>' . $channel['_id'] . '</li>';
             $output .= '<li><strong>Display Name: </strong>' . $channel_display_name . '</li>';
             $output .= '<li><strong>Status: </strong>' . $channel_status . '</li>';
             $output .= '<li><strong>Game: </strong>' . $channel_game . '</li>';
             $output .= '</ul>';
         }
-        
-        // Test Check Application Token
-        $output .= '<h2>' . __( 'Test: Check Application Token', 'twitchpress' ) . '</h2>';
-        $app_token_result = $kraken->check_application_token();
-        if( isset( $app_token_result['token']['authorization']['scopes'] ) ) {
-            $output .= __( 'Result: Application token is valid.' );    
-        } else {
-            $output .= __( 'Result: Application token is not valid.' );  
-            $overall_result = false;  
+  
+        // Check if user is subscribed to the main channel.
+        $output .= '<h2>' . __( 'Test: Subscription Check Method One', 'twitchpress' ) . '</h2>';    
+        $users_subscription = $kraken->get_users_subscription_apicall( $channel['_id'], twitchpress_get_main_channels_twitchid(), $current_user_token ); 
+        if( !$users_subscription )
+        {
+            $output .= __( 'Not subscribed to the main channel.', 'twitchpress' );
         }
+        else
+        {
+            $output .= __( 'Subscribed to the main channel', 'twitchpress' );
+        }
+        
+        // Subscription check two. 
+        $output .= '<h2>' . __( 'Test: Subscription Check Method Two', 'twitchpress' ) . '</h2>';
+        $users_sub_2 = $kraken->is_user_subscribed_to_main_channel( $current_user_wp_id );
+        if( !$users_sub_2 )
+        {
+            $output .= __( 'Not subscribed to the main channel.', 'twitchpress' );
+        }
+        else
+        {
+            // Get the full subscription object.
+            $sub_object = $kraken->getUserSubscription( $channel['_id'], twitchpress_get_main_channels_twitchid(), $current_user_token );
+
+            $output .= '<ul>';
+
+                $output .= '<li>Sub Plan: ' . $sub_object['sub_plan'] . '</li>';
+                $output .= '<li>Plan Name: ' . $sub_object['sub_plan_name'] . '</li>';
+                $output .= '<li>Channel ID: ' . $sub_object['channel']['_id'] . '</li>';
+                        
+                if( $sub_object['channel']['partner'] )
+                {
+                    $output .= '<li>Partner Status: ' . __( 'Partnered', 'twitchpress' ) . '<li>';
+                }
+                else
+                {
+                    $output .= '<li>Partner Status: ' . __( 'Not Partnered', 'twitchpress' ) . '<li>';    
+                }
+            
+            $output .= '</ul>';
+        }        
+ 
+        // Get Tokens Scopes
+        $output .= '<h2>' . __( 'Your Tokens Current Scopes', 'twitchpress' ) . '</h2>'; 
+        if( !$scope = twitchpress_get_users_token_scopes( $current_user_wp_id ) ) 
+        {
+            $output .= '<h3>' . __( 'No Scopes Found', 'twitchpress' ) . '</h3>';
+        } 
+        else 
+        {   
+            $output .= '<ol>';
+            foreach( $scope as $key => $item ) 
+            {
+                $output .= '<li>' . esc_html( $item ) . '</li>';
+            }    
+            $output .= '</ol>';
+        }
+        
+        // Avoid making these requests for every admin page request. 
+        set_transient( 'twitchpresshelptabuserstatus', $output, 120 );
+        
+        print $output;    
+        
+        print sprintf( __( 'Please check Twitch.tv status %s before creating fault reports.' ), '<a target="_blank" href="https://twitchstatus.com/">here</a>' );   
+    }  
+      
+    /**
+    * Displays Twitch application status. 
+    * 
+    * This focuses on the services main Twitch application credentials only.
+    * 
+    * @author Ryan Bayne
+    * @version 2.3
+    */
+    public function app_status() {
+        // Check for existing cache.
+        $cache = get_transient( 'twitchpresshelptabappstatus' );
+        if( $cache ) 
+        {
+            _e( '<p>You are viewing cached data that is up to 120 seconds old. Refresh again soon to get the latest data.</p>', 'twitchpress' );
+            print $cache; 
+            return;
+        }
+        else
+        {
+            // No existing cache found, so test Kraken, generate output, cache output, output output!
+            _e( '<p>You are viewing real-time data on this request (not cached). The data will be cached for 120 seconds.</p>', 'twitchpress' );  
+        }
+        
+        // Define variables. 
+        $overall_result = true;
+        $channel_display_name = __( 'Not Found', 'twitchpress' );
+        $channel_status = __( 'Not Found', 'twitchpress' );
+        $channel_game = __( 'Not Found', 'twitchpress' );
+        $current_user_id = get_current_user_id();
+        $output = '';
+        
+        $kraken = new TWITCHPRESS_Kraken_Calls();
+
+        $output .= '<h2>' . __( 'Application Credentials', 'twitchpress' ) . '</h2>';
+        $output .= '<p>Old App ID Method: ' . twitchpress_get_main_client_id() . '</p>';
+        $output .= '<p>New App ID Method: ' . twitchpress_get_app_id() . '</p>';
+        $output .= '<p>App Redirect: ' . twitchpress_get_app_redirect() . '</p>';
+
+        // Test Top Game 
+        $output .= '<h2>' . __( 'Test: Get Top Game', 'twitchpress' ) . '</h2>';
+        $channel = $kraken->get_top_games( __FUNCTION__ );
+        $output .= $channel['top'][0]['game']['name'];        
+
+        // Test Get Application Token
+        $output .= '<h2>' . __( 'Test: Get Application Token', 'twitchpress' ) . '</h2>';
+        $token_result = $kraken->establish_application_token( __FUNCTION__ );
+        if( $token_result ){$output .= __( 'Result: Token Exists!' ); }
+        else{ $output .= __( 'Result: No Application Token Found' ); $overall_result = false; }
+        
+        if( !$overall_result ) {
+            $output .= '<h3>' . __( 'Overall Result: Not Ready!', 'twitchpress' ) . '</h3>';
+        } else {
+            $output .= '<h3>' . __( 'Overall Result: Ready!', 'twitchpress' ) . '</h3>';            
+        }
+
+        // Avoid making these requests for every admin page request. 
+        set_transient( 'twitchpresshelptabappstatus', $output, 120 );
+
+        print $output;    
+        
+        print sprintf( __( 'Please check Twitch.tv status %s before creating fault reports.' ), '<a target="_blank" href="https://twitchstatus.com/">here</a>' );   
+    }
+    
+    /**
+    * Displays Twitch application status. 
+    * 
+    * This focuses on the services main Twitch application credentials only.
+    * 
+    * @author Ryan Bayne
+    * @version 2.3
+    */
+    public function channel_status() {
+        // Check for existing cache.
+        $cache = get_transient( 'twitchpresshelptabchannelstatus' );
+        if( $cache ) 
+        {
+            _e( '<p>You are viewing cached data that is up to 120 seconds old. Refresh again soon to get the latest data.</p>', 'twitchpress' );
+            print $cache; 
+            return;
+        }
+        else
+        {
+            // No existing cache found, so test Kraken, generate output, cache output, output output!
+            _e( '<p>You are viewing real-time data on this request (not cached). The data will be cached for 120 seconds.</p>', 'twitchpress' );  
+        }
+        
+        // Define variables. 
+        $overall_result = true;
+        $channel_display_name = __( 'Not Found', 'twitchpress' );
+        $channel_status = __( 'Not Found', 'twitchpress' );
+        $channel_game = __( 'Not Found', 'twitchpress' );
+        $current_user_id = get_current_user_id();
+        $output = '';
+        
+        $kraken = new TWITCHPRESS_Kraken_Calls();
+
+        $output .= '<h2>' . __( 'Main Channel Credentials', 'twitchpress' ) . '</h2>';
+        $output .= '<p>Main Channel Name: ' . twitchpress_get_main_channels_name() . '</p>';
+        $output .= '<p>Main Channel Twitch ID: ' . twitchpress_get_main_channels_twitchid() . '</p>';
+        $output .= '<p>Main Channel WP Post ID: ' . twitchpress_get_main_channels_postid() . '</p>';
+        //$output .= '<p>Main Channel Token: ' . twitchpress_get_main_channels_token();
+        $output .= '<p>Main Channel Code: ' . twitchpress_get_main_channels_code() . '</p>';
+        $output .= '<p>Main Channel WP Owner ID: ' . twitchpress_get_main_channels_wpowner_id() . '</p>';
+        $output .= '<p>Main Channel Refresh Token: ' . twitchpress_get_main_channels_refresh() . '</p>';
+                
+        // Confirm Main Channel
+        $output .= '<h2>' . __( 'Main Channel Submitted (Home of Application)', 'twitchpress' ) . '</h2>';
+        $output .= '<p>' . $kraken->get_main_channel_name() . '</p>';
+        
+        // Get main channel as a Twitch user.         
+        $twitch_user = $kraken->get_users( $kraken->get_main_channel_name() );
+
+        // Main Channel ID
+        $output .= '<h2>' . __( 'Main Channel ID', 'twitchpress' ) . '</h2>';
+        $output .= '<p>' . $twitch_user['users'][0]['_id'] . '</p>';
+                
+        // Test Get Application Token
+        $output .= '<h2>' . __( 'Test: Get Application Token', 'twitchpress' ) . '</h2>';
+        
+        $token_result = twitchpress_get_main_channels_token();
+        if( $token_result ){$output .= __( 'Result: Main channel token exists!' ); }
+        else{ $output .= __( 'Result: No channel token found' ); $overall_result = false; }
         
         if( !$overall_result ) {
             $output .= '<h3>' . __( 'Overall Result: Not Ready!', 'twitchpress' ) . '</h3>';
@@ -349,11 +625,13 @@ class TwitchPress_Admin_Help {
         }
         
         // Avoid making these requests for every admin page request. 
-        set_transient( 'twitchpresshelptabstatus', $output, 60 );
-        
+        set_transient( 'twitchpresshelptabchannelstatus', $output, 120 );
+
         print $output;    
-        
-        print sprintf( __( 'Please check Twitch.tv status %s before creating fault reports.' ), '<a target="_blank" href="https://twitchstatus.com/">here</a>' );   
+    }
+    
+    public function testing() {
+
     }
 }
 
