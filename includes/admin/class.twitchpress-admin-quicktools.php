@@ -9,7 +9,7 @@
  * @author      Ryan Bayne
  * @category    Admin
  * @package     TwitchPress/Admin
- * @version     1.0.1
+ * @version     1.0.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -161,7 +161,7 @@ class TwitchPress_Tools {
     * 
     * The WP users ID is also stored to indicate a relationship between WP user and owner. 
     * 
-    * @version 1.0 
+    * @version 2.0
     */
     public function tool_authorize_main_channel() {
         /**
@@ -200,7 +200,7 @@ class TwitchPress_Tools {
         // Create a Twitch API oAuth2 URL
         $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
                                              
-        $state = array( 'redirectto' => admin_url( '/?page=twitchpress' ),
+        $state = array( 'redirectto' => admin_url( 'admin.php?page=twitchpress' ),
                         'userrole'   => 'administrator',
                         'outputtype' => 'admin',
                         'reason'     => 'mainchannelsetup',
