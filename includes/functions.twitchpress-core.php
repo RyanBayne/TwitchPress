@@ -674,13 +674,13 @@ function twitchpress_is_valid_sub_plan( $value ){
 /**
 * Generates a random 14 character string.
 * 
-* @version 1.0
+* @version 2.0
 */
 function twitchpress_random14(){ 
-    return rand( 10000000000000, 99999999999999 );   
+    return rand( 10000000, 99999999 ) . rand( 100000, 999999 );   
 }
 
-function var_dump_twitchpress( $var ) {
+function var_dump_twitchpress( $var ) {     
     if( !bugnet_current_user_allowed() ) { return false; }
     echo '<pre>'; var_dump( $var ); echo '</pre>';
 }
@@ -882,3 +882,91 @@ function twitchpress_css_listtable_apierrors() {
     
 }
 add_action('admin_head', 'twitchpress_css_listtable_apierrors');
+
+/**
+* Get the sync timing array which holds delays for top level sync activity.
+* 
+* This option avoids having to creation options per service at the top level
+* but if needed services can have additional options to control individual
+* processes.
+* 
+* @version 1.0
+*/
+function twitchpress_get_sync_timing() {
+    $sync_timing_array = get_option( 'twitchpress_sync_timing' );
+    if( !$sync_timing_array || !is_array( $sync_timing_array ) ) { return array(); }
+    return $sync_timing_array;
+}
+
+function twitchpress_update_sync_timing( $sync_timing_array ) {
+    update_option( 'twitchpress_sync_timing', $sync_timing_array, false );    
+}
+
+/**
+* Add a new sync time for a giving procedure. 
+* 
+* @param mixed $file
+* @param mixed $function
+* @param mixed $line
+* @param mixed $delay
+* 
+* @version 1.0
+*/
+function twitchpress_add_sync_timing( $file, $function, $line, $delay ) {
+    $sync_timing_array = twitchpress_get_sync_timing();
+    $sync_timing_array[$file][$function][$line]['delay'] = $delay;
+    $sync_timing_array[$file][$function][$line]['time'] = time();
+    twitchpress_update_sync_timing( $sync_timing_array );    
+}
+
+/**
+* A standard method for establishing time delay and if a giving method is
+* due to run. Use this within any procedure to end it short or continue. 
+* 
+* Sets new time() if due to make it easier to manage delays within procedures. 
+* 
+* @param mixed $function
+* @param mixed $line
+* @param mixed $file
+* @param mixed $delay
+* 
+* @returns boolean true if delay has passed already else false.
+* 
+* @version 2.0
+*/
+function twitchpress_is_sync_due( $file, $function, $line, $delay ) {
+    $sync_timing_array = twitchpress_get_sync_timing();
+    
+    // Init the delay for the first time
+    if( !isset( $sync_timing_array[$file][$function][$line] ) )
+    {
+        twitchpress_add_sync_timing( $file, $function, $line, $delay );
+        return true;    
+    }    
+    else
+    {
+        $last_time = $sync_timing_array[$file][$function][$line]['time'];
+        $soonest_time = $last_time + $delay;
+        if( $soonest_time > time() ) 
+        {
+            $sync_timing_array[$file][$function][$line]['delay'] = $delay;
+            $sync_timing_array[$file][$function][$line]['time'] = time();
+            twitchpress_update_sync_timing( $sync_timing_array );
+            return true;    
+        }   
+        
+        // Not enough time has passed since the last event. 
+        return false;
+    }
+}
+
+/**
+* Determines if the current logged in user is also the owner of the main channel.
+* 
+* @version 1.0
+*/
+function twitchpress_is_current_user_main_channel_owner() {
+    // Avoid processing the owner of the main channel (might not be admin with ID 1)
+    if( twitchpress_get_main_channels_wpowner_id() == get_current_user_id() ) { return true; }
+    return false;    
+}

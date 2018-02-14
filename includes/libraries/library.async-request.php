@@ -8,6 +8,9 @@
  * 
  * @link https://github.com/A5hleyRich/wp-background-processing/
  */
+ 
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
 
 if ( ! class_exists( 'TwitchPress_Async_Request' ) ) {
 

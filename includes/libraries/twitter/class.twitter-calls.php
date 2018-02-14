@@ -8,9 +8,8 @@
  * @version  1.0.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
 
 if( !class_exists( 'TWITCHPRESS_Twitter_Calls' ) ) :
 

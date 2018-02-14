@@ -250,11 +250,18 @@ class TwitchPress_Admin_Help {
 
         print $output;    
     }
+    
+    /**
+    * FAQ menu uses script to display a selected answer.
+    * 
+    * @version 1.2
+    */
     public function faq() {
         $questions = array(
-            0 => __( '-- Select a question --', 'appointments' ),
-            1 => __( "Can I create my own extensions?", 'appointments' ),
-            2 => __( "How much would it cost for a custom extension?", 'appointments' ),
+            0 => __( '-- Select a question --', 'twitchpress' ),
+            1 => __( 'Can I create my own extensions?', 'twitchpress' ),
+            2 => __( 'How much would it cost for a custom extension?', 'twitchpress' ),
+            3 => __( 'Does the plugin support Twitch API version 6?', 'twitchpress' ),
         );  
         
         ?>
@@ -277,10 +284,13 @@ class TwitchPress_Admin_Help {
         
         <ul class="faq-answers">
             <li class="faq-answer" id='q1'>
-                <?php _e('Yes, if you have experience with PHP and WordPress you can create an extension for TwitchPress. You can submit your extension to the WordPress.org repository for the community to use or keep it private or sell it as a premium extension. Please invite me to the projects GitHub for support.', 'appointments');?>
+                <?php _e('Yes, if you have experience with PHP and WordPress you can create an extension for TwitchPress. You can submit your extension to the WordPress.org repository for the community to use or keep it private or sell it as a premium extension. Please invite me to the projects GitHub for support.', 'twitchpress');?>
             </li>
             <li class="faq-answer" id='q2'>
-                <p> <?php _e('You can hire me to create a new extension from as little as $30.00 and if you make the extension available to the WordPress community I will charge 50% less. I will also put from free hours into improving it which I cannot do if you request a private extension.', 'appointments');?> </p>
+                <p> <?php _e('You can hire me to create a new extension from as little as $30.00 and if you make the extension available to the WordPress community I will charge 50% less. I will also put from free hours into improving it which I cannot do if you request a private extension.', 'twitchpress');?> </p>
+            </li>        
+            <li class="faq-answer" id='q3'>
+                <p> <?php _e('Twitch API version 6 is being added to TwitchPress but it will not be ready for testing until April 2018.', 'twitchpress');?> </p>
             </li>        
         </ul>
              
@@ -315,7 +325,7 @@ class TwitchPress_Admin_Help {
 
                     if ( answer === 39 ) {
                         advancedGroup = $( '<optgroup />' )
-                            .attr( 'label', "<?php _e( 'Advanced: This part of FAQ requires some knowledge about HTML, PHP and/or WordPress coding.', 'appointments' ); ?>" );
+                            .attr( 'label', "<?php _e( 'Advanced: This part of FAQ requires some knowledge about HTML, PHP and/or WordPress coding.', 'twitchpress' ); ?>" );
 
                         indexSelector.append( advancedGroup );
                     }
@@ -339,7 +349,7 @@ class TwitchPress_Admin_Help {
                 indexSelector.before(
                     $('<label />')
                         .attr( 'for', 'question-selector' )
-                        .text( "<?php _e( 'Select a question', 'appointments' ); ?>" )
+                        .text( "<?php _e( 'Select a question', 'twitchpress' ); ?>" )
                         .addClass( 'screen-reader-text' )
                 );
 
@@ -403,7 +413,7 @@ class TwitchPress_Admin_Help {
         $output .=  '<h2>Test: Get Your Channel</h2>';
         $current_user_token = twitchpress_get_user_token( $current_user_wp_id );
         $channel = $kraken->get_tokens_channel( $current_user_token );
-
+        
         if( !isset( $channel['display_name'] ) || !$channel['display_name'] ) 
         {
             $output .= __( 'Could not get your channel because: ', 'twitchpress' );
@@ -416,7 +426,7 @@ class TwitchPress_Admin_Help {
             $overall_result = false;   
         } 
         else 
-        { 
+        {          
             if( isset( $channel['display_name'] ) ) { $channel_display_name = $channel['display_name']; }
             if( isset( $channel['status'] ) ) { $channel_status = $channel['status']; }
             if( isset( $channel['game'] ) ) { $channel_game = $channel['game']; }
@@ -430,46 +440,52 @@ class TwitchPress_Admin_Help {
         }
   
         // Check if user is subscribed to the main channel.
-        $output .= '<h2>' . __( 'Test: Subscription Check Method One', 'twitchpress' ) . '</h2>';    
-        $users_subscription = $kraken->get_users_subscription_apicall( $channel['_id'], twitchpress_get_main_channels_twitchid(), $current_user_token ); 
-        if( !$users_subscription )
+        if( isset( $channel['_id'] ) ) 
         {
-            $output .= __( 'Not subscribed to the main channel.', 'twitchpress' );
-        }
-        else
-        {
-            $output .= __( 'Subscribed to the main channel', 'twitchpress' );
+            $output .= '<h2>' . __( 'Test: Subscription Check Method One', 'twitchpress' ) . '</h2>';    
+            $users_subscription = $kraken->get_users_subscription_apicall( $channel['_id'], twitchpress_get_main_channels_twitchid(), $current_user_token ); 
+            if( !$users_subscription )
+            {
+                $output .= __( 'Not subscribed to the main channel.', 'twitchpress' );
+            }
+            else
+            {
+                $output .= __( 'Subscribed to the main channel', 'twitchpress' );
+            }
         }
         
         // Subscription check two. 
-        $output .= '<h2>' . __( 'Test: Subscription Check Method Two', 'twitchpress' ) . '</h2>';
-        $users_sub_2 = $kraken->is_user_subscribed_to_main_channel( $current_user_wp_id );
-        if( !$users_sub_2 )
-        {
-            $output .= __( 'Not subscribed to the main channel.', 'twitchpress' );
-        }
-        else
-        {
-            // Get the full subscription object.
-            $sub_object = $kraken->getUserSubscription( $channel['_id'], twitchpress_get_main_channels_twitchid(), $current_user_token );
+        if( isset( $channel['_id'] ) ) 
+        {        
+            $output .= '<h2>' . __( 'Test: Subscription Check Method Two', 'twitchpress' ) . '</h2>';
+            $users_sub_2 = $kraken->is_user_subscribed_to_main_channel( $current_user_wp_id );
+            if( !$users_sub_2 )
+            {
+                $output .= __( 'Not subscribed to the main channel.', 'twitchpress' );
+            }
+            else
+            {
+                // Get the full subscription object.
+                $sub_object = $kraken->getUserSubscription( $channel['_id'], twitchpress_get_main_channels_twitchid(), $current_user_token );
 
-            $output .= '<ul>';
+                $output .= '<ul>';
 
-                $output .= '<li>Sub Plan: ' . $sub_object['sub_plan'] . '</li>';
-                $output .= '<li>Plan Name: ' . $sub_object['sub_plan_name'] . '</li>';
-                $output .= '<li>Channel ID: ' . $sub_object['channel']['_id'] . '</li>';
-                        
-                if( $sub_object['channel']['partner'] )
-                {
-                    $output .= '<li>Partner Status: ' . __( 'Partnered', 'twitchpress' ) . '<li>';
-                }
-                else
-                {
-                    $output .= '<li>Partner Status: ' . __( 'Not Partnered', 'twitchpress' ) . '<li>';    
-                }
-            
-            $output .= '</ul>';
-        }        
+                    $output .= '<li>Sub Plan: ' . $sub_object['sub_plan'] . '</li>';
+                    $output .= '<li>Plan Name: ' . $sub_object['sub_plan_name'] . '</li>';
+                    $output .= '<li>Channel ID: ' . $sub_object['channel']['_id'] . '</li>';
+                            
+                    if( $sub_object['channel']['partner'] )
+                    {
+                        $output .= '<li>Partner Status: ' . __( 'Partnered', 'twitchpress' ) . '<li>';
+                    }
+                    else
+                    {
+                        $output .= '<li>Partner Status: ' . __( 'Not Partnered', 'twitchpress' ) . '<li>';    
+                    }
+                
+                $output .= '</ul>';
+            }  
+        }      
  
         // Get Tokens Scopes
         $output .= '<h2>' . __( 'Your Tokens Current Scopes', 'twitchpress' ) . '</h2>'; 

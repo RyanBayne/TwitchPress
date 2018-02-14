@@ -210,6 +210,7 @@ class TwitchPress_Tools {
         // Generate the oAuth URL that we will forward the user to. 
         $all_scopes = $post_credentials_kraken->twitch_scopes;
         $oAuth2_URL = $post_credentials_kraken->generate_authorization_url( $all_scopes, $state );
+
         wp_redirect( $oAuth2_URL );
         exit;
     }

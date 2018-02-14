@@ -1,4 +1,8 @@
 <?php
+
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
+
 class VariableClass {
   #region SETTINGS
 	public $chan = "starcitizengiveaways";//#StarCitizenGiveaways

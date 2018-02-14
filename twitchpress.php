@@ -1,12 +1,12 @@
 <?php
 /**
  * Plugin Name: TwitchPress
- * Plugin URI: https://wordpress.org/plugins/channel-solution-for-twitch
+ * Plugin URI: https://twitchpress.wordpress.com/
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch stream and channel management services to WordPress. 
- * Version: 1.6.5
+ * Version: 1.7.2
  * Author: Ryan Bayne
- * Author URI: https://twitchpress.wordpress.com/
+ * Author URI: https://ryanbayne.wordpress.com/
  * Requires at least: 4.4
  * Tested up to: 4.9
  * License: GPL3
@@ -17,7 +17,7 @@
  * @category Core
  * @author Ryan Bayne (Gaming Handle: ZypheREvolved)
  * @license GNU General Public License, Version 3
- * @copyright 2016-2017 Ryan R. Bayne (SqueekyCoder@Gmail.com)
+ * @copyright 2016-2018 Ryan R. Bayne (SqueekyCoder@Gmail.com)
  */
  
 // Exit if accessed directly. 
@@ -42,7 +42,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.6.5';
+    public $version = '1.7.2';
 
     /**
      * Minimum WP version.
@@ -181,17 +181,17 @@ final class WordPressTwitchPress {
         if ( ! defined( 'TWITCHPRESS_AUTHOR_SLACK' ) ) {      define( 'TWITCHPRESS_AUTHOR_SLACK', 'https://ryanbayne.slack.com/threads/team/' ); }
         
         // Twitch API
-        if( ! defined( "TWITCHPRESS_KEY_NAME" ) ){                 define( "TWITCHPRESS_KEY_NAME", 'name' );}
-        if( ! defined( "TWITCHPRESS_DEFAULT_TIMEOUT" ) ){          define( "TWITCHPRESS_DEFAULT_TIMEOUT", 5 );}
-        if( ! defined( "TWITCHPRESS_DEFAULT_RETURN_TIMEOUT" ) ){   define( "TWITCHPRESS_DEFAULT_RETURN_TIMEOUT", 20 );}
-        if( ! defined( "TWITCHPRESS_API_VERSION" ) ){              define( "TWITCHPRESS_API_VERSION", 5 );}
-        if( ! defined( "TWITCHPRESS_TOKEN_SEND_METHOD" ) ){        define( "TWITCHPRESS_TOKEN_SEND_METHOD", 'HEADER' );}
-        if( ! defined( "TWITCHPRESS_RETRY_COUNTER" ) ){            define( "TWITCHPRESS_RETRY_COUNTER", 2 );}
-        if( ! defined( "TWITCHPRESS_CERT_PATH" ) ){                define( "TWITCHPRESS_CERT_PATH", '' );}
-        if( ! defined( "TWITCHPRESS_CALL_LIMIT_DEFAULT" ) ){       define( "TWITCHPRESS_CALL_LIMIT_DEFAULT", '15' );}
-        if( ! defined( "TWITCHPRESS_CALL_LIMIT_DOUBLE" ) ){        define( "TWITCHPRESS_CALL_LIMIT_DOUBLE", '30' );}
-        if( ! defined( "TWITCHPRESS_CALL_LIMIT_MAX" ) ){           define( "TWITCHPRESS_CALL_LIMIT_MAX", '60' );}
-        if( ! defined( "TWITCHPRESS_CALL_LIMIT_SETTING" ) ){       define( "TWITCHPRESS_CALL_LIMIT_SETTING", TWITCHPRESS_CALL_LIMIT_MAX );}     
+        if( ! defined( "TWITCHPRESS_KEY_NAME" ) ){               define( "TWITCHPRESS_KEY_NAME", 'name' );}
+        if( ! defined( "TWITCHPRESS_DEFAULT_TIMEOUT" ) ){        define( "TWITCHPRESS_DEFAULT_TIMEOUT", 5 );}
+        if( ! defined( "TWITCHPRESS_DEFAULT_RETURN_TIMEOUT" ) ){ define( "TWITCHPRESS_DEFAULT_RETURN_TIMEOUT", 20 );}
+        if( ! defined( "TWITCHPRESS_API_VERSION" ) ){            define( "TWITCHPRESS_API_VERSION", 5 );}
+        if( ! defined( "TWITCHPRESS_TOKEN_SEND_METHOD" ) ){      define( "TWITCHPRESS_TOKEN_SEND_METHOD", 'HEADER' );}
+        if( ! defined( "TWITCHPRESS_RETRY_COUNTER" ) ){          define( "TWITCHPRESS_RETRY_COUNTER", 2 );}
+        if( ! defined( "TWITCHPRESS_CERT_PATH" ) ){              define( "TWITCHPRESS_CERT_PATH", '' );}
+        if( ! defined( "TWITCHPRESS_CALL_LIMIT_DEFAULT" ) ){     define( "TWITCHPRESS_CALL_LIMIT_DEFAULT", '15' );}
+        if( ! defined( "TWITCHPRESS_CALL_LIMIT_DOUBLE" ) ){      define( "TWITCHPRESS_CALL_LIMIT_DOUBLE", '30' );}
+        if( ! defined( "TWITCHPRESS_CALL_LIMIT_MAX" ) ){         define( "TWITCHPRESS_CALL_LIMIT_MAX", '60' );}
+        if( ! defined( "TWITCHPRESS_CALL_LIMIT_SETTING" ) ){     define( "TWITCHPRESS_CALL_LIMIT_SETTING", TWITCHPRESS_CALL_LIMIT_MAX );}     
     
         // Library Integration
         if ( ! defined( 'BUGNET_LOG_DIR' ) ) { define( 'BUGNET_LOG_DIR', TWITCHPRESS_LOG_DIR ); }        

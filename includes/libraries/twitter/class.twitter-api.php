@@ -9,6 +9,9 @@
  * @author   Ryan Bayne <squeekycoder@gmail.com>
  * @version  1.0.0
  */
+
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
  
 // Make sure we meet our dependency requirements
 if (!extension_loaded('curl')) trigger_error('cURL is not currently installed on your server, please install cURL if your wish to use Twitter API services in TwitchPress.');

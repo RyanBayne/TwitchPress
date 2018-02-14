@@ -1,12 +1,12 @@
 === TwitchPress ===
 Contributors: Ryan Bayne
-Donate link: https://www.patreon.com/ryanbayne
+Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.6.5
+Stable tag: 1.7.2
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -30,7 +30,7 @@ with the Twitch API.
 *   <a href="https://twitter.com/twitchpress" title="Follow the projects Tweets.">TwitchPress Twitter</a>
 *   <a href="https://www.twitch.tv/zypherevolved" title="Follow my Twitch channel.">Authors Twitch</a>   
 *   <a href="https://discord.gg/NaRB3wE" title="Chat about TwitchPress on Discord.">Discord Chat</a>     
-*   <a href="https://www.patreon.com/ryanbayne" title="">Patreon Pledges</a>     
+*   <a href="https://www.patreon.com/zypherevolved" title="">Patreon Pledges</a>     
 *   <a href="https://www.paypal.me/zypherevolved" title="">PayPal Donations</a>       
 
 = Features List = 
@@ -59,7 +59,7 @@ with the Twitch API.
 * DONE - Basic changes that do not require testing.
 * DEVS - Script changes that developers need to be aware of. 
 * TEXT - A note to translators that text has changed. 
-* BUGS - Fixed faults or faults still being investigated. 
+* FIX - Fixed faults or faults still being investigated. 
 * INFO - Helpful information regarding recent changes. 
 * HELP - A request for help, usually explained on GitHub further. 
 
@@ -90,6 +90,20 @@ Translator needed to localize the Channel Solution for Twitch.
 New setup step added. Please open the Help tab and go to the Installation section. Click on the Authorize Main Channel button. 
 
 == Changelog ==
+= 1.7.2 = 
+* FIX - Corrected variable name $functions to $function in the new twitchpress_is_sync_due() function.
+
+= 1.7.1 = 
+* DONE - Added new FAQ to Help tab. 
+* DONE - Corrected text domain "appointments" to "twitchpress" in around 20 locations. 
+* DONE - Prevented direct access to some files in the library directory including library.twitchbot.php for better security. 
+* DONE - New functions for managing sync event delays added to core functions file. 
+
+= 1.7.0 = 
+* FIX - Authorization of main account was taking user to a broken URL.
+* FIX - PHP 7 does not accept rand( 10000000000000, 99999999999999 ) so broken it down into two separate rand(). 
+* FIX - Above changes fixes problem when authorizing main account and having missing credentials. 
+
 = 1.6.5 = 
 * DEVS - The $code value in class.kraken-api.php is no longer url escaped. 
 * DEVS - oAuth part removed from Setup Wizard when submitting application credentials. 
