@@ -1,22 +1,11 @@
-## TwitchPress WordPress Plugin
-Turn your WordPress website into a Twitch powered gaming site by installing TwitchPress. This growing plugin can be easily extended and customized with little work involved. This is ideal for new streamers and clans on a low budget. Popular streamers who are well funded can expect many premium options and services to invest in guaranteed growth. 
+## TwitchPress System for WordPress
+Turn your WordPress website into a Twitch powered gaming site by installing TwitchPress. This is a growing range of plugin that easily extend and customize a core plugin. This can be done free, ideal for new streamers and clans on a low budget. Popular streamers who are well funded can expect many premium options and services to invest in guaranteed community growth on a professional level. 
 
 # TwitchPress For Streamers
-Your blog, your channel, your way! Merge the power of WordPress and Twitch to create a unique gaming website. The TwitchPress plugin and extensions can be used to build a unique website that suits your style and your audience. This project is fully supported by the original author and an active Discord community.
-
-### Main Features
-* Share posts from WordPress to your Twitch feed.
-* Extend the core plugin with free extensions. 
-* Setup Wizard makes configuration easy.  
-* Suitable for creating services.
-* Twitch API Version 6 being added now. 
+Your blog, your channel, your way! Merge the power of WordPress and Twitch to create a unique gaming website. The TwitchPress plugin system can be used to build a unique website that suits your style and your audience. This project is fully supported by developers and an active Discord community of gamers.
 
 # Installation 
-The plugin is free to download from WordPress.org and you can locate it from your WP admin by searching
-"TwitchPress". The official plugin name on WordPress.org is "Channel Solution for Twitch". The project codename
-is TwitchPress and covers more than just the plugin itself. 
-
-Use the WordPress 'Add New' plugins screen to get the latest stable build using the safest transfer method. 
+Start by installing the core plugin directly from WordPress.org within your admin as you would any other free plugin. Locate the plugin search and enter "Channel Solution for Twitch" in your WordPress admin. If you enter "TwitchPress" you will also find it and the extensions.
 
 ## 1. Twitch Developer Application
 You will need a set of Twitch Developer Application credentials. You can obtain them in your Twitch settings, 
@@ -61,6 +50,7 @@ Permissions of this strong copyleft license are conditioned on making available 
 * Warranty
 
 ## Project Links
+* Core Plugin GitHub: https://github.com/RyanBayne/TwitchPress-Core-WordPress-Plugin
 * Project Blog: http://twitchpress.wordpress.com
 * Twitter Updates: http://www.twitter.com/twitchpress
 * Patreon Donations:  https://www.patreon.com/zypherevolved
