@@ -1,0 +1,54 @@
+1519175074,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519175075,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is fzxh1dwoo4tla7onddujv537v1x0p3.",,,,X,1,1,,,100
+1519175075,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519175075,cURL_get,"TwitchPress Error 0: ",,,,X,1,1,,,100
+1519175075,cURL_get,"TwitchPress HTTPDStatus: 404 - The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible. For example, the channel, user, or relationship could not be found.",,,,X,1,1,,,100
+1519175127,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519175128,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is a5llz5utmarlzikc4x6aq0s55wljee.",,,,X,1,1,,,100
+1519175128,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519175128,cURL_get,"TwitchPress Error 0: ",,,,X,1,1,,,100
+1519175128,cURL_get,"TwitchPress HTTPDStatus: 404 - The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible. For example, the channel, user, or relationship could not be found.",,,,X,1,1,,,100
+1519175220,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519175220,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 08ct6asi34rfxmb13mtjffh6syu0fk.",,,,X,1,1,,,100
+1519175220,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519175221,cURL_get,"TwitchPress Error 0: ",,,,X,1,1,,,100
+1519175221,cURL_get,"TwitchPress HTTPDStatus: 404 - The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible. For example, the channel, user, or relationship could not be found.",,,,X,1,1,,,100
+1519175604,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519175605,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is ponealme6u9mbpva4ydoyfoxtcei13.",,,,X,1,1,,,100
+1519175605,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519175605,cURL_get,"TwitchPress Error 0: ",,,,X,1,1,,,100
+1519175605,cURL_get,"TwitchPress HTTPDStatus: 404 - The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible. For example, the channel, user, or relationship could not be found.",,,,X,1,1,,,100
+1519245105,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245105,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 6l44w8cxl2fom9senjgqflhmezaibr.",,,,X,1,1,,,100
+1519245105,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519245105,cURL_get,"TwitchPress Error 0: ",,,,X,1,1,,,100
+1519245105,cURL_get,"TwitchPress HTTPDStatus: 404 - The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible. For example, the channel, user, or relationship could not be found.",,,,X,1,1,,,100
+1519245106,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245106,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is eaqdhxcuiyriu4ho3omlkomdx92gyq.",,,,X,1,1,,,100
+1519245107,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245108,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is w6ka3t9t0uwdz6su5a59e5fxmquxah.",,,,X,1,1,,,100
+1519245108,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245109,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is puiwo1ry0hb7m3492mpsrp96ni839y.",,,,X,1,1,,,100
+1519245109,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1519245109,request_user_access_token,"No access token returned: Requesting function is establish_user_token()",,,,X,1,1,,,100
+1519245110,cURL_get,"TwitchPress HTTPDStatus: 401 - The OAuth token does not have the correct scope or does not have the required permission on behalf of the specified user.",,,,X,1,1,,,100
+1519245110,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245111,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is fx4qwgdhocx6ueflindba77ujtb8o0.",,,,X,1,1,,,100
+1519245111,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245112,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is xssgc618m9xj40dt6y5qwhtjju53xq.",,,,X,1,1,,,100
+1519245112,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245112,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is gl895vzk05uyx7chylhbxult14v0t8.",,,,X,1,1,,,100
+1519245163,twitchpresssyncuser,"User 1 is not due for an update. Try again soon.",762,sync_user,"C:\xampp\htdocs\twitchpress\1\wp-content\plugins\twitchpress-sync-extension\twitchpress-sync-extension.php",X,1,1,,,100,,641087
+1519245164,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245164,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 555datzr7agsrgj1yrbkuu7s8h0vd6.",,,,X,1,1,,,100
+1519245165,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245166,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is k5ew5tt1vultsmadivwr43cdtgg92u.",,,,X,1,1,,,100
+1519245181,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245181,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is ainalhretw89zfuvgigwbf44ji4k8l.",,,,X,1,1,,,100
+1519245181,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519245182,cURL_get,"TwitchPress Error 0: ",,,,X,1,1,,,100
+1519245182,cURL_get,"TwitchPress HTTPDStatus: 404 - The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible. For example, the channel, user, or relationship could not be found.",,,,X,1,1,,,100
+1519245182,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245183,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is pd55fxxuhbuof69tuitcm4r7e65zwx.",,,,X,1,1,,,100
+1519245184,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519245184,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is w9xdth248ru4cuncw2hfo9yox3lurp.",,,,X,1,1,,,100
