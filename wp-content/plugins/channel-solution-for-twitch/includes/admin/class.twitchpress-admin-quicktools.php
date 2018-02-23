@@ -41,17 +41,17 @@ class TwitchPress_Tools {
         add_action( 'admin_init', array( __CLASS__, 'admin_request_listener' )  );     
     }
     
-    public function tool_url( $tool_name ) {
-        $nonce = wp_create_nonce( 'tool_action' );        var_dump($tool_name);
+    public function url( $tool_name ) {
+        $nonce = wp_create_nonce( 'tool_action' );        
         return admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=' . $tool_name );    
     }
     
-    public function tool_link( $tool_name, $tool_title ) {
-        return '<a href="' . $this->tool_url( $tool_name ) . '">' . $tool_title . '</a></p>';    
+    public function text_link_tools_view( $tool_name, $tool_title, $href ) {
+        return '<a href="' . $this->url( $tool_name ) . '">' . $tool_title . '</a></p>';    
     }
         
-    public function tool_button( $tool_name, $tool_title ) {
-        return '<a href="' . $this->tool_url( $tool_name ) . '" class="button button-primary">' . $tool_title . '</a></p>';    
+    public function button_link_tools_view( $tool_name, $tool_title ) {
+        return '<a href="' . $this->url( $tool_name ) . '" class="button button-primary">' . $tool_title . '</a></p>';    
     }
     
     /**
@@ -750,7 +750,7 @@ class TwitchPress_Tools {
         $sync_object = TwitchPress_Sync::instance();
         $sync_object->sync_user( get_current_user_id(), false, true, 'user' );
         
-        TwitchPress_Admin_Notices::add_custom_notice( 'usersynctwitchsubdata', 'testing this' );
+        do_action( 'twitchpress_manualsubsync' );
     }
 }
 

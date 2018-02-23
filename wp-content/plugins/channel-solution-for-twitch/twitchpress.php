@@ -95,7 +95,7 @@ final class WordPressTwitchPress {
      * @since 1.0
      */
     public function __clone() {
-        _doing_it_wrong( __FUNCTION__, __( 'Your not allowed to do that!', 'twitchpress' ), '1.0' );
+        _doing_it_wrong( __FUNCTION__, __( 'You\'re not allowed to do that!', 'twitchpress' ), '1.0' );
     }
 
     /**
@@ -103,7 +103,7 @@ final class WordPressTwitchPress {
      * @since 1.0
      */
     public function __wakeup() {
-        _doing_it_wrong( __FUNCTION__, __( 'Your not allowed to do that!', 'twitchpress' ), '1.0' );
+        _doing_it_wrong( __FUNCTION__, __( 'You\'re not allowed to do that!', 'twitchpress' ), '1.0' );
     }
 
     /**

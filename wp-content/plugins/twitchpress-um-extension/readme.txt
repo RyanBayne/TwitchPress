@@ -64,6 +64,9 @@ Translator needed to localize our Channel Solution for Twitch: TwitchPress, and 
 No special upgrade instructions this time. 
 
 == Changelog ==
+= 1.2.4 NOT RELEASED = 
+* DEV - Added new action for twitchpress_manualsubsync which sets role after visitor runs manual Twitch sub data sync. 
+
 = 1.2.3 = 
 * FIX - Corrected use of add_actions() which should be add_action(). 
 

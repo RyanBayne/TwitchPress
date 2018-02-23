@@ -83,7 +83,7 @@ class TwitchPress_Sync_Tools extends TwitchPress_Sync {
         if ( ! empty( $twitchers ) ) {
 
             foreach ( $twitchers as $next_user ) {
-                $this->sync_user( $next_user->ID );
+                $this->sync_user( $next_user->ID, true, false );
             }
 
         }    

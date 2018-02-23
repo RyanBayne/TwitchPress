@@ -52,3 +52,124 @@
 1519245183,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is pd55fxxuhbuof69tuitcm4r7e65zwx.",,,,X,1,1,,,100
 1519245184,check_application_token,"Invalid app token",,,,X,1,1,,,100
 1519245184,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is w9xdth248ru4cuncw2hfo9yox3lurp.",,,,X,1,1,,,100
+1519248408,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248409,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is oir70zqe5b0d6s7v5h7g895bda237g.",,,,X,1,1,,,100
+1519248410,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248410,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is hs0ogsq8yh4rp79v91sj318qh41g2m.",,,,X,1,1,,,100
+1519248413,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248413,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is r0a77bsxqcpqqe4kr0vecr5ngf5mou.",,,,X,1,1,,,100
+1519248414,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248415,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is m0w7w0ljaz1b43w22nb0luotjxze5a.",,,,X,1,1,,,100
+1519248415,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248416,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is dll105nzb39qg0h0jt0lzq5sh920wu.",,,,X,1,1,,,100
+1519248417,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519248417,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519248417,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519248418,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519248418,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248419,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is z16ejq0hh8ptd0ujprvmkrw1wq8rsa.",,,,X,1,1,,,100
+1519248419,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248420,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is 6ijapxzlj3m2qwnbqmmiqbemv74wl9.",,,,X,1,1,,,100
+1519248420,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519248421,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 6eju6i3fevtndeavi6hvmdufb9200l.",,,,X,1,1,,,100
+1519249629,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519249630,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is a30q5pl5nlf7rqkhlme12tgypaqhz5.",,,,X,1,1,,,100
+1519249630,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519249630,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519249938,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519249938,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is clqwynyvo3aku7iehkun5qesq97vb9.",,,,X,1,1,,,100
+1519249938,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519249939,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250421,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250421,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 5b2lrul0jf56t4sxi2k85ougeuhouw.",,,,X,1,1,,,100
+1519250421,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519250422,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250422,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250423,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is ti52pbagcacao1500hk16e5e47nrty.",,,,X,1,1,,,100
+1519250424,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250425,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is 22uuso5jqh0rphatc3msnfwmfiaz9p.",,,,X,1,1,,,100
+1519250425,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250426,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is htl8ilufc6hpqgif645b2ujs39o8z3.",,,,X,1,1,,,100
+1519250427,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519250427,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250427,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519250427,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250428,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250429,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is so5xlozjcwuf6umk387ppynmjxhhim.",,,,X,1,1,,,100
+1519250429,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250430,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is hfb7zvd7uul3iys0t8cfmsmokqwvxc.",,,,X,1,1,,,100
+1519250430,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250431,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 0cvnb2z5r69pcygrpfeud9smm9youv.",,,,X,1,1,,,100
+1519250672,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250672,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is ibzccuvmekvlaczoukdkel3oxmttvx.",,,,X,1,1,,,100
+1519250672,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519250673,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250673,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250674,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is u3vhq8m6pvw88u1ji84mvw7hped5br.",,,,X,1,1,,,100
+1519250675,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250675,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is 4umuf479rte3z9bouyivz4gqsfmly0.",,,,X,1,1,,,100
+1519250676,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250677,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is euytlzep647tltit2kcw02kdum6t20.",,,,X,1,1,,,100
+1519250678,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519250678,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250678,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519250679,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519250679,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250680,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is rn0183z85al6i7icjkq5z2yx4zjpa6.",,,,X,1,1,,,100
+1519250680,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250681,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is 55ikh974cylbfw20ofxjelga9y6gy0.",,,,X,1,1,,,100
+1519250681,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519250682,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is cmb8vub6hbl4az0ymio4go8kjkhvqo.",,,,X,1,1,,,100
+1519251466,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251467,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is ksgz5kbdcv6wex7ia3vg6wqko495if.",,,,X,1,1,,,100
+1519251467,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519251467,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251467,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251468,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is yazvdta6kf8m9jplclatdqgn2p50nh.",,,,X,1,1,,,100
+1519251469,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251470,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is mda34vmjvyfopdn5kxgsdtgbu2mnyw.",,,,X,1,1,,,100
+1519251470,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251471,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is nhyg7hcvu447z11fl9mny0u0knsqz9.",,,,X,1,1,,,100
+1519251472,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519251472,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251472,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519251472,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251473,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251473,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is eo2e1kpo1jwpfuwu528zgus2tnpb08.",,,,X,1,1,,,100
+1519251474,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251474,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is gqal35j08tj2r3p0oddugeu4qr2wwf.",,,,X,1,1,,,100
+1519251475,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251475,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is at7rjy6emm0697adinibzefo0io3mv.",,,,X,1,1,,,100
+1519251552,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251552,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is v18xbw5z690qqs1q4dcm3ec4wc3efh.",,,,X,1,1,,,100
+1519251552,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519251553,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251553,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251554,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 0tk04yj6uydpk4m4t3dbsljrjpey7i.",,,,X,1,1,,,100
+1519251555,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251555,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is 865q8m3cf4gacu2yn9xswau82arvcs.",,,,X,1,1,,,100
+1519251722,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251723,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 25gaxxpzf8knb9orloh7yr8gl3qr4o.",,,,X,1,1,,,100
+1519251723,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function getUserSubscription()",,,,X,1,1,,,100,
+1519251723,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251723,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251724,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is y9725ek25uaryqx87a2d64un2yp4d2.",,,,X,1,1,,,100
+1519251725,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251726,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is flv7becru3jz1ikj5bisw94jhzqchx.",,,,X,1,1,,,100
+1519251726,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251727,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is pj5dvl1x9n7w3zz1w1xe0lclcb3vty.",,,,X,1,1,,,100
+1519251728,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519251728,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251728,twitchpressscopenotpermittedbyuser,"TwitchPress requires visitor scope: channel_check_subscription for function get_users_subscription_apicall()",,,,X,1,1,,,100,
+1519251729,cURL_get,"TwitchPress HTTPDStatus: 422 - For example, for a user subscription endpoint, the specified channel does not have a subscription program.",,,,X,1,1,,,100
+1519251729,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251730,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 33vo4w2gtnewhh6zkbdrolfbz61rsm.",,,,X,1,1,,,100
+1519251730,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251731,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is hpavq0p4ylmlro7gan48uw0c90w1dl.",,,,X,1,1,,,100
+1519251731,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251732,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is g8zp8bd6sdm7ua8430ycmhmrglfy5h.",,,,X,1,1,,,100
+1519251739,twitchpresssyncuser,"User 1 is not due for an update. Try again soon.",762,sync_user,"C:\xampp\htdocs\twitchpress\trunk\wp-content\plugins\twitchpress-sync-extension\twitchpress-sync-extension.php",X,1,1,,,100,,149145
+1519251740,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251740,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is ccei284dh2a8btg48cif8lh57irs3y.",,,,X,1,1,,,100
+1519251741,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1519251742,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is p2rrsltbk1xl4smqsmkmxrxos9ym5q.",,,,X,1,1,,,100

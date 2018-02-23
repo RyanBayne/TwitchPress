@@ -71,6 +71,14 @@ post your requirements on the plugins forum first.
 No special upgrade instructions this time. 
 
 == Changelog ==
+= 1.3.3 NOT RELEASED = 
+* NEW - Added button to Profile view for manual Twitch data sync.
+* DEV - sync_user_on_login() no longer calls sync_user() with "ignore delay" set to true, to prevent flooding by a bot login out and in constantly.
+* DEV - sync_user_on_login() no longer passed true for notice output to prevent sudden notices appearing unrelated to login.
+* DEV - As above for sync_user_on_viewing_profile(), no notices on going to profile and no longer ignores delay as an anti-flood measure. 
+* DEV - twitch_subscription_status_save() no longer ignores the sync_user() delay but it allows notice output due to this running when profile is updated.
+* DEV - tool_sync_all_users() now calls sync_user() with ignore delay set to true and notice output false, previously these parameters were omitted. 
+
 = 1.3.2 = 
 * FIX - User ID missing in twitchpress_sync_currentusers_twitchsub_mainchannel(). 
 * FIX - User ID missing in is_users_sync_due().

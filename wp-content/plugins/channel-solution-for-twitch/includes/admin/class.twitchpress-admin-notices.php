@@ -285,12 +285,14 @@ class TwitchPress_Admin_Notices {
     * Create a notice that uses WordPress own basic notice div and styling.
     * 
     * @param mixed $name
-    * @param mixed $type
+    * @param mixed $type error|warning|success|info
     * @param mixed $dismissible
     * @param mixed $title
     * @param mixed $description
+    * 
+    * @version 2.0
     */
-    public static function add_wordpress_notice( $name, $type, $dismissible, $title, $description ) {
+    public static function add_wordpress_notice( $name, $type = 'success', $dismissible = false, $title = 'Sorry!', $description = 'Information about your last request has not been established, sorry about that.' ) {
         $wordpress_notice_array = array(
             'type' => $type,
             'dismissible' => $dismissible,

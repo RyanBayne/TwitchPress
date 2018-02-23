@@ -71,7 +71,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
         /**
         * @var integer - user sync flood delay.        
         */
-        public $sync_user_flood_delay = 60;// seconds
+        public $sync_user_flood_delay = 120;// seconds
 
         /**
          * Get a *Singleton* instance of this class.
@@ -191,7 +191,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
         /**
         * A main channel sync method.
         * 
-        * Do this hook when you need to ensure that a current logged in users
+        * Do hook when you need to ensure that a current logged in users
         * Twitch subscription data has been updated else update it. 
         * 
         * @version 2.0
@@ -731,7 +731,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                 sprintf( __( 'User %s has logged in. Beginning procedure to query their Twitch data and update their WP account.', 'twitchpress' ), $user->ID )
             );
             
-            $this->sync_user( $user->data->ID, true, true );    
+            $this->sync_user( $user->data->ID, false, false );    
         }
 
         /**
@@ -740,7 +740,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
         * @version 1.2
         */
         public function sync_user_on_viewing_profile( $user ) {    
-            $this->sync_user( $user->ID, true, true );    
+            $this->sync_user( $user->ID, false, false );    
         }        
          
         /**
@@ -766,6 +766,11 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                         sprintf( __( 'User %s is not due for an update. Try again soon.', 'twitchpress' ), $wp_user_id )
                     );  
                   
+                    if( $output_notice ) 
+                    {
+                        TwitchPress_Admin_Notices::add_wordpress_notice( 'twitchpresssyncusernotdue', 'info', false, __( 'TwitchPress', 'twitchpress' ), __( 'Your subscription data was requested not long ago. Please wait a few minutes before trying again.', 'twitchpress' ) );
+                    }
+                    
                     return false; 
                 }
             }
@@ -778,7 +783,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             if( $side == 'user' )
             {
                 // Twitch Subscription Sync
-                $this->user_sub_sync( $wp_user_id );    
+                $this->user_sub_sync( $wp_user_id, $output_notice );    
             }
             elseif( $side == 'channel' )
             {
@@ -802,7 +807,15 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             return true;
         }
         
-        public function user_sub_sync( $wp_user_id ){       
+        /**
+        * Sync subscription data from Twitch to WP
+        * 
+        * @param mixed $wp_user_id
+        * @param mixed $notice_output
+        * 
+        * @version 1.0
+        */
+        public function user_sub_sync( $wp_user_id, $output_notice = false ){       
             global $bugnet;
  
             $kraken = new TWITCHPRESS_Kraken_Calls();
@@ -817,7 +830,6 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             // Get possible existing sub plan from a earlier sub sync.
             $local_sub_plan = get_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $twitch_channel_id, true  );
             
-            // If Twitch user is a subscriber to channel do_action() early here, maybe a simple thank you notice. 
             if( isset( $twitch_sub_response['error'] ) || $twitch_sub_response === null ) 
             {   
                 // Prepare error code/status to improve log entry.
@@ -837,9 +849,23 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                     delete_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $twitch_channel_id );  
                     delete_user_meta( $wp_user_id, 'twitchpress_sub_plan_name_' . $twitch_channel_id );  
     
+                    if( $output_notice ) 
+                    {
+                        TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'warning', false, 
+                        __( 'Subscription Ended', 'twitchpress' ), 
+                        __( 'The response from Twitch.tv indicates that a previous subscription to the sites main channel was discontinued. Subscriber perks on this website will also be discontinued.', 'twitchpress' ) );
+                    }
+                    
                     return;
                 }       
 
+                if( $output_notice ) 
+                {
+                    TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'info', false, 
+                    __( 'Not Subscribing', 'twitchpress' ), 
+                    __( 'The response from Twitch.tv indicates that you are not currently subscribing to this sites main channel.', 'twitchpress' ) );
+                }
+                                    
                 return;
             }
             elseif( isset( $twitch_sub_response['sub_plan'] ) )
@@ -854,21 +880,39 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                     update_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );
                     update_user_meta( $wp_user_id, 'twitchpress_sub_plan_name_' . $twitch_channel_id, $twitch_sub_response['sub_plan_name'] );
                     
+                    if( $output_notice ) 
+                    {
+                        TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
+                        __( 'New Subscriber', 'twitchpress' ), 
+                        __( 'You\'re subscription has been confirmed and your support is greatly appreciated. You now have access to subscriber perks on this site.', 'twitchpress' ) );
+                    }
+                    
                     return;
                 } 
                 elseif( twitchpress_is_valid_sub_plan( $local_sub_plan ) ) 
                 {  
                     // User is not a newely detected subscriber and has sub history stored in WP, check for sub plan change. 
-         
                     if( $twitch_sub_response['sub_plan'] !== $local_sub_plan )
                     { 
                         // User has changed their subscription plan and are still subscribing.
                         update_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );                        
-                        update_user_meta( $wp_user_id, 'twitchpress_sub_plan_name_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );                        
+                        update_user_meta( $wp_user_id, 'twitchpress_sub_plan_name_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );    
+                        
+                        if( $output_notice ) 
+                        {
+                            TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
+                            __( 'Continuing Subscriber', 'twitchpress' ), 
+                            __( 'Your existing subscription has been confirmed as unchanged and your continued support is greatly appreciated.', 'twitchpress' ) );
+                        }                                       
                     }
                     else
                     {          
-                        
+                        if( $output_notice ) 
+                        {
+                            TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
+                            __( 'Subscription Updated', 'twitchpress' ), 
+                            __( 'Your existing subscription has been updated due to a change in your plan. You\'re continued support is greatly appreciated.', 'twitchpress' ) );
+                        }            
                     }
 
                     return;
@@ -1079,8 +1123,11 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                         </th>
                         <td>
                             <?php 
-                            $QuickTools = new TwitchPress_Tools();                 
-                            echo $QuickTools->tool_button( 'tool_user_sync_twitch_sub_data', __( 'Update Twitch Subscription', 'twitchpress') );
+                            $nonce = wp_create_nonce( 'tool_action' );
+                            
+                            $profile_url = admin_url( 'profile.php?_wpnonce=' . $nonce . '&toolname=tool_user_sync_twitch_sub_data' );    
+
+                            echo '<a href="' . $profile_url . '" class="button button-primary">' . __( 'Update Twitch Subscription', 'twitchpress' ) . '</a></p>';                        
                             ?>
                         </td>
                     </tr>
@@ -1190,7 +1237,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
         * @param mixed $user_id
         */
         public function twitch_subscription_status_save( $user_id ) {
-            $this->sync_user( $user_id, true, true );   
+            $this->sync_user( $user_id, false, true );   
         }
                 
         /**
