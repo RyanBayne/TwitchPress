@@ -95,7 +95,10 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DONE - Added new links to the top of the Setup Wizard Application step - just makes more sense! 
 * DONE - Fixed broken link to the ZypheREvolved Twitch channel in Help tab.  
 * DEV  - Added defaults to parameters in function add_wordpress_notice().
-* DEV  - do_action( 'twitchpress_manualsubsync' ) added to visitor procedure for manual Twitch sub data sync. 
+* DEV  - do_action( 'twitchpress_manualsubsync' ) added to visitor procedure for manual Twitch sub data sync.
+* DONE - Improvement program step in Setup Wizard changed to "Options".
+* DONE - Setup wizard now includes the authorising of the main channel when submitting Options step. 
+* DONE - Final step in the Setup Wizard looks better after some text changes.  
 
 = 1.7.2 = 
 * FIX - Corrected variable name $functions to $function in the new twitchpress_is_sync_due() function.

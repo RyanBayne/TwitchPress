@@ -94,7 +94,7 @@ class TwitchPress_Admin_Setup_Wizard {
                 'handler' => array( $this, 'twitchpress_setup_extensions_save' ),
             ),                       
             'improvement' => array(
-                'name'    =>  __( 'Feedback', 'twitchpress' ),
+                'name'    =>  __( 'Options', 'twitchpress' ),
                 'view'    => array( $this, 'twitchpress_setup_improvement' ),
                 'handler' => array( $this, 'twitchpress_setup_improvement_save' ),
             ),
@@ -257,9 +257,8 @@ class TwitchPress_Admin_Setup_Wizard {
         <h3><?php _e( 'Some support buttons, they will open new tabs...', 'twitchpress' ); ?></h3>
               
         <p class="twitchpress-setup-actions step">
-            <a href="https://dev.twitch.tv/dashboard/apps" class="button button-large" target="_blank"><?php _e( 'Manage Twitch Apps', 'twitchpress' ); ?></a>                                
-            <a href="https://discord.gg/0gHwecaLRAzrRYWi" class="button button-large" target="_blank"><?php _e( 'Twitch Discord', 'twitchpress' ); ?></a>                                
-            <a href="https://discord.gg/uu7HyR7" class="button button-large" target="_blank"><?php _e( 'TwitchPress Discord', 'twitchpress' ); ?></a>                
+            <a href="https://dev.twitch.tv/dashboard/apps" class="button button-large" target="_blank"><?php _e( 'Manage Twitch Apps', 'twitchpress' ); ?></a>                                                                
+            <a href="https://discord.gg/uu7HyR7" class="button button-large" target="_blank"><?php _e( 'Live Chat Help (Discord)', 'twitchpress' ); ?></a>                
         </p>
                                                 
         <form method="post">
@@ -963,11 +962,19 @@ class TwitchPress_Admin_Setup_Wizard {
     }
 
     /**
-     * Improvement program and feedback.
+     * Options and Main Account oAuth
+     * 
+     * When user submits this form they are redirected to authorize the main 
+     * account and then return to the wizard. 
+     * 
+     * @version 1.0
      */
     public function twitchpress_setup_improvement() { ?>
-        <h1><?php _e( 'Improvement Program &amp; Feedback', 'twitchpress' ); ?></h1>
-        <p><?php _e( 'Taking the time to provide constructive feedback and allowing the plugin to send none-sensitive data to me can be as valuable as a donation.', 'twitchpress' ); ?></p>
+        <h1><?php _e( 'Options', 'twitchpress' ); ?></h1>
+
+        <h3><?php _e( 'Improvement Program &amp; Feedback Options', 'twitchpress' ); ?></h3>
+        <p><?php _e( 'Taking the time to provide constructive feedback and allowing 
+        the plugin to send none-sensitive data to me can be as valuable as a donation.', 'twitchpress' ); ?></p>
         
         <form method="post">
             <table class="form-table">
@@ -986,11 +993,19 @@ class TwitchPress_Admin_Setup_Wizard {
                     </td>
                 </tr>
             </table>
+            
+            <h3><?php _e( 'Please Read: Main Account Authorisation', 'twitchpress' ); ?></h3>
+            <p><?php _e( 'When you click on the Continue button you will be sent to Twitch.tv to
+            authorize your Twitch account as the main channel for this website. This
+            step is important for your TwitchPress system to run properly. If it fails
+            you must seek support.', 'twitchpress' ); ?></p>
+                        
             <p class="twitchpress-setup-actions step">
                 <input type="submit" class="button-primary button button-large button-next" value="<?php esc_attr_e( 'Continue', 'twitchpress' ); ?>" name="save_step" />
                 <a href="<?php echo esc_url( $this->get_next_step_link() ); ?>" class="button button-large button-next"><?php _e( 'Skip this step', 'twitchpress' ); ?></a>
                 <?php wp_nonce_field( 'twitchpress-setup' ); ?>
             </p>
+            
         </form>
         <?php
     }
@@ -1001,6 +1016,7 @@ class TwitchPress_Admin_Setup_Wizard {
     public function twitchpress_setup_improvement_save() { 
         check_admin_referer( 'twitchpress-setup' );
         
+        // Update all options.
         if( isset( $_POST['twitchpress_feedback_data'] ) ) {
             update_option( 'twitchpress_feedback_data', 1 );
         } else {
@@ -1013,8 +1029,25 @@ class TwitchPress_Admin_Setup_Wizard {
             delete_option( 'twitchpress_feedback_prompt' );
         }
         
-        wp_redirect( esc_url_raw( $this->get_next_step_link() ) );
-        exit;
+        //wp_redirect( esc_url_raw( $this->get_next_step_link() ) );
+        //exit;
+        
+        // Send user to authorise their main Twitch channel.
+        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+                                             
+        $state = array( 'redirectto' => admin_url( 'index.php?page=twitchpress-setup&step=next_steps' ),
+                        'userrole'   => 'administrator',
+                        'outputtype' => 'admin',
+                        'reason'     => 'mainchannelsetup',
+                        'function'   => __FUNCTION__
+        );
+
+        // Generate the oAuth URL that we will forward the user to. 
+        $all_scopes = $post_credentials_kraken->twitch_scopes;
+        $oAuth2_URL = $post_credentials_kraken->generate_authorization_url( $all_scopes, $state );
+
+        wp_redirect( $oAuth2_URL );
+        exit; 
     }
     
     public function twitchpress_setup_ready_actions() {
@@ -1029,18 +1062,17 @@ class TwitchPress_Admin_Setup_Wizard {
      */
     public function twitchpress_setup_ready() {
         $this->twitchpress_setup_ready_actions();?>
-        <h1><?php _e( 'WordPress TwitchPress is Ready!', 'twitchpress' ); ?></h1>
 
         <div class="twitchpress-setup-next-steps">
             <div class="twitchpress-setup-next-steps-first">
-                <h2><?php _e( 'Next Steps', 'twitchpress' ); ?></h2>
+                <h2><?php _e( 'TwitchPress System Ready!', 'twitchpress' ); ?></h2>
                 <ul>
                     <li class="setup-thing"><a class="button button-primary button-large" href="<?php echo esc_url( admin_url( 'admin.php?page=twitchpress' ) ); ?>"><?php _e( 'Go to Settings', 'twitchpress' ); ?></a></li>
                 </ul>                                                                                                 
             </div>
             <div class="twitchpress-setup-next-steps-last">
             
-                <h2><?php _e( 'Support', 'twitchpress' ); ?></h2>
+                <h2><?php _e( 'Need some support?', 'twitchpress' ); ?></h2>
                                                            
                 <a href="<?php echo TWITCHPRESS_GITHUB; ?>"><?php _e( 'GitHub', 'twitchpress' ); ?></a>
                 <a href="<?php echo TWITCHPRESS_DISCORD; ?>"><?php _e( 'Discord', 'twitchpress' ); ?></a>

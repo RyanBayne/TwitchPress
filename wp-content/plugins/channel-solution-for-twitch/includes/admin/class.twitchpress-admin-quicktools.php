@@ -165,10 +165,10 @@ class TwitchPress_Tools {
     }
 
     /**
+    * Called by a button in the Help tab under Installation. 
+    * 
     * This tool is to be run by the owner of the site and the main channel. 
-    * 
     * The oAuth procedure will be complete and a user token generated.
-    * 
     * The token and refresh token is stored as the main channel token for features.
     * 
     * The WP users ID is also stored to indicate a relationship between WP user and owner. 
