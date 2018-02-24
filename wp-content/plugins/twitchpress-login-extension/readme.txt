@@ -63,6 +63,7 @@ No special upgrade instructions this time.
 == Changelog ==
 = 1.3.4 NOT RELEASED = 
 * DONE - Account creation error notice improved - now shows the values used to try and insert new user.
+* DEV  - New hook "twitchpress_login_inserted_new_user" placed after wp_insert_user() and after meta update of Twitch account.
 
 = 1.3.3 = 
 * DEV - Now adds required scopes to the core for telling users what scopes are required for this plugin to operate.

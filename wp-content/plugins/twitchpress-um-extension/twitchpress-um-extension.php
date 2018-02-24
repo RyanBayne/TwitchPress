@@ -165,6 +165,7 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             add_action( 'twitchpress_sync_continuing_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
             add_action( 'twitchpress_sync_discontinued_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
             add_action( 'twitchpress_manualsubsync', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            add_action( 'twitchpress_login_inserted_new_user', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
             
             // Systematic actions. 
             add_action( 'wp_loaded', array( $this, 'set_current_users_um_role_based_on_twitch_sub' ), 5, 1 );

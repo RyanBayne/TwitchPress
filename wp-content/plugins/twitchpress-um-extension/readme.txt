@@ -66,6 +66,7 @@ No special upgrade instructions this time.
 == Changelog ==
 = 1.2.4 NOT RELEASED = 
 * DEV - Added new action for twitchpress_manualsubsync which sets role after visitor runs manual Twitch sub data sync. 
+* DEV - New action hook "twitchpress_login_inserted_new_user" will apply UM role after new user is inserted when logged in using Twitch.
 
 = 1.2.3 = 
 * FIX - Corrected use of add_actions() which should be add_action(). 

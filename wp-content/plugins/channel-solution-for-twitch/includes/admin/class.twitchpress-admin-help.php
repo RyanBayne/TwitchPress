@@ -72,7 +72,7 @@ class TwitchPress_Admin_Help {
             '<p>You could save a lot of people a lot of time by reporting issues. Tell the developers and community what has gone wrong by creating a ticket. Please explain what you were doing, what you expected from your actions and what actually happened. Screenshots and short videos are often a big help as the evidence saves us time, we will give you cookies in return.</p>' .  
             '<p><a href="' . TWITCHPRESS_GITHUB . '/issues?state=open' . '" class="button button-primary">' . __( 'Report a bug', 'twitchpress' ) . '</a></p>',
         ) );
-        
+                                  
         $nonce = wp_create_nonce( 'tool_action' );
         
         $screen->add_help_tab( array(
@@ -83,7 +83,7 @@ class TwitchPress_Admin_Help {
                 '<p>' . __( 'You must complete the Setup Wizard and you can go through it again to correct mistakes in the plugins initial configuration.', 'twitchpress' ) . '</p>' .
                 '<p><a href="' . admin_url( 'index.php?page=twitchpress-setup' ) . '" class="button button-primary">' . __( 'Setup wizard', 'twitchpress' ) . '</a></p>' .
                 '<h2>' . __( '2. Authorize Main Channel (Owner Only)', 'twitchpress' ) . '</h2>' .
-                '<p>' . __( 'This step is for the owner of this WordPress and the main Twitch channel. They need to logout of their Twitch account. Click the button below and then complete the oAuth procedure. This will generate a user token that will also be stored as the main channel token. The main channel token is used for channel management features.', 'twitchpress' ) . '</p>' .
+                '<p>' . __( 'This procedure is included in the Setup Wizard but you can run it here if you need to re-authorize your main Twitch channel. This procedure will take you through oAuth and generate an API user token.', 'twitchpress' ) . '</p>' .
                 '<p><a href="' . admin_url( 'admin.php?page=twitchpress_tools&_wpnonce=' . $nonce . '&toolname=tool_authorize_main_channel' ) . '" class="button button-primary">' . __( 'Authorize Main Account', 'twitchpress' ) . '</a></p>',
             'callback'  => array( $this, 'installation' ),
         ) );   

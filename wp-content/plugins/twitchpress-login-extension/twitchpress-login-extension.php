@@ -927,6 +927,8 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             update_user_meta( $user_id, 'twitchpress_token', $token_array['access_token'] );
             update_user_meta( $user_id, 'twitchpress_token_refresh', $token_array['token_refresh'] );
 
+            do_action( 'twitchpress_login_inserted_new_user' );
+            
             $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,false,__( 'A new WordPress user has been created for the visitor. Now calling session setup method to log them in.', 'twitchpress' ));
                             
             self::authenticate_login_by_twitch( $user_id, $twitch_user['name'], $state_code );
