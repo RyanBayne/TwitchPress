@@ -5,9 +5,9 @@ License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, TwitchPress Boilerplate
 Requires at least: 4.4
-Tested up to: 4.8
-Stable tag: 1.2.3
-Minimum TwitchPress version: 1.7.1
+Tested up to: 4.9
+Stable tag: 1.2.4
+Minimum TwitchPress version: 1.7.3
 Requires PHP: 5.6
                         
 Integrate the Ultimate Member plugin with a TwitchPress system.
@@ -64,7 +64,7 @@ Translator needed to localize our Channel Solution for Twitch: TwitchPress, and 
 No special upgrade instructions this time. 
 
 == Changelog ==
-= 1.2.4 NOT RELEASED = 
+= 1.2.4 = 
 * DEV - Added new action for twitchpress_manualsubsync which sets role after visitor runs manual Twitch sub data sync. 
 * DEV - New action hook "twitchpress_login_inserted_new_user" will apply UM role after new user is inserted when logged in using Twitch.
 

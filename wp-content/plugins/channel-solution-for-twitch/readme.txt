@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.7.2
+Stable tag: 1.7.3
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -90,7 +90,7 @@ Translator needed to localize the Channel Solution for Twitch.
 New setup step added. Please open the Help tab and go to the Installation section. Click on the Authorize Main Channel button. 
 
 == Changelog ==
-= 1.7.3 NOT RELEASED = 
+= 1.7.3 = 
 * DONE - Setup Wizard links updated on Application step to take users to more applicable pages. 
 * DONE - Added new links to the top of the Setup Wizard Application step - just makes more sense! 
 * DONE - Fixed broken link to the ZypheREvolved Twitch channel in Help tab.  

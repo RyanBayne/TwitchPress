@@ -4,10 +4,10 @@ Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, TwitchPress, Twitch.tv, Twitch Login, Twitch Register, Twitch Registration, Twitch User, Twitch Visitor
-Requires at least: 4.4
+Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 1.3.2
-Minimum TwitchPress version: 1.7.1
+Stable tag: 1.3.3
+Minimum TwitchPress version: 1.7.3
 Requires PHP: 5.6
                         
 Syncronize the data your TwitchPress system needs to run properly.
@@ -71,7 +71,7 @@ post your requirements on the plugins forum first.
 No special upgrade instructions this time. 
 
 == Changelog ==
-= 1.3.3 NOT RELEASED = 
+= 1.3.3 = 
 * NEW - Added button to Profile view for manual Twitch data sync.
 * DEV - sync_user_on_login() no longer calls sync_user() with "ignore delay" set to true, to prevent flooding by a bot login out and in constantly.
 * DEV - sync_user_on_login() no longer passed true for notice output to prevent sudden notices appearing unrelated to login.
