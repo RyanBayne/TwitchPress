@@ -1,14 +1,14 @@
 <?php 
 /*
 Plugin Name: TwitchPress UM Extension
-Version: 1.2.3
+Version: 1.2.4
 Plugin URI: http://twitchpress.wordpress.com
 Description: Integrate the Ultimate Member and TwitchPress plugins.
 Author: Ryan Bayne
 Author URI: http://ryanbayne.wordpress.com
 Text Domain: twitchpress-um
 Domain Path: /languages
-Copyright: © 2018 Ryan Bayne
+Copyright: © 2017 - 2018 Ryan Bayne
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
@@ -33,7 +33,7 @@ if ( !in_array( 'ultimate-member/index.php', apply_filters( 'active_plugins', ge
 /**
  * Required minimums and constants
  */
-define( 'TWITCHPRESS_UM_VERSION', '1.2.3' );
+define( 'TWITCHPRESS_UM_VERSION', '1.2.4' );
 define( 'TWITCHPRESS_UM_MIN_PHP_VER', '5.6.0' );
 define( 'TWITCHPRESS_UM_MIN_TP_VER', '1.7.1' );
 define( 'TWITCHPRESS_UM_MAIN_FILE', __FILE__ );

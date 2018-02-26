@@ -4,7 +4,7 @@
  * Plugin URI: https://twitchpress.wordpress.com/
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch stream and channel management services to WordPress. 
- * Version: 1.7.2
+ * Version: 1.7.3
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com/
  * Requires at least: 4.4
@@ -42,7 +42,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.7.2';
+    public $version = '1.7.3';
 
     /**
      * Minimum WP version.
@@ -220,6 +220,7 @@ final class WordPressTwitchPress {
         include_once( 'includes/toolbars/class.twitchpress-toolbars.php' );        
         include_once( 'includes/class.twitchpress-listener.php' );
         include_once( 'includes/class.twitchpress-feeds.php' );
+        include_once( 'includes/class.twitchpress-sync.php' );
         include_once( 'includes/functions.twitchpress-shortcodes.php' );
         
         // Load classes only required when logged into the administration side.     

@@ -1,14 +1,14 @@
 <?php 
 /*
 Plugin Name: TwitchPress Login Extension
-Version: 1.3.3
+Version: 1.3.4
 Plugin URI: http://twitchpress.wordpress.com
 Description: Social login and register on WordPress using Twitch.
 Author: Ryan Bayne             
 Author URI: http://ryanbayne.wordpress.com
 Text Domain: twitchpress-login
 Domain Path: /languages
-Copyright: © 2017 Ryan Bayne
+Copyright: © 2017 - 2018 Ryan Bayne
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html  
 */                                                                                                                         
@@ -26,7 +26,7 @@ if ( !in_array( 'channel-solution-for-twitch/twitchpress.php', apply_filters( 'a
 /**
  * Required minimums and constants
  */
-define( 'TWITCHPRESS_LOGIN_VERSION', '1.3.3' );
+define( 'TWITCHPRESS_LOGIN_VERSION', '1.3.4' );
 define( 'TWITCHPRESS_LOGIN_MIN_PHP_VER', '5.6.0' );
 define( 'TWITCHPRESS_LOGIN_MIN_TP_VER', '1.6.1' );
 define( 'TWITCHPRESS_LOGIN_MAIN_FILE', __FILE__ );
