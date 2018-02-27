@@ -1,14 +1,14 @@
 <?php 
 /*
 Plugin Name: TwitchPress Sync Extension
-Version: 1.3.2
+Version: 1.3.3
 Plugin URI: http://twitchpress.wordpress.com
 Description: Twitch extension for syncing most Twitch.tv data within a TwitchPress system.
 Author: Ryan Bayne
 Author URI: http://ryanbayne.wordpress.com
 Text Domain: twitchpress-sync
 Domain Path: /languages
-Copyright: © 2018 Ryan Bayne
+Copyright: © 2017 - 2018 Ryan Bayne
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
  
@@ -53,9 +53,9 @@ if ( !in_array( 'channel-solution-for-twitch/twitchpress.php', apply_filters( 'a
 /**
  * Required minimums and constants
  */
-define( 'TWITCHPRESS_SYNC_VERSION', '1.3.2' );
+define( 'TWITCHPRESS_SYNC_VERSION', '1.3.3' );
 define( 'TWITCHPRESS_SYNC_MIN_PHP_VER', '5.6.0' );
-define( 'TWITCHPRESS_SYNC_MIN_TP_VER', '1.7.1' );
+define( 'TWITCHPRESS_SYNC_MIN_TP_VER', '1.7.3' );
 define( 'TWITCHPRESS_SYNC_MAIN_FILE', __FILE__ );
 define( 'TWITCHPRESS_SYNC_PLUGIN_URL', untrailingslashit( plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) ) );
 define( 'TWITCHPRESS_SYNC_PLUGIN_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
@@ -256,7 +256,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             }
             
             // Load Kraken and set credentials for the app + channel.  
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
             $id = $kraken->get_main_channel_id();// Right now everything defaults to the main channel.
 
             $earliest_time = $option['last_time'] + $option['delay'];
@@ -818,7 +818,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
         public function user_sub_sync( $wp_user_id, $output_notice = false ){       
             global $bugnet;
  
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
             $twitch_user_id = twitchpress_get_user_twitchid_by_wpid( $wp_user_id );    
             $twitch_channel_id = twitchpress_get_main_channels_twitchid();
@@ -931,7 +931,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             global $bugnet;
          
             // Does the giving user subscribe to the main channel?
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
             $channel_id = twitchpress_get_main_channels_twitchid();
             $channel_token = twitchpress_get_main_channels_token();
 
@@ -1374,7 +1374,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                 
                 /*   TODO: If scopes allow it, make a call and test the token and code. 
                 // Make a call using users token and code, confirming validity.                 
-                $kraken = new TWITCHPRESS_Kraken_Calls();
+                $kraken = new TWITCHPRESS_Twitch_API_Calls();
                 $sub_call_result = $kraken->chat_generateToken( $token, $code );
                 if( !$sub_call_result ) 
                 {

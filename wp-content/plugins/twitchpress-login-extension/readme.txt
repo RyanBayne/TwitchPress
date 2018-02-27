@@ -1,13 +1,13 @@
 === TwitchPress Login Extension ===
 Contributors: Ryan Bayne
-Donate link: https://www.patreon.com/ryanbayne
+Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, TwitchPress, Twitch.tv, Twitch Login, Twitch Register, Twitch Registration, Twitch User, Twitch Visitor
 Requires at least: 4.4
-Tested up to: 4.8
-Stable tag: 1.3.3
-Minimum TwitchPress version: 1.6.2
+Tested up to: 4.9
+Stable tag: 1.3.4
+Minimum TwitchPress version: 1.7.3
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -61,7 +61,7 @@ Translator needed.
 No special upgrade instructions this time. 
 
 == Changelog ==
-= 1.3.4 NOT RELEASED = 
+= 1.3.4 = 
 * DONE - Account creation error notice improved - now shows the values used to try and insert new user.
 * DEV  - New hook "twitchpress_login_inserted_new_user" placed after wp_insert_user() and after meta update of Twitch account.
 

@@ -19,9 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if( !class_exists( 'TwitchPress_Custom_Posts_TwitchFeed' ) ) :
 
-/**
- * TwitchPress_Custom_Posts_TwitchFeed class.
- */
 class TwitchPress_Custom_Posts_TwitchFeed {
 
     public function __construct() {      
@@ -38,11 +35,10 @@ class TwitchPress_Custom_Posts_TwitchFeed {
     * When a twitchfeed post is published, this action is called and shares the
     * authored content with Twitch.tv channel feeds.
     * 
-    * @author Ryan Bayne
-    * @version 1.2
-    * 
     * @param mixed $ID post ID
     * @param mixed $post the post object
+    * 
+    * @version 2.0
     */
     public static function tweetfeed_post_published( $ID, $post ) {
         
@@ -55,7 +51,7 @@ class TwitchPress_Custom_Posts_TwitchFeed {
             return false;
         }
         
-        $kraken = new TWITCHPRESS_Kraken5_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
         $send = array( 'content' => $post->post_content );
         $result = $kraken->postFeedPost( $send, array() );
         
@@ -102,4 +98,3 @@ class TwitchPress_Custom_Posts_TwitchFeed {
 endif;
 
 TwitchPress_Custom_Posts_TwitchFeed::init();
-?>

@@ -4,10 +4,10 @@
  * Plugin URI: https://twitchpress.wordpress.com/
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add Twitch stream and channel management services to WordPress. 
- * Version: 1.7.2
+ * Version: 2.0.0
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com/
- * Requires at least: 4.4
+ * Requires at least: 4.7
  * Tested up to: 4.9
  * License: GPL3
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
@@ -42,7 +42,7 @@ final class WordPressTwitchPress {
      *
      * @var string
      */
-    public $version = '1.7.2';
+    public $version = '2.0.0';
 
     /**
      * Minimum WP version.
@@ -141,11 +141,23 @@ final class WordPressTwitchPress {
     private function define_constants() {
         
         $upload_dir = wp_upload_dir();
-                      
+
+        // Establish which Twitch API version to use.
+        $api_version = get_option( 'twitchpress_apiversion' ); 
+        if( $api_version == '6' )
+        {
+            if ( ! defined( 'TWITCHPRESS_API_NAME' ) ) { define( 'TWITCHPRESS_API_NAME', 'helix' ); }
+            if ( ! defined( 'TWITCHPRESS_API_VERSION' ) ){ define( 'TWITCHPRESS_API_VERSION', '6' );}        
+        }
+        else
+        {
+            if ( ! defined( 'TWITCHPRESS_API_NAME' ) ) { define( 'TWITCHPRESS_API_NAME', 'kraken' ); }
+            if ( ! defined( 'TWITCHPRESS_API_VERSION' ) ){ define( 'TWITCHPRESS_API_VERSION', '5' );}
+        }  
+
         if(!defined( "TWITCHPRESS_CURRENTUSERID" ) ){define( "TWITCHPRESS_CURRENTUSERID", get_current_user_id() );}
-                
+              
         // Main (package) constants.
-        if ( ! defined( 'TWITCHPRESS_KRAKEN' ) ) {            define( 'TWITCHPRESS_KRAKEN', '5' ); }
         if ( ! defined( 'TWITCHPRESS_ABSPATH' ) ) {           define( 'TWITCHPRESS_ABSPATH', __FILE__ ); }
         if ( ! defined( 'TWITCHPRESS_PLUGIN_BASENAME' ) ) {   define( 'TWITCHPRESS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); }
         if ( ! defined( 'TWITCHPRESS_PLUGIN_DIR_PATH' ) ) {   define( 'TWITCHPRESS_PLUGIN_DIR_PATH', plugin_dir_path( __FILE__ ) ); }
@@ -184,7 +196,6 @@ final class WordPressTwitchPress {
         if( ! defined( "TWITCHPRESS_KEY_NAME" ) ){               define( "TWITCHPRESS_KEY_NAME", 'name' );}
         if( ! defined( "TWITCHPRESS_DEFAULT_TIMEOUT" ) ){        define( "TWITCHPRESS_DEFAULT_TIMEOUT", 5 );}
         if( ! defined( "TWITCHPRESS_DEFAULT_RETURN_TIMEOUT" ) ){ define( "TWITCHPRESS_DEFAULT_RETURN_TIMEOUT", 20 );}
-        if( ! defined( "TWITCHPRESS_API_VERSION" ) ){            define( "TWITCHPRESS_API_VERSION", 5 );}
         if( ! defined( "TWITCHPRESS_TOKEN_SEND_METHOD" ) ){      define( "TWITCHPRESS_TOKEN_SEND_METHOD", 'HEADER' );}
         if( ! defined( "TWITCHPRESS_RETRY_COUNTER" ) ){          define( "TWITCHPRESS_RETRY_COUNTER", 2 );}
         if( ! defined( "TWITCHPRESS_CERT_PATH" ) ){              define( "TWITCHPRESS_CERT_PATH", '' );}
@@ -214,9 +225,9 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-install.php' );
         include_once( 'includes/class.twitchpress-ajax.php' );
         include_once( 'includes/libraries/allapi/class.all-api.php' );
-        include_once( 'includes/libraries/kraken5/functions.kraken-statuses.php' );
-        include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-api.php' );
-        include_once( 'includes/libraries/kraken' . TWITCHPRESS_KRAKEN . '/class.kraken-calls.php' );        
+        include_once( 'includes/libraries/twitch/' . TWITCHPRESS_API_NAME . '/functions.twitch-api-statuses.php' );
+        include_once( 'includes/libraries/twitch/' . TWITCHPRESS_API_NAME . '/class.twitch-api.php' );
+        include_once( 'includes/libraries/twitch/' . TWITCHPRESS_API_NAME . '/class.twitch-api-calls.php' );        
         include_once( 'includes/toolbars/class.twitchpress-toolbars.php' );        
         include_once( 'includes/class.twitchpress-listener.php' );
         include_once( 'includes/class.twitchpress-feeds.php' );

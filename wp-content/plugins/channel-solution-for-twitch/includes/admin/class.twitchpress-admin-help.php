@@ -194,7 +194,7 @@ class TwitchPress_Admin_Help {
         
         $output = '';
         
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         // Test Top Game 
         $channel = $kraken->get_top_games( __FUNCTION__ );
@@ -396,7 +396,7 @@ class TwitchPress_Admin_Help {
         $current_user_wp_id = get_current_user_id();
         $output = '';
         
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         // Test Get Users Token
         $output .= '<h2>' . __( 'Test: Get Your Token', 'twitchpress' ) . '</h2>';
@@ -546,7 +546,7 @@ class TwitchPress_Admin_Help {
         $current_user_id = get_current_user_id();
         $output = '';
         
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         $output .= '<h2>' . __( 'Application Credentials', 'twitchpress' ) . '</h2>';
         $output .= '<p>Old App ID Method: ' . twitchpress_get_main_client_id() . '</p>';
@@ -609,7 +609,7 @@ class TwitchPress_Admin_Help {
         $current_user_id = get_current_user_id();
         $output = '';
         
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         $output .= '<h2>' . __( 'Main Channel Credentials', 'twitchpress' ) . '</h2>';
         $output .= '<p>Main Channel Name: ' . twitchpress_get_main_channels_name() . '</p>';

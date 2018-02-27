@@ -348,7 +348,7 @@ function twitchpress_sync_feed_to_wp( $channel_id = false ) {
     include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken-calls.php' );
       
     // Make call to Twitch for the latest feed post. 
-    $kraken = new TWITCHPRESS_Kraken_Calls();
+    $kraken = new TWITCHPRESS_Twitch_API_Calls();
     $feed_posts = $kraken->getFeedPosts( $channel_id, 5 );
     unset( $kraken );
     if( !$feed_posts) { return; }
@@ -808,7 +808,7 @@ function twitchpress_scopecheckboxpublic_required_icon( $scope ){
 * @return integer from Twitch user object or false if failure detected.
 */
 function twitchpress_get_user_twitchid( $twitch_username ) {
-    $kraken = new TWITCHPRESS_Kraken_Calls();
+    $kraken = new TWITCHPRESS_Twitch_API_Calls();
     $user_object = $kraken->get_users( $twitch_username );
     if( isset( $user_object['users'][0]['_id'] ) && is_numeric( $user_object['users'][0]['_id'] ) ) {
         return $user_object['users'][0]['_id'];

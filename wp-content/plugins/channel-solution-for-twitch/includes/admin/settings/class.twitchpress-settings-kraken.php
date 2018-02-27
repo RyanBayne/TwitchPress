@@ -42,6 +42,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
         $sections = array(
             'default'               => __( 'Permissions Scope', 'twitchpress' ),
             'entermaincredentials'  => __( 'Enter Main Credentials', 'twitchpress' ),
+            'general'               => __( 'General Options', 'twitchpress' ),
         );
 
         return apply_filters( 'twitchpress_get_sections_' . $this->id, $sections );
@@ -66,7 +67,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
         
         // Re-apply for application token and admin users token if scopes or app credentials are being submitted.
         if( !isset( $_GET['section']) || $_GET['section'] == 'entermaincredentials' || $_GET['section'] == 'default' ) {
-            //$kraken = new TWITCHPRESS_Kraken_API();
+            //$kraken = new TWITCHPRESS_Twitch_API();
             //$kraken->start_twitch_session_admin( 'main' );
         }
     }
@@ -76,12 +77,43 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
      *
      * @return array
      * 
-     * @version 2.0
+     * @version 1.0
      */
     public function get_settings( $current_section = '' ) {
         $settings = array();
                
-        if ( 'entermaincredentials' == $current_section ) {
+        if ( 'general' == $current_section ) {
+            $settings = apply_filters( 'twitchpress_generalapi_settings', array(
+            
+                array(
+                    'title' => __( 'Twitch API Options', 'twitchpress' ),
+                    'type'     => 'title',
+                    'desc'     => __( 'Mostly miscellanous options for the Twitch API.', 'twitchpress' ),
+                    'id'     => 'twitchapigeneraloptions'
+                ),
+
+                array(
+                    'title'   => __( 'Twitch API Version', 'twitchpress' ),
+                    'desc'    => __( 'Use to switch between API versions when a new version is not fully used yet.', 'twitchpress' ),
+                    'id'      => 'twitchpress_apiversion',
+                    'default' => '5',
+                    'type'    => 'radio',
+                    'options' => array(
+                        '5' => __( 'Kraken (v5)', 'twitchpress' ),
+                        '6' => __( 'Helix (v6)', 'twitchpress' ),
+                    ),
+                    'autoload'        => true,
+                    'show_if_checked' => 'option',
+                ),
+                                     
+                array(
+                    'type'     => 'sectionend',
+                    'id'     => 'twitchapigeneraloptions'
+                )
+
+            ));
+                
+        } elseif ( 'entermaincredentials' == $current_section ) {
 
             $settings = apply_filters( 'twitchpress_entermaincredentials_settings', array(
             

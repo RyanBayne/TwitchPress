@@ -20,9 +20,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 if (!extension_loaded('curl')) trigger_error('cURL is not currently installed on your server, please install cURL if your wish to use Twitch services in TwitchPress.');
 if (!extension_loaded('json')) trigger_error('PECL JSON or pear JSON is not installed, please install either PECL JSON or compile pear JSON if you wish to use Twitch services in TwitchPress.');
 
-if( !class_exists( 'TWITCHPRESS_Kraken_API' ) ) :
+if( !class_exists( 'TWITCHPRESS_Twitch_API' ) ) :
 
-class TWITCHPRESS_Kraken_API {
+class TWITCHPRESS_Twitch_API {
     
     protected $twitch_wperror                = null;
     protected $twitch_default_channel        = null;// Services own channel name, not ID.
@@ -72,24 +72,20 @@ class TWITCHPRESS_Kraken_API {
     * @version 1.0
     */
     public $twitchchannels_endorsed = array(
-        'zypherevolved'        => array( 'display_name' => 'ZypheREvolved' ),
-        'nookyyy'              => array( 'display_name' => 'nookyyy' ),
-        'starcitizengiveaways' => array( 'display_name' => 'StarCitizenGiveaways' ),        
-        'testgaming'           => array( 'display_name' => 'TESTGaming' ),
-        'capn_flint'           => array( 'display_name' => 'capn_flint' ),
-        'wtfosaurus'           => array( 'display_name' => 'WTFOSAURUS' ),
-        'starcitizen'          => array( 'display_name' => 'StarCitizen' ),
-        'cigcommunity'         => array( 'display_name' => 'CIGCommunity' ),
-        'dtox_tv'              => array( 'display_name' => 'DTOX_TV' ),
-        'sgt_gamble'           => array( 'display_name' => 'SGT_Gamble' ),
-        'baiorofred'           => array( 'display_name' => 'BaiorOfRed' ),
-        'bristolboy88'         => array( 'display_name' => 'BristolBoy88' ),
-        'mzhartz'              => array( 'display_name' => 'MzHartz' ),
-        'boredgameruk'         => array( 'display_name' => 'BoredGamerUK' ),
-        'thenoobifier1337'     => array( 'display_name' => 'TheNOOBIFIER1337' ),
-        'thatgirlslays'        => array( 'display_name' => 'ThatGirlSlays' ),
+        'zypherevolved'        => array( 'display_name' => 'ZypheREvolved' ),        // because...he is me!
+        'nookyyy'              => array( 'display_name' => 'nookyyy' ),              // because...backer of TwitchPress
+        'starcitizengiveaways' => array( 'display_name' => 'StarCitizenGiveaways' ), // because...I own this channel       
+        'thebatclam'           => array( 'display_name' => 'theBatclam' ),           // because...backer of TwitchPress 
+        'andsim'               => array( 'display_name' => 'Andsim' ),               // because...backer of TwitchPress
+        'imchrisp'             => array( 'display_name' => 'ImChrisP' ),             // because...backer of TwitchPress
+        'scarecr0w12'          => array( 'display_name' => 'Scarecr0w12' ),          // because...backer of TwitchPress
+        'gideonthegreyfox'     => array( 'display_name' => 'GideontheGreyFox' ),     // because...backer of TwitchPress
+        'gamingfroggie'        => array( 'display_name' => 'GamingFroggie' ),        // because...backer of TwitchPress
+        'boredgameruk'         => array( 'display_name' => 'BoredGamerUK' ),         // because...provides giveaways. 
+        'thenoobifier1337'     => array( 'display_name' => 'TheNOOBIFIER1337' ),     // because...provides giveaways.
+        'thatgirlslays'        => array( 'display_name' => 'ThatGirlSlays' ),        // because...provided critical feedback. 
     );
-        
+    
     /**
     * Requirements will be checked here and constants set.
     * 
@@ -314,7 +310,7 @@ class TWITCHPRESS_Kraken_API {
         } 
         
         // Generate oAuth token for the current user and the main channel. 
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
         $token_array = $kraken->request_user_access_token( $_GET['code'], __FUNCTION__ );
         
         // Update current user although this is a main channel procedure.
@@ -492,7 +488,7 @@ class TWITCHPRESS_Kraken_API {
         $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) 
                         || (array_key_exists('oauth_token', $get) === true))) 
                                 ? array_merge($header, array('Authorization: OAuth ' . $get['oauth_token'])) : $header ;
-                                                        // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
+                                                        // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/kraken/
 
         if (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) || (array_key_exists('oauth_token', $get) === true))) {
             unset($get['oauth_token']);
@@ -602,7 +598,7 @@ class TWITCHPRESS_Kraken_API {
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) ? array_merge($header, array('Authorization: OAuth ' . $post['oauth_token'])) : $header;
-        $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                           // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
+        $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                           // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/kraken/
     
         if (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) {
             unset($post['oauth_token']);
@@ -698,7 +694,7 @@ class TWITCHPRESS_Kraken_API {
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $put) === 1) || (array_key_exists('oauth_token', $put) === true))) ? array_merge($header, array('Authorization: OAuth ' . $put['oauth_token'])) : $header ;
-        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                         // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
+        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                         // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/kraken/
         
         if ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $put) === 1) || (array_key_exists('oauth_token', $put) === true))) {
             unset($put['oauth_token']);
@@ -787,7 +783,7 @@ class TWITCHPRESS_Kraken_API {
         // Specify the header
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) ? array_merge($header, array('Authorization: OAuth ' . $post['oauth_token'])) : $header ;
-        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                           // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/helix/
+        $header = (($this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;                           // v6 Authorization: Bearer    <access token>"  https://api.twitch.tv/kraken/
         
         if ((TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $post) === 1) || (array_key_exists('oauth_token', $post) === true))) {
             unset($post['oauth_token']);
@@ -1883,4 +1879,4 @@ class TWITCHPRESS_Kraken_API {
 }
 
 endif;
-TWITCHPRESS_Kraken_API::init();
+TWITCHPRESS_Twitch_API::init();

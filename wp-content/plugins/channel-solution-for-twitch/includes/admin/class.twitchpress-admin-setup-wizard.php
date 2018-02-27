@@ -606,13 +606,20 @@ class TwitchPress_Admin_Setup_Wizard {
         }
    
         // Delete options for scopes that are not in $_POST (not checked) and add those that are.
-        $pre_credentials_kraken = new TWITCHPRESS_Kraken_API();
+        $pre_credentials_kraken = new TWITCHPRESS_Twitch_API();
         $all_scopes = $pre_credentials_kraken->scopes();
         foreach( $all_scopes as $scope => $scope_info ) {  
             if( in_array( $scope, $_POST['twitchpress_scopes'] ) ) {     
                 update_option( 'twitchpress_scope_' . $scope, 'yes' );
             } else {                                       
                 delete_option( 'twitchpress_scope_' . $scope );
+            }
+        }       
+        foreach( $all_scopes as $scope => $scope_info ) {  
+            if( in_array( $scope, $_POST['twitchpress_visitor_scopes'] ) ) {     
+                update_option( 'twitchpress_visitor_scope_' . $scope, 'yes' );
+            } else {                                       
+                delete_option( 'twitchpress_visitor_scope_' . $scope );
             }
         }
  
@@ -636,7 +643,7 @@ class TwitchPress_Admin_Setup_Wizard {
         update_option( 'twitchpress_app_token_scopes', $token_result['scopes'], false );
                    
         // Confirm the giving main channel is valid. 
-        $kraken_calls_obj = new TWITCHPRESS_Kraken_Calls();
+        $kraken_calls_obj = new TWITCHPRESS_Twitch_API_Calls();
         
         // Confirm channel exists by using the "users?login" endpoint. 
         $user_objects = $kraken_calls_obj->get_users( $main_channel );
@@ -686,7 +693,7 @@ class TwitchPress_Admin_Setup_Wizard {
         TwitchPress_Admin_Notices::add_custom_notice( 'applicationcredentialssaved', __( 'Your application credentials have been stored and your WordPress site is ready to communicate with Twitch.' ) );
         
         // Create a Twitch API oAuth2 URL
-        // REMOVVE $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+        // REMOVVE $post_credentials_kraken = new TWITCHPRESS_Twitch_API();
         
         //REMOVVE $state = array( 'redirectto' => admin_url( '/?page=twitchpress-setup&step=folders' ),
         //REMOVVE                 'userrole'   => 'administrator',
@@ -1033,7 +1040,7 @@ class TwitchPress_Admin_Setup_Wizard {
         //exit;
         
         // Send user to authorise their main Twitch channel.
-        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+        $post_credentials_kraken = new TWITCHPRESS_Twitch_API();
                                              
         $state = array( 'redirectto' => admin_url( 'index.php?page=twitchpress-setup&step=next_steps' ),
                         'userrole'   => 'administrator',

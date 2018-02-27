@@ -1,14 +1,11 @@
 <?php
 /**
- * Kraken5 main class for calling the Twitch API. 
- * 
- * Do not use this class unless you accept the Twitch Developer Services Agreement
- * @link https://www.twitch.tv/p/developer-agreement
+ * Twitch API Call methods. 
  * 
  * @author   Ryan Bayne
  * @category Admin
  * @package  TwitchPress/Core
- * @version  1.0.0
+ * @version  2.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,9 +16,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 if (!extension_loaded('curl')) trigger_error('cURL is not currently installed on your server, please install cURL if your wish to use Twitch services in TwitchPress.');
 if (!extension_loaded('json')) trigger_error('PECL JSON or pear JSON is not installed, please install either PECL JSON or compile pear JSON if you wish to use Twitch services in TwitchPress.');
 
-if( !class_exists( 'TWITCHPRESS_Kraken5' ) ) :
+if( !class_exists( 'TWITCHPRESS_Twitch_API_Calls' ) ) :
 
-class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
+class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
     
     /**
      * WordPress integrating constructor. 
@@ -1658,4 +1655,4 @@ class TWITCHPRESS_Kraken_Calls extends TWITCHPRESS_Kraken_API {
 
 endif;
 
-//TWITCHPRESS_Kraken_Calls::init();
+//TWITCHPRESS_Twitch_API_Calls::init();

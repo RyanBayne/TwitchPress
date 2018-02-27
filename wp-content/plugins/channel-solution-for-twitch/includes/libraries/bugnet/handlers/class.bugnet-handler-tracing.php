@@ -27,7 +27,7 @@ class BugNet_Handler_Tracing {
     * 
     * @version 1.0
     */
-    public function do_trace( $tag, $args, $info, $transient_life_seconds = 84600 ) {   
+    public function do_trace( $tag, $args, $info, $transient_life_seconds = 86400 ) {   
 
         // Add $tag to a transient that only stores trace tags.
         // We used this to get traces which are also stored in their own transients.  
