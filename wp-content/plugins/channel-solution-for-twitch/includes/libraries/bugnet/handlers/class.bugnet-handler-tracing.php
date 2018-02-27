@@ -23,11 +23,11 @@ class BugNet_Handler_Tracing {
     * @param mixed $tag
     * @param mixed $args
     * @param mixed $info
-    * @package integer $transient_life_seconds default 24 hours (84600)
+    * @package integer $transient_life_seconds default 24 hours (86400)
     * 
     * @version 1.0
     */
-    public function do_trace( $tag, $args, $info, $transient_life_seconds = 84600 ) {   
+    public function do_trace( $tag, $args, $info, $transient_life_seconds = 86400 ) {   
 
         // Add $tag to a transient that only stores trace tags.
         // We used this to get traces which are also stored in their own transients.  
@@ -220,7 +220,7 @@ class BugNet_Handler_Tracing {
     * @version 1.0
     */
     public function set_trace_list_transient( $value ) {
-        set_transient( 'bugnet_trace_list', $value, 84600 );    
+        set_transient( 'bugnet_trace_list', $value, 86400 );    
     }
 
     /**
@@ -414,7 +414,7 @@ class BugNet_Handler_Tracing {
         $current[ $tag ][ $eventid ]['wpdb']          = $trace_array['traceargs']['wpdb'];    
         $current[ $tag ][ $eventid ]['cache']         = $trace_array['traceargs']['cache'];    
         
-        set_transient( 'bugnet_traces', $current, 84600 );       
+        set_transient( 'bugnet_traces', $current, 86400 );       
     }
     
     public function get_longterm_transient_traces() {
