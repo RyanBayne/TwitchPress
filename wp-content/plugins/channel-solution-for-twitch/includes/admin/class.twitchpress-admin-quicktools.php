@@ -210,7 +210,7 @@ class TwitchPress_Tools {
         */
         
         // Create a Twitch API oAuth2 URL
-        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+        $post_credentials_kraken = new TWITCHPRESS_Twitch_API();
                                              
         $state = array( 'redirectto' => admin_url( 'admin.php?page=twitchpress' ),
                         'userrole'   => 'administrator',
@@ -425,7 +425,7 @@ class TwitchPress_Tools {
         global $bugnet;
         
         // Create Class Objects
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         // Build the output for the entire procedure. 
         $output = __( 'Debugging Subscription Update Procedure', 'twitchpress' );
@@ -586,7 +586,7 @@ class TwitchPress_Tools {
         global $bugnet;
         
         // Create Class Objects
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         // Build the output for the entire procedure. 
         $output = __( 'Debugging Subscription Update Procedure', 'twitchpress' );
@@ -825,6 +825,7 @@ class TwitchPress_Tools {
         $notices = new TwitchPress_Admin_Notices();
         $notices->success( __( 'User Sync Finished', 'twitchpress-sync' ), __( 'Your request to import data from Twitch and update your WordPress users has been complete. Due to the technical level of this action it is not easy to generate a summary. Please see log entries for specifics.', 'twitchpress-sync' ) );   
     }    
+
 }
 
 endif;

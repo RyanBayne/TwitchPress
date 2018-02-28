@@ -4,9 +4,9 @@ Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Feed, Twitch Channel, Twitch Team, Twitch Embed, Twitch Stream, Twitch Suite, Twitch Bot, Twitch Chat 
-Requires at least: 4.4
+Requires at least: 4.7
 Tested up to: 4.9
-Stable tag: 1.7.3
+Stable tag: 2.0.0
 Requires PHP: 5.6
                         
 Launch your own Twitch services using the TwitchPress plugin for WordPress.
@@ -91,7 +91,22 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 
 == Changelog ==
 
-= 1.7.4 NOT RELEASED = 
+= 2.0.0 NOT RELEASED = 
+* DEV  - Constant TWITCHPRESS_API_NAME replaced with TWITCHPRESS_API_NAME. 
+* DEV  - Twitch API files moved to new "libraries/twitch" directory.
+* DEV  - Twitch API files renamed, "kraken" replaced with "twitch" for easier switching between versions.
+* FIX  - Visitor Scopes checkboxes in Setup Wizard now populate and are saved. 
+* DEV  - Class TWITCHPRESS_Kraken_API renamed to TWITCHPRESS_Twitch_API.
+* DEV  - Class TWITCHPRESS_Kraken_Calls renamed to TWITCHPRESS_Twitch_API_Calls.
+* DONE - Andsim added to endorsed channels in new Twitch API version 6 (Helix directory).
+* DONE - GamingFroggie added to endorsed channels in new Twitch API version 6 (Helix directory).
+* DONE - Scarecr0w12 added to endorsed channels in new Twitch API version 6 (Helix directory).
+* DONE - ImChrisP added to endorsed channels in new Twitch API version 6 (Helix directory).
+* DONE - theBatclam added to endorsed channels in new Twitch API version 6 (Helix directory).
+* DONE - GideontheGreyFox added to endorsed channels in new Twitch API version 6 (Helix directory).
+* DEV  - Typo 84600 in BugNet changed to 86400, would not cause a bug, just earlier expiry of transient caches. 
+
+= 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.
 * DEV  - Manual subscription sync tool function added to core tools class. 
 

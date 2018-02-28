@@ -105,7 +105,7 @@ No special upgrade instructions this time.
 * DEV - sync_user_subscription_main_channel() now handles "null" return from Twitch.tv (possible cause of 500 error).
 
 = 1.2.0 =
-* FIX - Renamed TWITCHPRESS_Kraken5_Calls to TWITCHPRESS_Kraken_Calls in preparation for Twitch API version 6.
+* FIX - Renamed TWITCHPRESS_Kraken5_Calls to TWITCHPRESS_Twitch_API_Calls in preparation for Twitch API version 6.
 
 = 1.0.18 = 
 * NEW - Channel subscriber systematic syncing is now set to off (value = no) by default.

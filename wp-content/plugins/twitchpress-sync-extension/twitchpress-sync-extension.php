@@ -256,7 +256,8 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             }
             
             // Load Kraken and set credentials for the app + channel.  
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
+          
             $id = $kraken->get_main_channel_id();// Right now everything defaults to the main channel.
 
             $earliest_time = $option['last_time'] + $option['delay'];
@@ -818,7 +819,7 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
         public function user_sub_sync( $wp_user_id, $output_notice = false ){       
             global $bugnet;
  
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
             $twitch_user_id = twitchpress_get_user_twitchid_by_wpid( $wp_user_id );    
             $twitch_channel_id = twitchpress_get_main_channels_twitchid();
@@ -931,7 +932,8 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
             global $bugnet;
          
             // Does the giving user subscribe to the main channel?
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
+          
             $channel_id = twitchpress_get_main_channels_twitchid();
             $channel_token = twitchpress_get_main_channels_token();
 
@@ -1374,7 +1376,8 @@ if ( ! class_exists( 'TwitchPress_Sync' ) ) :
                 
                 /*   TODO: If scopes allow it, make a call and test the token and code. 
                 // Make a call using users token and code, confirming validity.                 
-                $kraken = new TWITCHPRESS_Kraken_Calls();
+                $kraken = new TWITCHPRESS_Twitch_API_Calls();
+                
                 $sub_call_result = $kraken->chat_generateToken( $token, $code );
                 if( !$sub_call_result ) 
                 {

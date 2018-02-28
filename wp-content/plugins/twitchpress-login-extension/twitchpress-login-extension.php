@@ -547,7 +547,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             }
                                        
             // Load Kraken.
-            $kraken = new TWITCHPRESS_Kraken_API();
+            $kraken = new TWITCHPRESS_Twitch_API();
 
             // Lets make sure TwitchPress app is setup properly else do not display button/link.
             $is_app_set = $kraken->is_app_set();
@@ -728,7 +728,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,false,__( 'Request to process login has started.', 'twitchpress' ),array(),true);
 
             // Summon the Kraken! 
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
             
             // Ensure code is ready.
             if( !twitchpress_validate_code( $_GET['code'] ) ) 
@@ -1080,7 +1080,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             // This is the top (above) position button.
             if( 'below' !== get_option( 'twitchpress_login_loginpage_position' ) ) { return; }
             
-            $kraken = new TWITCHPRESS_Kraken_API();
+            $kraken = new TWITCHPRESS_Twitch_API();
             
             // Ensure Twitch app is setup to avoid pointless API calls.
             $is_app_set = $kraken->is_app_set();
@@ -1124,7 +1124,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             $temp_option_autologin = false;
 
             // Generate oAuth2 URL.
-            $kraken = new TWITCHPRESS_Kraken_API();
+            $kraken = new TWITCHPRESS_Twitch_API();
             
             // Ensure Twitch app is setup to avoid pointless API calls.
             $is_app_set = $kraken->is_app_set();
