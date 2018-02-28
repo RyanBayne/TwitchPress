@@ -970,3 +970,15 @@ function twitchpress_is_current_user_main_channel_owner() {
     if( twitchpress_get_main_channels_wpowner_id() == get_current_user_id() ) { return true; }
     return false;    
 }
+
+
+/**
+* Returns the user meta value for the last time their Twitch data
+* was synced with WordPress. Value is 
+* 
+* @returns integer time set using time() or false/null. 
+* @version 1.0
+*/
+function twitchpress_get_user_sync_time( $user_id ) {
+    return get_user_meta( $user_id, 'twitchpress_sync_time', true );
+}

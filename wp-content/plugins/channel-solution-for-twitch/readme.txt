@@ -90,6 +90,11 @@ Translator needed to localize the Channel Solution for Twitch.
 New setup step added. Please open the Help tab and go to the Installation section. Click on the Authorize Main Channel button. 
 
 == Changelog ==
+
+= 1.7.4 NOT RELEASED = 
+* DONE - Sync extension has been merged into this plugin.
+* DEV  - Manual subscription sync tool function added to core tools class. 
+
 = 1.7.3 = 
 * DONE - Setup Wizard links updated on Application step to take users to more applicable pages. 
 * DONE - Added new links to the top of the Setup Wizard Application step - just makes more sense! 
