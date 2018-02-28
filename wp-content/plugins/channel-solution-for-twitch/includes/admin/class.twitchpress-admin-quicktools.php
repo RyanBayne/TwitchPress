@@ -752,7 +752,7 @@ class TwitchPress_Tools {
         
         do_action( 'twitchpress_manualsubsync' );
     }
-    
+
     /**
     * Tool for syncing all users.
     * 

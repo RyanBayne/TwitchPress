@@ -20,6 +20,7 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
+
 define('DB_NAME', 'twitchpresssyncmerge');
 
 /** MySQL database username */
@@ -46,6 +47,7 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
+
 define('AUTH_KEY',         '[cwEvC#v*twT-y2wp>$0MJ0ua/]e9tU(m3{2zQ7=q=q[SY$c+H&M:Kl*?e~S3z)n');
 define('SECURE_AUTH_KEY',  'p]myFPTIX<@!K?ZgR&VSDp&G<h{02k,jNVEIBY}{MvLR>?oNSSCf{d:(9BF|>aI|');
 define('LOGGED_IN_KEY',    'FYDK<;LIN`FY:v!D,r}7(c&$ =pIv{d_4!C</ j7`>e;9%em9MuZ] WBUBr^f!H$');
