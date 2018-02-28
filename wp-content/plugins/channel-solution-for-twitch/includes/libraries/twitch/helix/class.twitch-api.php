@@ -482,7 +482,7 @@ class TWITCHPRESS_Twitch_API {
      * @version 1.6
      */
     protected function cURL_get($url, array $get = array(), array $options = array(), $returnStatus = false, $function = '' ){
-
+                                    
         $header = array('Accept: application/vnd.twitchtv.v' . TWITCHPRESS_API_VERSION . '+json'); // Always included
         $header = (( $this->twitch_client_id !== '') && ($this->twitch_client_id !== ' ')) ? array_merge($header, array('Client-ID: ' . $this->twitch_client_id)) : $header;
         $header = (( TWITCHPRESS_TOKEN_SEND_METHOD == 'HEADER') && ((array_key_exists('oauth_token', $get) === 1) 

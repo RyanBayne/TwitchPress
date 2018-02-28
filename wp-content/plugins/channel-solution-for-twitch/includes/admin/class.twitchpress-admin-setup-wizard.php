@@ -644,7 +644,7 @@ class TwitchPress_Admin_Setup_Wizard {
                    
         // Confirm the giving main channel is valid. 
         $kraken_calls_obj = new TWITCHPRESS_Twitch_API_Calls();
-        
+                                     var_dump( $main_channel );
         // Confirm channel exists by using the "users?login" endpoint. 
         $user_objects = $kraken_calls_obj->get_users( $main_channel );
 

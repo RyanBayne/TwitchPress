@@ -344,7 +344,7 @@ class TWITCHPRESS_Twitch_API {
                 __FUNCTION__,
                 __FILE__,
                 true,
-                __( 'TwitchPress Main Account Listener: Kraken user object cannot confirm channel exists.', 'twitchpress' )
+                __( 'Main Account Listener: Kraken user object cannot confirm channel exists.', 'twitchpress' )
             );
                         
             return;                         
