@@ -2,11 +2,11 @@
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /twitchpress/branches/Twitch-API-Version-6/
+RewriteBase /twitchpress/trunk/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /twitchpress/branches/Twitch-API-Version-6/index.php [L]
+RewriteRule . /twitchpress/trunk/index.php [L]
 </IfModule>
 
 # END WordPress

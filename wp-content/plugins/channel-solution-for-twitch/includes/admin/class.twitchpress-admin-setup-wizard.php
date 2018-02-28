@@ -614,7 +614,8 @@ class TwitchPress_Admin_Setup_Wizard {
             } else {                                       
                 delete_option( 'twitchpress_scope_' . $scope );
             }
-        }       
+        }   
+      
         foreach( $all_scopes as $scope => $scope_info ) {  
             if( in_array( $scope, $_POST['twitchpress_visitor_scopes'] ) ) {     
                 update_option( 'twitchpress_visitor_scope_' . $scope, 'yes' );
@@ -644,7 +645,7 @@ class TwitchPress_Admin_Setup_Wizard {
                    
         // Confirm the giving main channel is valid. 
         $kraken_calls_obj = new TWITCHPRESS_Twitch_API_Calls();
-                                     
+      
         // Confirm channel exists by using the "users?login" endpoint. 
         $user_objects = $kraken_calls_obj->get_users( $main_channel );
 

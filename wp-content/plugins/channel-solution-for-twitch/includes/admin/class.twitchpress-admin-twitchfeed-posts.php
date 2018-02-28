@@ -19,6 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if( !class_exists( 'TwitchPress_Custom_Posts_TwitchFeed' ) ) :
 
+/**
+ * TwitchPress_Custom_Posts_TwitchFeed class.
+ */
 class TwitchPress_Custom_Posts_TwitchFeed {
 
     public function __construct() {      

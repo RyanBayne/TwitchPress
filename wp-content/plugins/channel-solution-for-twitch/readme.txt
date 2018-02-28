@@ -90,6 +90,7 @@ Translator needed to localize the Channel Solution for Twitch.
 New setup step added. Please open the Help tab and go to the Installation section. Click on the Authorize Main Channel button. 
 
 == Changelog ==
+
 = 2.0.0 NOT RELEASED = 
 * DEV  - Constant TWITCHPRESS_API_NAME replaced with TWITCHPRESS_API_NAME. 
 * DEV  - Twitch API files moved to new "libraries/twitch" directory.
@@ -104,7 +105,11 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DONE - theBatclam added to endorsed channels in new Twitch API version 6 (Helix directory).
 * DONE - GideontheGreyFox added to endorsed channels in new Twitch API version 6 (Helix directory).
 * DEV  - Typo 84600 in BugNet changed to 86400, would not cause a bug, just earlier expiry of transient caches. 
- 
+
+= 1.7.4 = 
+* DONE - Sync extension has been merged into this plugin.
+* DEV  - Manual subscription sync tool function added to core tools class. 
+
 = 1.7.3 = 
 * DONE - Setup Wizard links updated on Application step to take users to more applicable pages. 
 * DONE - Added new links to the top of the Setup Wizard Application step - just makes more sense! 

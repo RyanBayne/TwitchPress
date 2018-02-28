@@ -77,7 +77,7 @@ class TwitchPress_Settings_Kraken extends TwitchPress_Settings_Page {
      *
      * @return array
      * 
-     * @version 1.0
+     * @version 2.0
      */
     public function get_settings( $current_section = '' ) {
         $settings = array();
