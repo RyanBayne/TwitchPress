@@ -1,0 +1,144 @@
+1518873050,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873050,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518873051,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873051,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518873052,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873052,twitchpressscopenotpermitted,"A Kraken5 call requires a scope that has not been permitted.",,,,X,1,1,,,100,
+1518873053,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873054,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873054,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518873055,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873055,request_app_access_token,"No access token returned: Requesting function is installation + establish_application_token()",,,,X,1,1,,,100
+1518873056,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873056,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518873057,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873057,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518873058,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873058,request_user_access_token,"No access token returned: Requesting function is establish_user_token()",,,,X,1,1,,,100
+1518873058,twitchpressscopenotpermittedbyadmin,"TwitchPress scope channel_read was not permitted by administration and is required by get_tokens_channel().",,,,X,1,1,,,100,
+1518873059,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873060,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873060,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518873061,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873061,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518873062,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873063,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873063,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518873064,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873064,request_app_access_token,"No access token returned: Requesting function is app_status + establish_application_token()",,,,X,1,1,,,100
+1518873065,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873065,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518873065,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518873065,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518873065,twitchpressscopenotpermitted,"A Kraken5 call requires a scope that has not been permitted.",,,,X,1,1,,,100,
+1518873066,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874956,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874956,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518874957,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874957,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518874957,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874957,twitchpressscopenotpermitted,"A Kraken5 call requires a scope that has not been permitted.",,,,X,1,1,,,100,
+1518874957,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874958,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874958,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518874958,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874958,request_app_access_token,"No access token returned: Requesting function is installation + establish_application_token()",,,,X,1,1,,,100
+1518874958,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874958,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518874959,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874959,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518874959,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874959,request_user_access_token,"No access token returned: Requesting function is establish_user_token()",,,,X,1,1,,,100
+1518874959,twitchpressscopenotpermittedbyadmin,"TwitchPress scope channel_read was not permitted by administration and is required by get_tokens_channel().",,,,X,1,1,,,100,
+1518874959,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874960,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874960,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518874960,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874960,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518874960,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874961,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874961,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518874961,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874961,request_app_access_token,"No access token returned: Requesting function is app_status + establish_application_token()",,,,X,1,1,,,100
+1518874961,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874961,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518874962,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518874962,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518874962,twitchpressscopenotpermitted,"A Kraken5 call requires a scope that has not been permitted.",,,,X,1,1,,,100,
+1518874962,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875159,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875159,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875159,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875159,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518875160,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875160,twitchpressscopenotpermitted,"A Kraken5 call requires a scope that has not been permitted.",,,,X,1,1,,,100,
+1518875160,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875160,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875160,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875161,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875161,request_app_access_token,"No access token returned: Requesting function is installation + establish_application_token()",,,,X,1,1,,,100
+1518875161,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875161,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875161,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875161,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518875162,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875162,request_user_access_token,"No access token returned: Requesting function is establish_user_token()",,,,X,1,1,,,100
+1518875162,twitchpressscopenotpermittedbyadmin,"TwitchPress scope channel_read was not permitted by administration and is required by get_tokens_channel().",,,,X,1,1,,,100,
+1518875162,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875162,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875162,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875163,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875163,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518875163,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875164,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875164,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875164,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875164,request_app_access_token,"No access token returned: Requesting function is app_status + establish_application_token()",,,,X,1,1,,,100
+1518875164,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875164,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875165,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875165,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518875165,twitchpressscopenotpermitted,"A Kraken5 call requires a scope that has not been permitted.",,,,X,1,1,,,100,
+1518875165,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875663,cURL_get,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875663,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875663,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875663,request_app_access_token,"No access token returned: Requesting function is set_application_credentials + establish_application_token()",,,,X,1,1,,,100
+1518875663,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875663,request_app_access_token,"No access token returned: Requesting function is twitchpress_setup_application_save()",,,,X,1,1,,,100
+1518875664,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875664,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is j2odwpyx24xwxuwfzwcs2a3bjig175.",,,,X,1,1,,,100
+1518875665,publish_to_feed,"Share to feed rejected for post ID: 4 because post_type: twitchchannels is not shareable.",,,,X,1,1,,,100
+1518875665,oauth2mainaccount,"Listener forewarded administrator back to Setup Wizard.",720,twitchpress_setup_folders,"C:\xampp\htdocs\twitchpress\1\wp-content\plugins\channel-solution-for-twitch\includes\admin\class.twitchpress-admin-setup-wizard.php",X,1,1,,,100,,637089
+1518875671,oauth2mainaccount,"Listener forewarded administrator back to Setup Wizard.",720,twitchpress_setup_folders,"C:\xampp\htdocs\twitchpress\1\wp-content\plugins\channel-solution-for-twitch\includes\admin\class.twitchpress-admin-setup-wizard.php",X,1,1,,,100,,567091
+1518875692,oauth2mainaccount,"Listener forewarded administrator back to Setup Wizard.",720,twitchpress_setup_folders,"C:\xampp\htdocs\twitchpress\1\wp-content\plugins\channel-solution-for-twitch\includes\admin\class.twitchpress-admin-setup-wizard.php",X,1,1,,,100,,328379
+1518875948,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875948,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is jxw6e23qg43dxphu6rm8koj2gcijfr.",,,,X,1,1,,,100
+1518875949,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875950,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is xp1yo7r0812a3rl8rvgn7zsblxpmg8.",,,,X,1,1,,,100
+1518875950,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875951,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 8altccsvgysx49ezsqovejdbndwi7o.",,,,X,1,1,,,100
+1518875951,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518875951,request_user_access_token,"No access token returned: Requesting function is establish_user_token()",,,,X,1,1,,,100
+1518875952,cURL_get,"TwitchPress HTTPDStatus: 401 - The OAuth token does not have the correct scope or does not have the required permission on behalf of the specified user.",,,,X,1,1,,,100
+1518875952,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875953,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is q6cc8rsq4b46kwhfvt121rcm2szwhs.",,,,X,1,1,,,100
+1518875953,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875954,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is w78uif0t7zuqnwg4osgvlpf5kexuzd.",,,,X,1,1,,,100
+1518875954,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518875955,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 1x52qd2gpjghqtnmf4t4e7x3tzkig5.",,,,X,1,1,,,100
+1518907047,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518907047,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is nqxbd5xspa07xxzs9hwmayaf8nokna.",,,,X,1,1,,,100
+1518907048,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518907049,request_app_access_token,"Access token returned. Requesting function was installation + establish_application_token() and the token is whmdxkyd9lyh3fduksg7hwmc0gs5na.",,,,X,1,1,,,100
+1518907049,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518907050,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is j67z5j0d8ubdla8gbaucjz37y4ove3.",,,,X,1,1,,,100
+1518907050,cURL_post,"TwitchPress HTTPDStatus: 400 - Request Not Valid. Something is wrong with the request due to an apparent client error e.g. malformed request syntax, size too large, invalid request message framing, or deceptive request routing.",,,,X,1,1,,,100
+1518907050,request_user_access_token,"No access token returned: Requesting function is establish_user_token()",,,,X,1,1,,,100
+1518907050,cURL_get,"TwitchPress HTTPDStatus: 401 - The OAuth token does not have the correct scope or does not have the required permission on behalf of the specified user.",,,,X,1,1,,,100
+1518907051,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518907051,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is 1jg47h1azfzqwx0g1z4vl5serabwhs.",,,,X,1,1,,,100
+1518907052,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518907053,request_app_access_token,"Access token returned. Requesting function was app_status + establish_application_token() and the token is dwe6e47agxogr7focyiwaxtrv3p7ra.",,,,X,1,1,,,100
+1518907053,check_application_token,"Invalid app token",,,,X,1,1,,,100
+1518907054,request_app_access_token,"Access token returned. Requesting function was set_application_credentials + establish_application_token() and the token is wempr4gc7rt6drj7ttbcmi0btso2tw.",,,,X,1,1,,,100
