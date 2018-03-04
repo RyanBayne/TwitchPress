@@ -6,6 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if( !class_exists( 'TwitchPress_Uninstall' ) ) : 
 
+// Include parent settings class, we use its methods to cycle through options.
+include_once( TWITCHPRESS_PLUGIN_DIR_PATH . '/includes/admin/class.twitchpress-admin-settings.php' );
+
 /**
  * TwitchPress - Uninstallation class.
  * 
@@ -16,8 +19,15 @@ if( !class_exists( 'TwitchPress_Uninstall' ) ) :
  */
 class TwitchPress_Uninstall {
     
-    public static function removeall() {
-        self::uninstall_options();
+    public static function run() {
+        
+        //if( 'yes' == get_option( 'twitchpress_remove_options' ) ) { self::remove_options(); }
+        //if( 'yes' == get_option( 'twitchpress_remove_feed_posts' ) ) { self::remove_feed_posts(); }
+        //if( 'yes' == get_option( 'twitchpress_remove_database_tables' ) ) { self::remove_database_tables(); }
+        //if( 'yes' == get_option( 'twitchpress_remove_extensions' ) ) { self::remove_extensions(); }
+        //if( 'yes' == get_option( 'twitchpress_remove_user_data' ) ) { self::remove_user_data(); }
+        if( 'yes' == get_option( 'twitchpress_remove_media' ) ) { self::remove_media(); }
+
     }
     
     /**
@@ -37,7 +47,7 @@ class TwitchPress_Uninstall {
     * 
     * @version 1.0
     */
-    public static function uninstall_options() {
+    public static function remove_options() {
         return;// Requires reworking as this method is outside of the plugins API.
         
         if( !current_user_can( 'activate_plugins' ) ) {
@@ -71,6 +81,44 @@ class TwitchPress_Uninstall {
         
         return true;// to indicate option deletion was done.
     }    
+    
+    /**
+    * Remove feed posts (the core plugins custom post type)
+    * 
+    * @version 1.0
+    */
+    public static function remove_feed_posts() {}
+    
+    /**
+    * Remove database tables created by the TwitchPress core.
+    * 
+    * @version 1.0 
+    */
+    public static function remove_database_tables() {}
+    
+    /**
+    * Remove all TwitchPress extensions. 
+    * 
+    * @version 1.0
+    */
+    public static function remove_extensions() {}
+    
+    /**
+    * Remove all user data created by the core plugin.
+    * 
+    * @version 1.0
+    */
+    public static function remove_user_data() {}
+    
+    /**
+    * Remove media created by TwitchPress. 
+    * 
+    * @version 1.0
+    */
+    public static function remove_media() {
+        do_action( 'twitchpress_test' );
+    }
+
 }
 
 endif;

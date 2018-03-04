@@ -251,48 +251,48 @@ class TWITCHPRESS_Twitch_API {
                      
         if( !isset( $_GET['code'] ) ) {       
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: No code returned.', 'twitchpress' );
+            $return_reason .= __( 'Main Account Listener: No code returned.', 'twitchpress' );
         }          
 
         // We require the local state value stored in transient. 
         elseif( !$transient_state = get_transient( 'twitchpress_oauth_' . $_GET['state'] ) ) {       
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: No matching transient.', 'twitchpress' );
+            $return_reason .= __( 'Main Account Listener: No matching transient.', 'twitchpress' );
         }  
         
         // Ensure the reason for this request is an attempt to set the main channels credentials
         elseif( !isset( $transient_state['reason'] ) ) {
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: Reason not provided for this request.', 'twitchpress' );            
+            $return_reason .= __( 'Main Account Listener: Reason not provided for this request.', 'twitchpress' );            
         }              
          
         // Ensure we have the admin view or page the user needs to be sent to. 
         elseif( $transient_state['reason'] !== 'mainchannelsetup' ) {         
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: Request reason rejected for this procedure.', 'twitchpress' );    
+            $return_reason .= __( 'Main Account Listener: Request reason rejected for this procedure.', 'twitchpress' );    
         }
                  
         // Ensure we have the admin view or page the user needs to be sent to. 
         elseif( !isset( $transient_state['redirectto'] ) ) {         
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: The redirectto value does not exist.', 'twitchpress' );    
+            $return_reason .= __( 'Main Account Listener: The redirectto value does not exist.', 'twitchpress' );    
         } 
           
         // For this procedure the userrole MUST be administrator.
         elseif( !isset( $transient_state['userrole'] ) ) {        
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: this request is not an expected operation related to the main account.', 'twitchpress' );    
+            $return_reason .= __( 'Main Account Listener: this request is not an expected operation related to the main account.', 'twitchpress' );    
         }          
         
         elseif( !isset( $transient_state['userrole'] ) || 'administrator' !== $transient_state['userrole'] ) {        
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: User is not an administrator.', 'twitchpress' );    
+            $return_reason .= __( 'Main Account Listener: User is not an administrator.', 'twitchpress' );    
         }         
                 
         // NEW IF - Validate the code as a measure to prevent URL spamming that gets further than here.
         elseif( !twitchpress_validate_code( $_GET['code'] ) ) {        
             $return = true;
-            $return_reason .= __( 'TwitchPress Main Account Listener: Code is invalid.', 'twitchpress' );
+            $return_reason .= __( 'Main Account Listener: Code is invalid.', 'twitchpress' );
         }
 
         // If we have a return reason, add it to the trace then do the return. 
@@ -340,7 +340,7 @@ class TWITCHPRESS_Twitch_API {
                 __FUNCTION__,
                 __FILE__,
                 true,
-                __( 'TwitchPress Main Account Listener: Kraken user object cannot confirm channel exists.', 'twitchpress' )
+                __( 'Main Account Listener: Kraken user object cannot confirm channel exists.', 'twitchpress' )
             );
                         
             return;                         
@@ -363,7 +363,7 @@ class TWITCHPRESS_Twitch_API {
             __FUNCTION__,
             __FILE__,
             true,
-            __( 'TwitchPress Main Account Listener: Admin Listener Passed. Forwarding user to: ' . $transient_state['redirectto'], 'twitchpress' )
+            __( 'Main Account Listener: Admin Listener Passed. Forwarding user to: ' . $transient_state['redirectto'], 'twitchpress' )
         );
                     
         // Forward user to the custom destinaton i.e. where they were before oAuth2. 
