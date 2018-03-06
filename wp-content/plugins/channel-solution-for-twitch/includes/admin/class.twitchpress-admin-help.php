@@ -651,39 +651,7 @@ class TwitchPress_Admin_Help {
     }
     
     public function testing() {
-        ?>
-        
-        <script>
-        var _connection = new WebSocket('ws://localhost:8080');
-
-        _connection.onopen = function(e) {
-            displayMessage( 'Connection established' );    
-        };
-
-        _connection.onmessage = function(e) {
-            displayMessage( e.data );
-        };
-
-
-        function displayMessage( msg ){
-            var _discussion = document.getElementById('discussion');
-            _discussion.innerHtml += '<li>'+msg+'</li>';
-        }
-
-        function postMessage(){
-            
-            var _button = document.getElementById('button');
-            var _text = document.getElementById( 'text' );
-
-            _button.addEventListener( 'click', function(){
-
-                _connection.send( _text.value );
-
-            });
-        }
-        </script>
-        
-        <?php 
+ 
     }
 }
 

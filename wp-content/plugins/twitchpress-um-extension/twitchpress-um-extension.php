@@ -174,7 +174,8 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
         }
         
         public function new_test() {
-            wp_die_twitchpress( 'A COOL TEST' );
+            var_dump( 'UNINSTALL TEST' );
+            exit;
         }
         
         public static function install() {

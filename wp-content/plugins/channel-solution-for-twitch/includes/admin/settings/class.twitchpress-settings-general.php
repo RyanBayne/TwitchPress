@@ -404,7 +404,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
 
                 array(
                     'desc'            => __( 'Tracing', 'twitchpress' ),
-                    'id'              => 'wpseed_bugnet_handlerswitch_tracing',
+                    'id'              => 'bugnet_handlerswitch_tracing',
                     'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',

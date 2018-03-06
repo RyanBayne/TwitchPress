@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
                  
 if ( ! class_exists( 'WordPressTwitchPress' ) ) :
 
-// Core unctions
+// Core files.                                            
 include_once( 'includes/functions.twitchpress-core.php' );
 include_once( 'includes/functions.twitchpress-credentials.php' );
 include_once( 'includes/functions.twitchpress-validate.php' );
