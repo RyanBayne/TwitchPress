@@ -236,7 +236,7 @@ final class WordPressTwitchPress {
         // Load classes only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {
             include_once( 'includes/admin/class.twitchpress-admin.php' );
-            include_once( 'includes/admin/class.twitchpress-admin-uninstall.php' );
+            include_once( 'includes/admin/class.twitchpress-admin-deactivate.php' );
         }
 
         // Load classes only required when viewing frontend/public side.
@@ -254,7 +254,7 @@ final class WordPressTwitchPress {
      */
     private function init_hooks() {
         register_activation_hook( __FILE__, array( 'TwitchPress_Install', 'install' ) );
-        register_deactivation_hook( __FILE__, array( 'TwitchPress_Uninstall', 'deactivate' ) );
+        register_deactivation_hook( __FILE__, array( 'TwitchPress_Deactivate', 'deactivate' ) );
 
         add_action( 'init', array( $this, 'init' ), 0 );
         add_action( 'init', array( $this, 'output_errors' ), 1 );    
