@@ -12,9 +12,7 @@
  * @version  5.2.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
-}
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // Make sure we meet our dependency requirements
 if (!extension_loaded('curl')) trigger_error('cURL is not currently installed on your server, please install cURL if your wish to use Twitch services in TwitchPress.');

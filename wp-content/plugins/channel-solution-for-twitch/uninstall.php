@@ -44,6 +44,15 @@ function twitchpress_remove_options() {
         }
     }
     
+}   
+
+/**
+* Uninstall options related to the uninstall procedure itself.
+* 
+* @version 1.0
+*/
+function twitchpress_remove_uninstallation_options() {
+
     // Now remove the uninstallation options. 
     delete_option( 'twitchpress_remove_options' );
     delete_option( 'twitchpress_remove_feed_posts' );
@@ -73,14 +82,33 @@ function twitchpress_remove_database_tables() {}
 * 
 * @version 1.0
 */
-function twitchpress_remove_extensions() {}
+function twitchpress_remove_extensions() {
+    // Include the array of known extensions.
+    include_once( 'extensions.php' );
+      
+    foreach( twitchpress_extensions_array() as $extensions_group_key => $extensions_group_array ) {
+        foreach( $extensions_group_array as $extension_name => $extension_array ) {
+            deactivate_plugins( $extension_name, true );
+            uninstall_plugin( $extension_name );
+        }
+    }     
+}
 
 /**
 * Remove all user data created by the core plugin.
 * 
 * @version 1.0
 */
-function twitchpress_remove_user_data() {}
+function twitchpress_remove_user_data() {
+    // Include the array of known user meta keys.
+    include_once( 'meta.php' );
+    
+    foreach( twitchpress_meta_array() as $metakey_group_key => $metakey_group_array ) {
+        foreach( $metakey_group_array as $metakey => $metakey_array ) {
+            delete_option( $metakey );
+        }
+    }
+}
 
 /**
 * Remove media created by TwitchPress. 
@@ -88,7 +116,7 @@ function twitchpress_remove_user_data() {}
 * @version 1.0
 */
 function twitchpress_remove_media() {
-    do_action( 'twitchpress_test' );
+    
 }
 
 if( 'yes' == get_option( 'twitchpress_remove_options' ) ) { twitchpress_remove_options(); }
@@ -97,3 +125,6 @@ if( 'yes' == get_option( 'twitchpress_remove_database_tables' ) ) { twitchpress_
 if( 'yes' == get_option( 'twitchpress_remove_extensions' ) ) { twitchpress_remove_extensions(); }
 if( 'yes' == get_option( 'twitchpress_remove_user_data' ) ) { twitchpress_remove_user_data(); }
 if( 'yes' == get_option( 'twitchpress_remove_media' ) ) { twitchpress_remove_media(); }
+
+// Final action is removal of this group of options.
+if( 'yes' == get_option( 'twitchpress_remove_uninstallation_options' ) ) { twitchpress_remove_uninstallation_options(); }

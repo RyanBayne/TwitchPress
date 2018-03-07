@@ -164,17 +164,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
                     'autoload'        => false,
-                ),    
-            
-                array(
-                    'desc'            => __( 'Delete Extensions', 'twitchpress' ),
-                    'id'              => 'twitchpress_remove_extensions',
-                    'default'         => 'no',
-                    'type'            => 'checkbox',
-                    'checkboxgroup'   => '',
-                    'show_if_checked' => 'yes',
-                    'autoload'        => false,
-                ),    
+                ),        
             
                 array(
                     'desc'            => __( 'Delete User Data', 'twitchpress' ),

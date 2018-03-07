@@ -1,9 +1,13 @@
 <?php
 /**
-* Basic array of all known options with multiple uses planned.
+* Arrays of all known options. Multiple uses are planned for this data
+* to aid in development and configuration.
 * 
+* @author Ryan R. Bayne
+* @package TwitchPress
 * @version 1.0
 */
+
 function twitchpress_options_array() {
 
     return array(
@@ -20,7 +24,6 @@ function twitchpress_options_array() {
 function twitchpress_options_misc() {
     $arr = array();
 
-    // Get Cheermotes
     $arr[ 'twitchpress_admin_notices' ] = array();
     $arr[ 'twitchpress_displayerrors' ] = array();
     $arr[ 'twitchpress_db_version' ] = array();
@@ -61,7 +64,7 @@ function twitchpress_options_twitch_api() {
     
     $arr = array();
 
-    // Get Cheermotes
+    $arr[ 'twitchpress_apiversion' ] = array();
     $arr[ 'twitchpress_app_id' ] = array();
     $arr[ 'twitchpress_app_secret' ] = array();
     $arr[ 'twitchpress_app_redirect' ] = array();
@@ -77,6 +80,23 @@ function twitchpress_options_twitch_api() {
     $arr[ 'twitchpress_main_client_secret' ] = array();
     $arr[ 'twitchpress_main_client_id' ] = array();
     $arr[ 'twitchpress_main_redirect_uri' ] = array();
+    $arr[ 'twitchpress_main_channel_postid' ] = array();
+    $arr[ 'twitchpress_main_code' ] = array();
+    $arr[ 'twitchpress_main_token' ] = array();
+    $arr[ 'twitchpress_main_token_scopes' ] = array();
+
+    return $arr;
+
+}
+
+function twitchpress_options_extension_integration() {
+    
+    $arr = array();
+
+    $arr[ 'twitchpress_twitchpress-embed-everything_settings' ] = array();
+    $arr[ 'twitchpress_twitchpress-login-extension_settings' ] = array();
+    $arr[ 'twitchpress_twitchpress-sync-extension_settings' ] = array();
+    $arr[ 'twitchpress_twitchpress-um-extension_settings' ] = array();
 
     return $arr;
 
@@ -86,7 +106,6 @@ function twitchpress_options_switch() {
     
     $arr = array();
 
-    // Get Cheermotes
     $arr[ 'twitchpress_admin_notices' ] = array();
     $arr[ 'twitchpress_switch_twitter_api_services' ] = array();
     $arr[ 'twitchpress_switch_twitter_api_logs' ] = array();
@@ -119,7 +138,6 @@ function twitchpress_options_otherapi() {
 
     $arr = array();
 
-    // Get Cheermotes
     $arr[ 'twitchpress_otherapi_application_saving' ] = array();
     $arr[ 'twitchpress_api_redirect_uri_twitter' ] = array();
     $arr[ 'twitchpress_api_id_twitter' ] = array();
@@ -180,6 +198,34 @@ function twitchpress_options_scope() {
     $arr[ 'twitchpress_scope_user_subscriptions' ] = array();
     $arr[ 'twitchpress_scope_viewing_activity_read' ] = array();
     $arr[ 'twitchpress_scope_openid' ] = array();
+    
+    return $arr;
+
+}
+
+function twitchpress_options_visitor_scope() {
+    
+    $arr = array();
+
+    $arr[ 'twitchpress_visitor_scope_channel_check_subscription' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_commercial' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_editor' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_feed_edit' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_feed_read' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_read' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_stream' ] = array();
+    $arr[ 'twitchpress_visitor_scope_channel_subscriptions' ] = array();
+    $arr[ 'twitchpress_visitor_scope_chat_login' ] = array();
+    $arr[ 'twitchpress_visitor_scope_collections_edit' ] = array();
+    $arr[ 'twitchpress_visitor_scope_communities_edit' ] = array();
+    $arr[ 'twitchpress_visitor_scope_communities_moderate' ] = array();
+    $arr[ 'twitchpress_visitor_scope_user_blocks_edit' ] = array();
+    $arr[ 'twitchpress_visitor_scope_user_blocks_read' ] = array();
+    $arr[ 'twitchpress_visitor_scope_user_follows_edit' ] = array();
+    $arr[ 'twitchpress_visitor_scope_user_read' ] = array();
+    $arr[ 'twitchpress_visitor_scope_user_subscriptions' ] = array();
+    $arr[ 'twitchpress_visitor_scope_viewing_activity_read' ] = array();
+    $arr[ 'twitchpress_visitor_scope_openid' ] = array();
     
     return $arr;
 
