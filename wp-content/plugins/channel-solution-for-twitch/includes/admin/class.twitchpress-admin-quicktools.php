@@ -210,7 +210,7 @@ class TwitchPress_Tools {
         */
         
         // Create a Twitch API oAuth2 URL
-        $post_credentials_kraken = new TWITCHPRESS_Kraken_API();
+        $post_credentials_kraken = new TWITCHPRESS_Twitch_API();
                                              
         $state = array( 'redirectto' => admin_url( 'admin.php?page=twitchpress' ),
                         'userrole'   => 'administrator',
@@ -425,7 +425,7 @@ class TwitchPress_Tools {
         global $bugnet;
         
         // Create Class Objects
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         // Build the output for the entire procedure. 
         $output = __( 'Debugging Subscription Update Procedure', 'twitchpress' );
@@ -586,7 +586,7 @@ class TwitchPress_Tools {
         global $bugnet;
         
         // Create Class Objects
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         // Build the output for the entire procedure. 
         $output = __( 'Debugging Subscription Update Procedure', 'twitchpress' );
@@ -747,11 +747,85 @@ class TwitchPress_Tools {
         /*
             Your tools unique code goes here. Make it do something!
         */
-        $sync_object = TwitchPress_Sync::instance();
+        $sync_object = new TwitchPress_Systematic_Syncing();
         $sync_object->sync_user( get_current_user_id(), false, true, 'user' );
         
         do_action( 'twitchpress_manualsubsync' );
     }
+
+    /**
+    * Tool for syncing all users.
+    * 
+    * Originally in the Sync Extension before it was merged.
+    * 
+    * @param mixed $return_tool_info
+    * 
+    * @version 1.0
+    */
+    public function tool_sync_all_users( $return_tool_info = true ) {
+        /**
+        * Description of values.
+        * 
+        * title       - give the tool a name.
+        * description - describe what the tool does.
+        * version     - tools must be versioned to give users warning
+        * author      - we have to know who to come to for help with a tool
+        * url         - link to a tutorial or other documentation
+        * category    - a way to group tools
+        * capability  - apply security using a core or custom capability
+        * option      - add option name if configuration required to use tool
+        */
+        $tool_info = array(
+            'title'       => __( 'Sync All Users', 'multitool' ),
+            'description' => __( 'Import all WP users Twitch user data if not already done recently.', 'multitool' ),
+            'version'     => '1.1',
+            'author'      => 'Ryan Bayne',
+            'plugin'      => 'Sync Extension',      
+            'url'         => '',
+            'category'    => 'users',
+            'capability'  => 'activate_plugins',
+            'option'      => null,
+            'function'    => __FUNCTION__
+        );
+        
+        if( $return_tool_info ){ return $tool_info; }     
+        
+        if( !current_user_can( $tool_info['capability'] ) ) { return; }   
+      
+        // WP_User_Query - get all users who have a Twitch auth setup. 
+        $args = array(    
+            'meta_query' => array(
+                array(
+                    'key'     => 'twitchpress_code',
+                    'compare' => 'EXISTS'
+                ),
+                array(
+                    'key'     => 'twitchpress_token',
+                    'compare' => 'EXISTS'
+                ),
+                array(
+                    'key'     => 'twitchpress_sync_time',
+                    'value'   => time(),
+                    'compare' => '<'
+                ),                
+            )
+        );
+
+        // Create the WP_User_Query object
+        $wp_user_query = new WP_User_Query( $args ); 
+        $twitchers = $wp_user_query->get_results();
+        if ( ! empty( $twitchers ) ) {
+
+            foreach ( $twitchers as $next_user ) {
+                $this->sync_user( $next_user->ID, true, false );
+            }
+
+        }    
+        
+        $notices = new TwitchPress_Admin_Notices();
+        $notices->success( __( 'User Sync Finished', 'twitchpress-sync' ), __( 'Your request to import data from Twitch and update your WordPress users has been complete. Due to the technical level of this action it is not easy to generate a summary. Please see log entries for specifics.', 'twitchpress-sync' ) );   
+    }    
+
 }
 
 endif;

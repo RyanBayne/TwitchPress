@@ -36,7 +36,7 @@ class TwitchPress_Background_Updater extends TwitchPress_Background_Process {
         $logger     = new TwitchPress_Logger();
 
         if ( is_wp_error( $dispatched ) ) {
-            $logger->add( 'twitchpress_db_updates', sprintf( 'Unable to dispatch TwitchPress updater: %s', $dispatched->get_error_message() ) );
+            $logger->add( 'twitchpress_db_updates', sprintf( 'Unable to dispatch updater: %s', $dispatched->get_error_message() ) );
         }
     }
                          

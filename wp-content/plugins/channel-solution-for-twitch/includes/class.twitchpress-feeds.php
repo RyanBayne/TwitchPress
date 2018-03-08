@@ -91,7 +91,7 @@ class TwitchPress_Feeds {
         $bugnet->log( __FUNCTION__, sprintf( __( 'Share to feed requested for post ID: %s and is Post-Type: %s', 'twitchpress' ), $ID, $post->post_type ), array( 'level' => 200 ), true, false );
         
         // Wake the Kraken up! 
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
         
         // Enhance post content using prepend and append values.
         $original_content = array( 'content' => $post->post_content );

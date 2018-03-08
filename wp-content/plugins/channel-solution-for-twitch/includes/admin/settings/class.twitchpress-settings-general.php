@@ -132,13 +132,53 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                 array(
                     'title' => __( 'Plugin Removal Settings', 'twitchpress' ),
                     'type'     => 'title',
-                    'desc'     => __( 'By default most plugins will not remove everything when the plugin is deleted. If you need all options, custom tables, custom files and other data to be removed when you delete the plugin. Then check the box below, else please leave this option alone.', 'twitchpress' ),
+                    'desc'     => __( 'What should the TwitchPress core plugin remove when being deleted?', 'twitchpress' ),
                     'id'     => 'pluginremovalsettings',
                 ),
             
                 array(
-                    'desc'            => __( 'Removal All TwitchPress Data and Files (including extensions)', 'twitchpress' ),
-                    'id'              => 'twitchpress_removeall',
+                    'desc'            => __( 'Delete Options', 'twitchpress' ),
+                    'id'              => 'twitchpress_remove_options',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),    
+            
+                array(
+                    'desc'            => __( 'Delete Feed Posts', 'twitchpress' ),
+                    'id'              => 'twitchpress_remove_feed_posts',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),    
+            
+                array(
+                    'desc'            => __( 'Delete Database Tables', 'twitchpress' ),
+                    'id'              => 'twitchpress_remove_database_tables',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),        
+            
+                array(
+                    'desc'            => __( 'Delete User Data', 'twitchpress' ),
+                    'id'              => 'twitchpress_remove_user_data',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => false,
+                ),    
+            
+                array(
+                    'desc'            => __( 'Delete Media', 'twitchpress' ),
+                    'id'              => 'twitchpress_remove_media',
                     'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',
@@ -354,7 +394,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
 
                 array(
                     'desc'            => __( 'Tracing', 'twitchpress' ),
-                    'id'              => 'wpseed_bugnet_handlerswitch_tracing',
+                    'id'              => 'bugnet_handlerswitch_tracing',
                     'default'         => 'no',
                     'type'            => 'checkbox',
                     'checkboxgroup'   => '',

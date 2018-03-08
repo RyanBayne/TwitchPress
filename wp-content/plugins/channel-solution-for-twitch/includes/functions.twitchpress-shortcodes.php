@@ -42,7 +42,7 @@ function twitchpress_channel_status( $atts ) {
         return $cache; 
     }
     
-    $twitchpress = new TWITCHPRESS_Kraken_Calls();
+    $twitchpress = new TWITCHPRESS_Twitch_API_Calls();
 
     // Get channel ID using the channel/username. 
     if( $atts['channel_id'] === null && $atts['channel_name'] !== null )
@@ -105,7 +105,7 @@ function twitchpress_channel_status_line( $atts ) {
         return $cache; 
     }
     
-    $twitchpress = new TWITCHPRESS_Kraken_Calls();
+    $twitchpress = new TWITCHPRESS_Twitch_API_Calls();
 
     // Get channel ID using the channel/username. 
     if( $atts['channel_id'] === null && $atts['channel_name'] !== null )
@@ -172,7 +172,7 @@ function twitchpress_channel_status_box( $atts ) {
         return $cache; 
     }
     
-    $twitchpress = new TWITCHPRESS_Kraken_Calls();
+    $twitchpress = new TWITCHPRESS_Twitch_API_Calls();
 
     // Get channel ID using the channel/username. 
     if( $atts['channel_id'] === null && $atts['channel_name'] !== null )

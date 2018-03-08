@@ -348,7 +348,7 @@ function twitchpress_sync_feed_to_wp( $channel_id = false ) {
     include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/kraken5/class.kraken-calls.php' );
       
     // Make call to Twitch for the latest feed post. 
-    $kraken = new TWITCHPRESS_Kraken_Calls();
+    $kraken = new TWITCHPRESS_Twitch_API_Calls();
     $feed_posts = $kraken->getFeedPosts( $channel_id, 5 );
     unset( $kraken );
     if( !$feed_posts) { return; }
@@ -808,7 +808,7 @@ function twitchpress_scopecheckboxpublic_required_icon( $scope ){
 * @return integer from Twitch user object or false if failure detected.
 */
 function twitchpress_get_user_twitchid( $twitch_username ) {
-    $kraken = new TWITCHPRESS_Kraken_Calls();
+    $kraken = new TWITCHPRESS_Twitch_API_Calls();
     $user_object = $kraken->get_users( $twitch_username );
     if( isset( $user_object['users'][0]['_id'] ) && is_numeric( $user_object['users'][0]['_id'] ) ) {
         return $user_object['users'][0]['_id'];
@@ -969,4 +969,16 @@ function twitchpress_is_current_user_main_channel_owner() {
     // Avoid processing the owner of the main channel (might not be admin with ID 1)
     if( twitchpress_get_main_channels_wpowner_id() == get_current_user_id() ) { return true; }
     return false;    
+}
+
+
+/**
+* Returns the user meta value for the last time their Twitch data
+* was synced with WordPress. Value is 
+* 
+* @returns integer time set using time() or false/null. 
+* @version 1.0
+*/
+function twitchpress_get_user_sync_time( $user_id ) {
+    return get_user_meta( $user_id, 'twitchpress_sync_time', true );
 }
