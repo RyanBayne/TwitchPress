@@ -268,7 +268,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
         * 
         * @param mixed $settings
         * 
-        * @version 1.2
+        * @version 1.3
         */
         public function settings_add_options_users( $settings ) {
             global $current_section, $only_section;
@@ -389,7 +389,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
                     ),
                                                             
                     array(
-                        'desc'          => __( 'Registration Button Switch: Display a Twitch button on the WordPress registration form.', 'twitchpress-login' ),
+                        'desc'          => __( 'Registration Button: Display a Twitch button on the WordPress registration form.', 'twitchpress-login' ),
                         'id'            => 'twitchpress_registration_button',
                         'default'       => 'yes',
                         'type'          => 'checkbox',
@@ -398,7 +398,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
                     ),
 
                     array(
-                        'desc'          => __( 'Force Registration Switch: Force registration by Twitch only and hide WP registration form.', 'twitchpress-login' ),
+                        'desc'          => __( 'Force Registration: Force registration by Twitch only and hide WP registration form.', 'twitchpress-login' ),
                         'id'            => 'twitchpress_registration_twitchonly',
                         'default'       => 'no',
                         'type'          => 'checkbox',
@@ -407,7 +407,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
                     ),
                     
                     array(
-                        'desc'          => __( 'Email Validation Switch: Require a validated email address (validated by user through their Twitch account).', 'twitchpress-login' ),
+                        'desc'          => __( 'Email Validation: Require a validated email address (validated by user through their Twitch account).', 'twitchpress-login' ),
                         'id'            => 'twitchpress_registration_requirevalidemail',
                         'default'       => 'yes',
                         'type'          => 'checkbox',

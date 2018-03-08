@@ -1,2 +1,0 @@
-[07-Mar-2018 00:31:01 UTC] PHP Notice:  Undefined index: top in C:\xampp\htdocs\twitchpress\branches\Beta\wp-content\plugins\channel-solution-for-twitch\includes\admin\class.twitchpress-admin-help.php on line 559
-[07-Mar-2018 00:31:02 UTC] PHP Notice:  Undefined index: users in C:\xampp\htdocs\twitchpress\branches\Beta\wp-content\plugins\channel-solution-for-twitch\includes\admin\class.twitchpress-admin-help.php on line 632
