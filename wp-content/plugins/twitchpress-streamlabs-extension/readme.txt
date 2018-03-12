@@ -1,21 +1,21 @@
-=== TwitchPress DeepBot Extension ===
+=== TwitchPress Streamlabs Extension ===
 Contributors: Ryan Bayne
 Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, DeepBot
-Requires at least: 4.6
+Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, TwitchPress Streamlabs, Streamlabs
+Requires at least: 4.4
 Tested up to: 4.9
 Stable tag: 1.0.0
-Minimum core version: 2.1.5
+Minimum core version: 1.7.0
 Requires PHP: 5.6
                         
-DeepBot extension for my Twitch.tv plugin.
+Streamlabs extension for the TwitchPress system.
                        
 == Description ==
-Use this DeepBot plugin as an extension to
-your TwitchPress system. Activation of this plugin
-will add the DeepBot API to your gaming site. 
+
+TwitchPress offers a platform to build a Twitch.tv powered website. This
+extension will add Streamlabs features to the TwitchPress system. 
 
 = Links =                                                                
 *   <a href="https://twitchpress.wordpress.com" title="">Blog</a>

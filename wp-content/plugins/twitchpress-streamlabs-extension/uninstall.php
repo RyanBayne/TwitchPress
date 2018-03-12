@@ -1,10 +1,10 @@
 <?php
 /**
- * Uninstall TwitchPress Sync Extension.
+ * Uninstall TwitchPress Extension Boilerplate plugin.
  *
  * @author      Ryan Bayne
  * @category    Core
- * @package     TwitchPress Sync Extension/Uninstaller
+ * @package     TwitchPress Extension Boilerplate/Uninstaller
  * @version     1.0.0
  */
 
