@@ -115,6 +115,10 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DEV  - New options.php file contains arrays of all entries to the WP options table.
 * DEV  - class.twitchpress-admin-uninstall.php has been removed and replaced with class.twitchpress-admin-deactivate.php 
 * DEV  - New meta.php file contains arrays of meta keys used in the TwitchPress system. 
+* DEV  - $twitch_wperror removed from the Twitch API library as it is not in use.
+* DEV  - Streamlabs API endpoints added to All-API library.
+* DEV  - Removed $twitch_call_id from Twitch API class as it is not in use.
+* DEV  - Deepbot settings removed - extension on hold pending a strictly localhost only phase. 
 
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.

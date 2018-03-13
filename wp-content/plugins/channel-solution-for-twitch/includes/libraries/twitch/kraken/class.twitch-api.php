@@ -24,7 +24,6 @@ if( !class_exists( 'TWITCHPRESS_Twitch_API' ) ) :
 
 class TWITCHPRESS_Twitch_API {
     
-    protected $twitch_wperror                = null;
     protected $twitch_default_channel        = null;// Services own channel name, not ID.
     protected $twitch_channel_id             = null;
     protected $twitch_client_id              = null;
@@ -37,7 +36,6 @@ class TWITCHPRESS_Twitch_API {
     
     // Debugging variables.
     public $twitch_call_name = 'Unknown';
-    public $twitch_call_id   = null;
     public $twitch_sandbox_mode = false;
     
     public $twitch_scopes = array( 

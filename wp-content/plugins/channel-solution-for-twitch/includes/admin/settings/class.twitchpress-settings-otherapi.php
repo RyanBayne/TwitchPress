@@ -258,28 +258,7 @@ class TwitchPress_Settings_OtherAPI extends TwitchPress_Settings_Page {
                     'show_if_checked' => 'yes',
                     'autoload'        => false,
                 ),
-                                
-                // DeepBot
-                array(
-                    'title'         => __( 'Deepbot API', 'twitchpress' ),
-                    'desc'          => __( 'Activate Deepbot Services.', 'twitchpress' ),
-                    'id'            => 'twitchpress_switch_deepbot_api_services',
-                    'type'          => 'checkbox',
-                    'default'       => 'no',
-                    'checkboxgroup' => 'start',
-                    'autoload'      => false,
-                ),
-
-                array(
-                    'desc'            => __( 'Log Deepbot API Activity', 'twitchpress' ),
-                    'id'              => 'twitchpress_switch_deepbot_api_logs',
-                    'default'         => 'yes',
-                    'type'            => 'checkbox',
-                    'checkboxgroup'   => '',
-                    'show_if_checked' => 'yes',
-                    'autoload'        => false,
-                ),
-                                
+             
                 // Streamtip
                 array(
                     'title'         => __( 'Streamtip API', 'twitchpress' ),
