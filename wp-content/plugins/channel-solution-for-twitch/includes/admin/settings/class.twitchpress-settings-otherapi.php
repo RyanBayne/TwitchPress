@@ -258,7 +258,7 @@ class TwitchPress_Settings_OtherAPI extends TwitchPress_Settings_Page {
                     'show_if_checked' => 'yes',
                     'autoload'        => false,
                 ),
-             
+              
                 // Streamtip
                 array(
                     'title'         => __( 'Streamtip API', 'twitchpress' ),

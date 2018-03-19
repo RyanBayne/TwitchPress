@@ -1,5 +1,6 @@
 <?php 
 /**
+
  * All-API class helps to manage API consumption in a plugin consuming many API.
  * 
  * Do not use this class unless you accept the Twitch Developer Services Agreement

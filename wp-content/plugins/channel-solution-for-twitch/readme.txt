@@ -120,6 +120,7 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DEV  - Removed $twitch_call_id from Twitch API class as it is not in use.
 * DEV  - Deepbot settings removed - extension on hold pending a strictly localhost only phase. 
 
+
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.
 * DEV  - Manual subscription sync tool function added to core tools class. 

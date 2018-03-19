@@ -61,6 +61,7 @@ Translator needed.
 No special upgrade instructions this time. 
 
 == Changelog ==
+
 = 1.3.5 NOT RELEASED = 
 * FIX - Action now passes WP user ID: do_action( 'twitchpress_login_inserted_new_user', $user_id )
 
