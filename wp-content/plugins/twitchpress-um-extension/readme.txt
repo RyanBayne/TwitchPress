@@ -64,6 +64,9 @@ Translator needed to localize our Channel Solution for Twitch: TwitchPress, and 
 No special upgrade instructions this time. 
 
 == Changelog ==
+= 1.3.0 NOT RELEASED = 
+* FIX - Role set improved in set_twitch_subscribers_um_role() by ensuring WP user ID is set. 
+
 = 1.2.4 = 
 * DEV - Added new action for twitchpress_manualsubsync which sets role after visitor runs manual Twitch sub data sync. 
 * DEV - New action hook "twitchpress_login_inserted_new_user" will apply UM role after new user is inserted when logged in using Twitch.
