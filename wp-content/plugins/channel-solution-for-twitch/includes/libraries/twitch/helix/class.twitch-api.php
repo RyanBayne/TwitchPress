@@ -35,7 +35,9 @@ class TWITCHPRESS_Twitch_API {
     
     // Debugging variables.
     public $twitch_call_name = 'Unknown';
+
     public $twitch_call_id   = null;
+
     public $twitch_sandbox_mode = false;
     
     public $twitch_scopes = array( 

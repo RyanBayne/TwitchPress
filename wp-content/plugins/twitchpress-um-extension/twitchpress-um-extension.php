@@ -115,6 +115,11 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             if ( ! defined( 'TWITCHPRESS_SHOW_SETTINGS_CONTENT' ) )  { define( 'TWITCHPRESS_SHOW_SETTINGS_CONTENT', true ); }      
         }  
         
+        /**
+        * Do something before TwitchPress core initializes. 
+        * 
+        * @version 1.0
+        */
         public function pre_twitchpress_init() {
             $this->load_dependencies();
             
@@ -125,12 +130,19 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             add_action( 'twitchpress_init', array( $this, 'after_twitchpress_init' ) );
         }
 
+        /**
+        * Do something after TwitchPress core initializes.
+        * 
+        * @version 1.0
+        */
         public function after_twitchpress_init() {
             $this->attach_hooks();                   
         }
 
         /**
          * Load all plugin dependencies.
+         * 
+         * @version 1.0
          */
         public function load_dependencies() {
 
@@ -140,14 +152,19 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             add_action( 'admin_init', array( $this, 'load_admin_dependencies' ) );
         }
         
+        /**
+        * Call by add_action( 'admin_init ) in load_dependencies().
+        * 
+        * @version 1.0
+        */
         public function load_admin_dependencies() {
              
         }
                    
         /**
-         * Hook into actions and filters.
+         * Hooks
          * 
-         * @version 1.0
+         * @version 2.0
          */
         private function attach_hooks() {
 
@@ -167,17 +184,10 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             add_action( 'twitchpress_manualsubsync', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
             add_action( 'twitchpress_login_inserted_new_user', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
 
-            add_action( 'twitchpress_test', array( $this, 'new_test' ), 1 );// Passes user ID.
-            
             // Systematic actions. 
             add_action( 'wp_loaded', array( $this, 'set_current_users_um_role_based_on_twitch_sub' ), 5, 1 );
         }
-        
-        public function new_test() {
-            var_dump( 'UNINSTALL TEST' );
-            exit;
-        }
-        
+
         public static function install() {
             
         }
@@ -192,6 +202,8 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
         * required for the current system.
         * 
         * @param mixed $new_array
+        * 
+        * @version 1.0
         */
         public function update_system_scopes_status( $filtered_array ) {
             $scopes = array();
@@ -239,7 +251,7 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
         * @param mixed $channel_id
         * @param mixed $api_response
         * 
-        * @version 2.2
+        * @version 2.3
         */
         public function set_twitch_subscribers_um_role( $user_id ) {
             global $ultimatemember, $bugnet;
@@ -249,36 +261,31 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             // This function is called by multiple hooks so we need to determine which one for logging.
             $hook = 'UNKNOWN';
             
+            // Get the current filter to help us trace backwards from log entries. 
+            $filter = current_filter();
+            $action = current_action();
+            
             // current_filter() returns string i.e. "edit_user_profile".
-            switch( current_filter() )
+            if( 'edit_user_profile' == $filter ) 
             {
-                // edit_user_profile actually returns a user object.
-                case 'edit_user_profile':
+                $hook = 'edit_user_profile';
                 
-                    $hook = 'edit_user_profile';
-                    
-                    // This hook actually passes a user object. 
-                    $user_id = $user_id->data->ID;
-                    
-                break;
-                case 'personal_options_update':
-                    $hook = 'personal_options_update';
-                break;
-                case 'edit_user_profile_update':
-                    $hook = 'edit_user_profile_update';
-                break;
-                case 'twitchpress_sync_new_twitch_subscriber':
-                    $hook = 'twitchpress_sync_new_twitch_subscriber';
-                break;
-                case 'twitchpress_sync_continuing_twitch_subscriber':
-                    $hook = 'twitchpress_sync_continuing_twitch_subscriber';
-                break;
-                case 'twitchpress_sync_discontinued_twitch_subscriber':
-                    $hook = 'twitchpress_sync_discontinued_twitch_subscriber';
-                break;
+                // This hook actually passes a user object. 
+                $user_id = $user_id->data->ID;                
             }
             
-            $bugnet->log( __FUNCTION__, sprintf( __( 'Applying the Ultimate Member role for WP user ID %s and the triggered hook is %s', 'twitchpress' ), $user_id, $hook ), array(), true, false );
+            /*  Other filters and actions that call this method. 
+                1. personal_options_update
+                2. edit_user_profile_update
+                3. twitchpress_sync_new_twitch_subscriber
+                4. twitchpress_sync_continuing_twitch_subscriber
+                5. twitchpress_sync_discontinued_twitch_subscriber
+                6. twitchpress_login_inserted_new_user 
+            */
+                
+            $bugnet->log( __FUNCTION__, sprintf( __( 'Ultimate Member role applied to WP user ID: %s (1 of 3)', 'twitchpress' ), $user_id ), array(), true, false );
+            $bugnet->log( __FUNCTION__, sprintf( __( 'Ultimate Member current filter: %s (2 of 3)', 'twitchpress' ), $filter ), array(), true, false );
+            $bugnet->log( __FUNCTION__, sprintf( __( 'Ultimate Member current action: %s (3 of 3)', 'twitchpress' ), $action ), array(), true, false );
             
             $channel_id = twitchpress_get_main_channels_twitchid();
             

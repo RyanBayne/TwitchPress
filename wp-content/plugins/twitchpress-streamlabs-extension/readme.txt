@@ -1,31 +1,23 @@
-=== TwitchPress UM Extension ===
+=== TwitchPress Streamlabs Extension ===
 Contributors: Ryan Bayne
 Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, TwitchPress Boilerplate
+Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, TwitchPress Streamlabs, Streamlabs
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 1.2.4
-Minimum TwitchPress version: 1.7.3
+Stable tag: 1.0.0
+Minimum core version: 1.7.0
 Requires PHP: 5.6
                         
-Integrate the Ultimate Member plugin with a TwitchPress system.
+Streamlabs extension for the TwitchPress system.
                        
 == Description ==
 
-Ultimate Member roles based on your visitors Twitch subscription plans. 
-Makes it possible to limit WP access to subscriber only content and other perks. 
+TwitchPress offers a platform to build a Twitch.tv powered website. This
+extension will add Streamlabs features to the TwitchPress system. 
 
-This extension requires the TwitchPress core plugin, named "Channel Solution for Twitch" on the WordPress.org plugin repository.
-
-Currently requires the following plugins:
-* TwitchPress Core Plugin     - Officially named "Channel Solution for Twitch", codenamed TwitchPress.
-* TwitchPress Sync Extension  - Keeps the Twitch data in WP updated (soon to be merged into the core).
-* TwitchPress Login Extension - Provides safe login and automatic registration that other extensions can expand further to suit different systems.
-
-= Links =      
-*   <a href="https://wordpress.org/plugins/channel-solution-for-twitch/" title="">Core Plugin</a>                                                          
+= Links =                                                                
 *   <a href="https://twitchpress.wordpress.com" title="">Blog</a>
 *   <a href="https://github.com/RyanBayne/TwitchPress" title="">GitHub</a>       
 *   <a href="https://twitter.com/ryan_r_bayne" title="Follow the projects Tweets.">Developers Twitter</a>     
@@ -37,8 +29,7 @@ Currently requires the following plugins:
 
 = Features List = 
 
-* Shortcode for adding Connect to Twitch button to Ultimate Member login form. 
-* Hooks into the TwitchPress Sync Extension subscription data management and reacts to a visitors change in Twitch channel subscription.
+* Coming Soon
 
 == Installation ==
 
@@ -61,36 +52,13 @@ Translator needed to localize our Channel Solution for Twitch: TwitchPress, and 
 
 == Upgrade Notice ==
 
-No special upgrade instructions this time. 
+No special upgrade instructions this time. Just remember to 
+backup your site files and database.
 
 == Changelog ==
 
-= 1.3.0 NOT RELEASED = 
-* FIX - Role set improved in set_twitch_subscribers_um_role() by ensuring WP user ID is set. 
-
-= 1.2.4 = 
-* DEV - Added new action for twitchpress_manualsubsync which sets role after visitor runs manual Twitch sub data sync. 
-* DEV - New action hook "twitchpress_login_inserted_new_user" will apply UM role after new user is inserted when logged in using Twitch.
-
-= 1.2.3 = 
-* FIX - Corrected use of add_actions() which should be add_action(). 
-
-= 1.2.2 = 
-* DONE - Increased frequency of role update to the currently logged in user. 
-
-= 1.2.1 = 
-* DEV - Now adds required scopes to the core for telling users what scopes are required for this plugin to operate. 
-* FIX - Fixed bug preventing subscription update when viewing or updated user profile.   
-
-= 1.2.0 = 
-* DEV - New scopes() function for holding the scopes needed by this extension.
-
-= 1.1.1 =
-* DEV - A get_option() now has a default value. 
-* FIX - Established which hooks pass user object and which pass user ID to the set_twitch_subscribers_um_role() function. 
-
-= 1.0.10 =
-* DEV - More logging added, still debugging the UM role fault with a remote developer. 
+= 1.0.0 =
+* DEV - Released ???
 
 == Version Numbers and Updating ==
 
