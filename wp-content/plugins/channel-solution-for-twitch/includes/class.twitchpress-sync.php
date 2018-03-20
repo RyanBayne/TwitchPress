@@ -19,25 +19,24 @@ class TwitchPress_Systematic_Syncing {
     /**
     * @var integer - user sync flood delay.        
     */
-    public $sync_user_flood_delay = 120;// seconds
+    public $sync_user_flood_delay = 60;// seconds
 
     public function __construct() {      
-        if ( ! defined( 'TWITCHPRESS_SYNC_ABSPATH' ) )  { define( 'TWITCHPRESS_SYNC_ABSPATH', __FILE__ ); }
-        if ( ! defined( 'TWITCHPRESS_SYNC_BASENAME' ) ) { define( 'TWITCHPRESS_SYNC_BASENAME', plugin_basename( __FILE__ ) ); }
-        if ( ! defined( 'TWITCHPRESS_SYNC_DIR_PATH' ) ) { define( 'TWITCHPRESS_SYNC_DIR_PATH', plugin_dir_path( __FILE__ ) ); }      
+                         
     }
     
     public function init() {
+                        
+        // Custom action hooks. 
+        add_action( 'twitchpress_login_inserted_new_user', array( $this, 'twitchpress_sync_currentusers_twitchsub_mainchannel' ), 1 );
+                           
         // WP core action hooks.
         add_action( 'wp_login', array( $this, 'sync_user_on_login' ), 1, 2 );
         add_action( 'profile_personal_options', array( $this, 'sync_user_on_viewing_profile' ) );
                
         // Systematic syncing will perform constant data updating with delays to prevent flooding.
         add_action( 'wp_loaded', array( $this, 'systematic_syncing' ), 1 );
-
-        // Custom action hooks. 
-        add_action( 'twitchpress_sync_currentusers_twitchsub_mainchannel', 'twitchpress_sync_currentusers_twitchsub_mainchannel', 5 );
-        
+   
         // User Profile
         add_action( 'show_user_profile',        array( $this, 'twitch_subscription_status_show' ), 1 );
         add_action( 'edit_user_profile',        array( $this, 'twitch_subscription_status_edit' ), 1 );
@@ -119,7 +118,7 @@ class TwitchPress_Systematic_Syncing {
         }
         
         // Load Kraken and set credentials for the app + channel.  
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
         $id = $kraken->get_main_channel_id();// Right now everything defaults to the main channel.
 
         $earliest_time = $option['last_time'] + $option['delay'];
@@ -537,7 +536,7 @@ class TwitchPress_Systematic_Syncing {
     public function user_sub_sync( $wp_user_id, $output_notice = false ){       
         global $bugnet;
 
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         $twitch_user_id = twitchpress_get_user_twitchid_by_wpid( $wp_user_id );    
         $twitch_channel_id = twitchpress_get_main_channels_twitchid();
@@ -636,7 +635,9 @@ class TwitchPress_Systematic_Syncing {
 
                 return;
             } 
-        }      
+        }     
+        
+        do_action( 'twitchpress_user_sub_sync_finished', $wp_user_id ); 
     }   
          
     /**
@@ -650,7 +651,7 @@ class TwitchPress_Systematic_Syncing {
         global $bugnet;
      
         // Does the giving user subscribe to the main channel?
-        $kraken = new TWITCHPRESS_Kraken_Calls();
+        $kraken = new TWITCHPRESS_Twitch_API_Calls();
         $channel_id = twitchpress_get_main_channels_twitchid();
         $channel_token = twitchpress_get_main_channels_token();
 
@@ -944,7 +945,7 @@ class TwitchPress_Systematic_Syncing {
             </tbody>
         </table>
         <?php  
-        do_action( 'twtichpress_sync_user_profile_section' );         
+        do_action( 'twitchpress_sync_user_profile_section' );         
     }
     
     /**
@@ -1093,7 +1094,7 @@ class TwitchPress_Systematic_Syncing {
             
             /*   TODO: If scopes allow it, make a call and test the token and code. 
             // Make a call using users token and code, confirming validity.                 
-            $kraken = new TWITCHPRESS_Kraken_Calls();
+            $kraken = new TWITCHPRESS_Twitch_API_Calls();
             $sub_call_result = $kraken->chat_generateToken( $token, $code );
             if( !$sub_call_result ) 
             {
