@@ -173,7 +173,7 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             add_filter( 'twitchpress_get_settings_users', array( $this, 'settings_add_options_users' ), 50 );
             add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) ); 
             add_filter( 'twitchpress_update_system_scopes_status', array( $this, 'update_system_scopes_status' ), 1, 1 ); 
-            
+
             // Decide a users role when the sub data has been updated. 
             add_action( 'twitchpress_user_sub_sync_finished', array( $this, 'set_twitch_subscribers_um_role' ), 2, 1 );// Passes user ID.
                                     
@@ -263,7 +263,7 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             // Get the current filter to help us trace backwards from log entries. 
             $filter = current_filter();
             $action = current_action();
-            
+
             // edit_user_profile filter passed array
             if( 'edit_user_profile' == $filter ) 
             {
