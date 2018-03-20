@@ -232,6 +232,7 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-listener.php' );
         include_once( 'includes/class.twitchpress-feeds.php' );
         include_once( 'includes/functions.twitchpress-shortcodes.php' );
+        include_once( 'includes/class.twitchpress-sync.php' );
         
         // Load classes only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {
