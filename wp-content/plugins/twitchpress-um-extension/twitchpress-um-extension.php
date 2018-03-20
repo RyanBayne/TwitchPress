@@ -173,19 +173,21 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             add_filter( 'twitchpress_get_settings_users', array( $this, 'settings_add_options_users' ), 50 );
             add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) ); 
             add_filter( 'twitchpress_update_system_scopes_status', array( $this, 'update_system_scopes_status' ), 1, 1 ); 
-                                                
+
+            // Decide a users role when the sub data has been updated. 
+            add_action( 'twitchpress_user_sub_sync_finished', array( $this, 'set_twitch_subscribers_um_role' ), 2, 1 );// Passes user ID.
+                                    
             // Apply UM role based on users Twitch plan data if it is available.  
-            add_action( 'edit_user_profile', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user object. 
-            add_action( 'personal_options_update', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
-            add_action( 'edit_user_profile_update', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
-            add_action( 'twitchpress_sync_new_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
-            add_action( 'twitchpress_sync_continuing_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
-            add_action( 'twitchpress_sync_discontinued_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
-            add_action( 'twitchpress_manualsubsync', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
-            add_action( 'twitchpress_login_inserted_new_user', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            //add_action( 'edit_user_profile', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user object. 
+            //add_action( 'personal_options_update', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            //add_action( 'edit_user_profile_update', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            //add_action( 'twitchpress_sync_new_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            //add_action( 'twitchpress_sync_continuing_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            //add_action( 'twitchpress_sync_discontinued_twitch_subscriber', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
+            //add_action( 'twitchpress_manualsubsync', array( $this, 'set_twitch_subscribers_um_role' ), 5, 1 );// Passes user ID.
 
             // Systematic actions. 
-            add_action( 'wp_loaded', array( $this, 'set_current_users_um_role_based_on_twitch_sub' ), 5, 1 );
+            //add_action( 'wp_loaded', array( $this, 'set_current_users_um_role_based_on_twitch_sub' ), 5, 1 );
         }
 
         public static function install() {
@@ -258,18 +260,13 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             
             $return_value = null;
 
-            // This function is called by multiple hooks so we need to determine which one for logging.
-            $hook = 'UNKNOWN';
-            
             // Get the current filter to help us trace backwards from log entries. 
             $filter = current_filter();
             $action = current_action();
-            
-            // current_filter() returns string i.e. "edit_user_profile".
+
+            // edit_user_profile filter passed array
             if( 'edit_user_profile' == $filter ) 
             {
-                $hook = 'edit_user_profile';
-                
                 // This hook actually passes a user object. 
                 $user_id = $user_id->data->ID;                
             }
@@ -282,11 +279,7 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
                 5. twitchpress_sync_discontinued_twitch_subscriber
                 6. twitchpress_login_inserted_new_user 
             */
-                
-            $bugnet->log( __FUNCTION__, sprintf( __( 'Ultimate Member role applied to WP user ID: %s (1 of 3)', 'twitchpress' ), $user_id ), array(), true, false );
-            $bugnet->log( __FUNCTION__, sprintf( __( 'Ultimate Member current filter: %s (2 of 3)', 'twitchpress' ), $filter ), array(), true, false );
-            $bugnet->log( __FUNCTION__, sprintf( __( 'Ultimate Member current action: %s (3 of 3)', 'twitchpress' ), $action ), array(), true, false );
-            
+
             $channel_id = twitchpress_get_main_channels_twitchid();
             
             // Avoid processing the main account or administrators so they are never downgraded. 
@@ -295,40 +288,61 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
                         
             // Get subscription plan from user meta for the giving channel (based on channel ID). 
             $sub_plan = get_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id, true );
-            
+
             // Get possible current UM role. 
             $current_role = get_user_meta( $user_id, 'role', true );
             
             // Do nothing if the users UM role is admin (it is not administrator for UM)
-            if( $current_role == 'admin' ) { return; }
+            if( $current_role == 'admin' || $current_role == 'administrator' ) { return; }
+            
+            
+            
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - Channel ID [%s].', 'twitchpress' ), $channel_id ), array(), true, false );  
+
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - User ID [%s].', 'twitchpress' ), $user_id ), array(), true, false );  
+
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - Sub Plan from user meta [%s].', 'twitchpress' ), $sub_plan ), array(), true, false );  
+
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - Filter [%s].', 'twitchpress' ), $filter ), array(), true, false );  
+
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - Action [%s].', 'twitchpress' ), $action ), array(), true, false ); 
+ 
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - Current role [%s].', 'twitchpress' ), $current_role ), array(), true, false );  
+
+
             
             if( !$sub_plan ) 
             { 
-                // User has no Twitch subscription, so apply default UM role. 
-                $role = um_get_option("default_role");
-                $bugnet->log( __FUNCTION__, sprintf( __( 'WP user ID %s does not have a Twitch subscription to the main channel.', 'twitchpress' ), $user_id ), array(), true, false );  
+                // User has no Twitch subscription, so apply default (none) role. 
+                $role = get_option( 'twitchpress_um_subtorole_none', false );
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - user [%s] does not have a Twitch subscription to the main channel.', 'twitchpress' ), $user_id ), array(), true, false );  
             }
             else
             {
                 $option_string = 'twitchpress_um_subtorole_' . $sub_plan;
                 
-                $result = get_option( $option_string, false );
-
-                $bugnet->log( __FUNCTION__, sprintf( __( 'WP user ID %s has a Twitch subscription to the main channel. UM Extension will now attempt to get the matching UM role and apply it.', 'twitchpress' ), $user_id ), array(), true, false );  
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - user [%s] has a Twitch subscription to the main channel. Getting and applying the matching UM role.', 'twitchpress' ), $user_id ), array(), true, false );  
                 
                 // Get the UM role paired with the $sub_plan
                 $role = get_option( $option_string, false );
+                
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - New Role [%s].', 'twitchpress' ), $role ), array(), true, false );  
+                                
                 if( !$role )         
                 {   
                     // UM settings have not been setup or there is somehow a mismatch (that should never happen though).
-                    $return_value = $bugnet->log_error( __FUNCTION__, sprintf( __( 'TwitchPress UM Extension attempted to update WP user %s with an Ultimate Member role but the subscription plan stored in user meta does not have a matching option key. Expected option key: %s', 'twitchpress-um' ), $user_id, $option_string ), array(), false );
-                    $role = um_get_option("default_role");
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension attempted to update WP user [%s] with an Ultimate Member role but the subscription plan stored in user meta does not have a matching option key. Expected option key: [%s]', 'twitchpress-um' ), $user_id, $option_string ), array(), false );
+                    $role = get_option( 'twitchpress_um_subtorole_none', false );
+                }
+                else
+                {
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension role for [%s] is [%s]', 'twitchpress-um' ), $option_string, $role ), array(), true, false );                    
                 }              
             }
 
-            update_user_meta( $user_id, 'role', $role );   
-            
-            return $return_value;          
+$bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension role update for user ID [%s] to [%s]', 'twitchpress-um' ), $user_id, $role ), array(), true, false );                    
+
+            update_user_meta( $user_id, 'role', $role );           
         }
         
         /**
