@@ -724,7 +724,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
         */
         private function process_login_using_twitch( $state_code ) { 
             global $bugnet;
- 
+
             $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,false,__( 'Request to process login has started.', 'twitchpress' ),array(),true);
 
             // Summon the Kraken! 
@@ -829,7 +829,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
                     update_user_meta( $get_users_results[0]->ID, 'twitchpress_token_refresh', $token_array['refresh_token'] );
                       
                     $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,false,__( 'Login accepted. Existing user found using Twitch ID. Calling session setup procedure.', 'twitchpress' ) );
-                                                              
+                                        
                     // Log the user in.
                     self::authenticate_login_by_twitch( $get_users_results[0]->ID, $twitch_user['name'], $state_code  );
                     
@@ -847,7 +847,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
                 update_user_meta( $wp_user->data->ID, 'twitchpress_token_refresh', $token_array['refresh_token'] );
    
                 $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,false,__( 'Login accepted. Existing user found using Twitch email address. Calling session setup procedure.', 'twitchpress' ) );
-                       
+    
                 self::authenticate_login_by_twitch( $wp_user->data->ID, $wp_user->data->user_login, $state_code );
 
                 return;
@@ -925,7 +925,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             update_user_meta( $user_id, 'twitchpress_auth_time', time() );
             update_user_meta( $user_id, 'twitchpress_code', sanitize_text_field( $_GET['code'] ) );
             update_user_meta( $user_id, 'twitchpress_token', $token_array['access_token'] );
-            update_user_meta( $user_id, 'twitchpress_token_refresh', $token_array['token_refresh'] );
+            update_user_meta( $user_id, 'twitchpress_token_refresh', $token_array['refresh_token'] );
 
             do_action( 'twitchpress_login_inserted_new_user', $user_id );
             
