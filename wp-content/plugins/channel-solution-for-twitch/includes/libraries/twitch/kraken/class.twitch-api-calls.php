@@ -1557,7 +1557,7 @@ class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
     }
     
     /**
-     * Gets the a users subscription data for specified channel from the user side.
+     * Gets the a users subscription data (array) for specified channel from the user side.
      * 
      * @param $twitch_user_id - [string] User ID of the user check against
      * @param $chan_id    - [string] Channel name of the channel to check against
@@ -1569,7 +1569,10 @@ class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
      * @version 5.1
      */ 
     public function getUserSubscription( $twitch_user_id, $chan_id, $user_token = false ){   
-      
+
+        // Sandbox Mode - avoid processing this function and instead process the _sandbox copy of it. 
+        if( $this->twitch_sandbox_mode ) { return $this->get_channel_subscriptions_sandbox(); }
+             
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'channel_check_subscription', 'user', __FUNCTION__ );
         if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
@@ -1582,7 +1585,69 @@ class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
                  
         return $subscribed;
     }
+    
+    /**
+    * Sandbox-mode edition of getUserSubscription().
+    * 
+    * @param mixed $twitch_user_id
+    * @param mixed $chan_id
+    * @param mixed $user_token
+    * 
+    * @version 1.0
+    */
+    public function getUserSubscription_sandbox( $twitch_user_id, $chan_id, $user_token = false ){   
         
+        $return = array();
+        
+        if( 'yes' == get_option( 'twitchress_sandbox_mode_generator_switch' ) )
+        {
+             /* Not doing anything here yet, but we could generate users based on real Twitch channels. */
+        }
+
+        // Return a subscriber as the affirmative response.
+        $return[] = array( 
+            "_id"           => "ac2f1248993eaf97e71721458bd88aae66c92330",
+            "sub_plan"      => "3000",
+            "sub_plan_name" => "Channel Subscription (forstycup) - $24.99 Sub",
+            "channel" => array(
+                "_id"                             => "19571752",
+                "broadcaster_language"            => "en",
+                "created_at"                      => "2011-01-16T04:35:51Z",
+                "display_name"                    => "forstycup",
+                "followers"                       => 397,
+                "game"                            => "Final Fantasy XV",
+                "language"                        => "en",
+                "logo"                            => "https://static-cdn.jtvnw.net/jtv_user_pictures/forstycup-profile_image-940fb4ca1e5949c0-300x300.png",
+                "mature"                          => true,
+                "name"                            => "forstycup",
+                "partner"                         => true,
+                "profile_banner"                  => null,
+                "profile_banner_background_color" => null,
+                "status"                          => "[Blind] Moar Sidequests! Let's explore.",
+                "updated_at"                      => "2017-04-06T09:00:41Z",
+                "url"                             => "http://localhost:3000/forstycup",
+                "video_banner"                    => "https://static-cdn.jtvnw.net/jtv_user_pictures/forstycup-channel_offline_image-f7274322063da225-1920x1080.png",
+                "views"                           => 5705 
+            ),
+            "created_at" => "2017-04-08T19:54:24Z"
+        );
+
+        // If false returns not on, we only return the affirmative response.
+        if( 'yes' !== get_option( 'twitchress_sandbox_mode_falsereturns_switch' ) )
+        {
+            return $return[0];
+        }
+                
+        // Add the false returns and randomize which is returned (for a natural set of data)
+        $return[] = array(
+            "error"   => "Not Found",
+            "message" => "dallas has no subscriptions to twitch",
+            "status"  => 404
+        );
+        
+        return array_rand( $return );
+    }
+     
     /**
      * Gets the team objects for all active teams
      * 

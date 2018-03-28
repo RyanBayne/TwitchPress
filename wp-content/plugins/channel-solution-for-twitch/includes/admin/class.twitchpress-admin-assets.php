@@ -28,6 +28,8 @@ class TwitchPress_Admin_Assets {
 
     /**
      * Enqueue styles for the admin side.
+     * 
+     * @version 1.2
      */
     public function admin_styles() {
         global $wp_scripts;
@@ -43,12 +45,11 @@ class TwitchPress_Admin_Assets {
         wp_register_style( 'jquery-ui-style', '//code.jquery.com/ui/' . $jquery_version . '/themes/smoothness/jquery-ui.min.css', array(), $jquery_version );
 
         // Admin styles for WordPress TwitchPress pages only
-        /*
         if ( in_array( $screen_id, twitchpress_get_screen_ids() ) ) {
             wp_enqueue_style( 'twitchpress_admin_styles' );
-            wp_enqueue_style( 'jquery-ui-style' );
+            //wp_enqueue_style( 'jquery-ui-style' );
         }
-        */
+        
     }
 
     /**

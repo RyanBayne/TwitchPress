@@ -735,9 +735,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             { 
                 $this->loginerror( __( 'Invalid Twitch Code'), 
                                    __( 'Your request to login via Twitch has failed because the code return by Twitch appears invalid. Please try again or report the issue.', 'twitchpress-login' ),
-                                   null ); 
-                                   
-                $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,true,__( 'Login denied. Twitch code invalid on login.', 'twitchpress' )); 
+                                   null );                
                 return;                   
             }
            
@@ -748,9 +746,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             if( !twitchpress_was_valid_token_returned( $token_array ) ) {   
                 $this->loginerror( __( 'Invalid Token'), 
                                    __( 'Your request to login via Twitch could not be complete because the giving token is invalid.', 'twitchpress-login' ),
-                                   null );  
-                                   
-                $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,true,__( 'Login denied. Twitch token invalid on login.', 'twitchpress' ));                                                 
+                                   null );                                  
                 return;                         
             }
             
@@ -761,10 +757,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             if( !isset( $twitch_user['email'] ) ) {        
                 $this->loginerror( __( 'Email Address Missing'), 
                                    __( 'Twitch returned some of your account information but your email address was not included in the data.', 'twitchpress-login' ),
-                                   null );     
-                                   
-                $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,true,__( 'Login denied. Twitch email address not provided on login.', 'twitchpress' ));
-                                                              
+                                   null );                                                    
                 return;                        
             }
             
@@ -782,9 +775,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
                                        __( 'Your request to login via Twitch was refused because your email address has not been verified by Twitch. You will need to verify your email through Twitch and then register on this site.', 'twitchpress-login' ),
                                        null 
                     );  
-                    
-                    $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,true,__( 'Twitch email address not verified yet, login denied.', 'twitchpress' ));                    
-                                  
+        
                     return;                                             
                 } 
             }
@@ -928,7 +919,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             update_user_meta( $user_id, 'twitchpress_token_refresh', $token_array['refresh_token'] );
 
             do_action( 'twitchpress_login_inserted_new_user', $user_id );
-            
+ 
             $bugnet->trace( 'twitchpressloginextensionlistener',__LINE__,__FUNCTION__,__FILE__,false,__( 'A new WordPress user has been created for the visitor. Now calling session setup method to log them in.', 'twitchpress' ));
                             
             self::authenticate_login_by_twitch( $user_id, $twitch_user['name'], $state_code );

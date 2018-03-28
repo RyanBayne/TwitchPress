@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'TwitchPress_ListTable_Krakencalls' ) ) {
+if ( ! class_exists( 'TwitchPress_ListTable_Daily_Logs' ) ) {
     require_once( 'class.twitchpress-listtable-daily-logs.php' );
 }
 

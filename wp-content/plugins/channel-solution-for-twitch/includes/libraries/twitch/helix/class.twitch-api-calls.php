@@ -1341,6 +1341,7 @@ class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
      */ 
     public function get_channel_subscribers( $chan, $limit = -1, $offset = 0, $direction = 'asc', $token = null, $code = null ){
         
+        // Sandbox Mode - avoid processing this function and instead process the _sandbox copy of it. 
         if( $this->twitch_sandbox_mode ) { return $this->get_channel_subscriptions_sandbox(); }
                                                                                                     
         $url = 'https://api.twitch.tv/kraken/channels/' . $chan . '/subscriptions';                          
@@ -1373,25 +1374,25 @@ class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
     */
     public function get_channel_subscriptions_sandbox() { 
         return array( 
-                        "_total" => 4,
-                        "subscriptions" => array( 
-                            array(
-                                "_id"            => "e5e2ddc37e74aa9636625e8d2cc2e54648a30418",
-                                "created_at"     => "2016-04-06T04:44:31Z",
-                                "sub_plan"       => "1000",
-                                "sub_plan_name"  =>  "Channel Subscription (mr_woodchuck)",
-                                "user"               => array(
-                                    "_id"            => "89614178",
-                                    "bio"            => "Twitch staff member who is a heimerdinger main on the road to diamond.",
-                                    "created_at"     => "2015-04-26T18:45:34Z",
-                                    "display_name"   => "Mr_Woodchuck",
-                                    "logo"           => "https://static-cdn.jtvnw.net/jtv_user_pictures/mr_woodchuck-profile_image-a8b10154f47942bc-300x300.jpeg",
-                                    "name"           => "mr_woodchuck",
-                                    "type"           => "staff",
-                                    "updated_at"     => "2017-04-06T00:14:13Z" ),
-                                    
-                            )
-                        )
+            "_total" => 1,
+            "subscriptions" => array( 
+                array(
+                    "_id"            => "e5e2ddc37e74aa9636625e8d2cc2e54648a30418",
+                    "created_at"     => "2016-04-06T04:44:31Z",
+                    "sub_plan"       => "1000",
+                    "sub_plan_name"  =>  "Channel Subscription (mr_woodchuck)",
+                    "user"               => array(
+                        "_id"            => "89614178",
+                        "bio"            => "Twitch staff member who is a heimerdinger main on the road to diamond.",
+                        "created_at"     => "2015-04-26T18:45:34Z",
+                        "display_name"   => "Mr_Woodchuck",
+                        "logo"           => "https://static-cdn.jtvnw.net/jtv_user_pictures/mr_woodchuck-profile_image-a8b10154f47942bc-300x300.jpeg",
+                        "name"           => "mr_woodchuck",
+                        "type"           => "staff",
+                        "updated_at"     => "2017-04-06T00:14:13Z" ),
+                        
+                )
+            )
         );
     }   
     

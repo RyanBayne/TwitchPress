@@ -963,11 +963,16 @@ function twitchpress_is_sync_due( $file, $function, $line, $delay ) {
 /**
 * Determines if the current logged in user is also the owner of the main channel.
 * 
-* @version 1.0
+* @version 2.0
 */
-function twitchpress_is_current_user_main_channel_owner() {
+function twitchpress_is_current_user_main_channel_owner( $user_id = null ) {
+    if( !$user_id )
+    {
+        $user_id = get_current_user_id();
+    }
+    
     // Avoid processing the owner of the main channel (might not be admin with ID 1)
-    if( twitchpress_get_main_channels_wpowner_id() == get_current_user_id() ) { return true; }
+    if( twitchpress_get_main_channels_wpowner_id() == $user_id ) { return true; }
     return false;    
 }
 

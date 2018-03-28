@@ -213,7 +213,8 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
                     'autoload'        => true,
-                ),            
+                ),  
+                          
                 array(
                     'desc'            => __( 'Activate Redirect Tracking', 'twitchpress' ),
                     'id'              => 'twitchress_redirect_tracking_switch',
@@ -222,8 +223,47 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'checkboxgroup'   => '',
                     'show_if_checked' => 'yes',
                     'autoload'        => true,
+                ),
+                                 
+                /**
+                * @link https://twitchpress.wordpress.com/2018/03/20/sandbox-mode/                
+                */                
+                array(
+                    'desc'            => __( 'Activate Sandbox-mode', 'twitchpress' ),
+                    'id'              => 'twitchress_sandbox_mode_switch',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
                 ), 
                 
+                /**
+                * @link https://twitchpress.wordpress.com/2018/03/20/sandbox-mode/                
+                */
+                array(
+                    'desc'            => __( 'Sandbox-mode Generator', 'twitchpress' ),
+                    'id'              => 'twitchress_sandbox_mode_generator_switch',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
+                ), 
+                
+                /**
+                * @link https://twitchpress.wordpress.com/2018/03/20/sandbox-mode/                
+                */
+                array(
+                    'desc'            => __( 'Sandbox-mode False/Fail Returns', 'twitchpress' ),
+                    'id'              => 'twitchress_sandbox_mode_falsereturns_switch',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
+                ), 
+                                
                 array(
                     'type'     => 'sectionend',
                     'id'     => 'advancedsettings'
@@ -237,7 +277,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
             $settings = apply_filters( 'twitchpress_general_bugnet_settings', array(
              
                 array(
-                    'title' => __( 'BugNet Controls', 'twitchpress' ),
+                    'title' => __( 'BugNet Main Services', 'twitchpress' ),
                     'type'     => 'title',
                     'desc'     => '',
                     'id'     => 'twitchpress_bugnet_main_service_switches',
@@ -273,12 +313,87 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'show_if_checked' => 'yes',
                     'autoload'        => true,
                 ),
-
+                                
                 array(
                     'type' => 'sectionend',
                     'id'   => 'twitchpress_bugnet_main_service_switches'
                 ),
 
+                // DISPLAY SWITCHES
+                array(
+                    'title' => __( 'Display Settings', 'twitchpress' ),
+                    'type'     => 'title',
+                    'desc'     => '',
+                    'id'     => 'twitchpress_bugnet_display_switches',
+                ),
+
+                array(
+                    'desc'            => __( 'Dump Errors (footer)', 'twitchpress' ),
+                    'id'              => 'twitchpress_displayerrors',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
+                ),
+                                
+                array(
+                    'title'    => __( 'Single User Error Dump', 'twitchpress-login' ),
+                    'desc'     => __( 'Enter a WP user ID to limit error dumping to that user.', 'twitchpress-login' ),
+                    'id'       => 'bugnet_error_dump_user_id',
+                    'css'      => 'width:75px;',
+                    'default'  => '1',
+                    'type'     => 'text',
+                ),
+                
+                array(
+                    'desc'            => __( 'Dump Filters (footer)', 'twitchpress' ),
+                    'id'              => 'twitchpress_display_filters',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
+                ),
+                
+                array(
+                    'desc'            => __( 'Dump Actions (footer)', 'twitchpress' ),
+                    'id'              => 'twitchpress_display_actions',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
+                ),
+                                    
+                array(
+                    'type' => 'sectionend',
+                    'id'   => 'twitchpress_bugnet_display_switches'
+                ),
+                
+                // TRANSIENT CACHE SWITCHES
+                array(
+                    'title' => __( 'Transient Cache Settings', 'twitchpress' ),
+                    'type'     => 'title',
+                    'desc'     => __( 'Control how much data BugNet stores. Views that use transient caches to generate tables of data will instead use available data from the immediate page request. That is limiting but can still help.', 'twitchpress' ),
+                    'id'     => 'twitchpress_bugnet_cache_switches',
+                ),
+                
+                array(
+                    'desc'            => __( 'Cache Action Hooks', 'twitchpress' ),
+                    'id'              => 'twitchpress_bugnet_cache_action_hooks',
+                    'default'         => 'no',
+                    'type'            => 'checkbox',
+                    'checkboxgroup'   => '',
+                    'show_if_checked' => 'yes',
+                    'autoload'        => true,
+                ),
+                                    
+                array(
+                    'type' => 'sectionend',
+                    'id'   => 'twitchpress_bugnet_cache_switches'
+                ),
+                                
                 // LEVEL SWITCHES
                 array(
                     'title' => __( 'Level Switches', 'twitchpress' ),
@@ -478,16 +593,7 @@ class TwitchPress_Settings_General extends TwitchPress_Settings_Page {
                     'show_if_checked' => 'option',
                     'autoload'        => true,
                 ),
-                
-                array(
-                    'title'    => __( 'Single User Error Dump', 'twitchpress-login' ),
-                    'desc'     => __( 'Enter a WP user ID to limit error dumping to that user.', 'twitchpress-login' ),
-                    'id'       => 'bugnet_error_dump_user_id',
-                    'css'      => 'width:75px;',
-                    'default'  => '1',
-                    'type'     => 'text',
-                ),
-                    
+ 
                 array(
                     'type' => 'sectionend',
                     'id'   => 'twitchpress_bugnet_other_switches'

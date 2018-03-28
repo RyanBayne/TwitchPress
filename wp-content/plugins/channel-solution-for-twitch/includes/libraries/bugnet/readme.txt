@@ -1,7 +1,7 @@
 ======== BugNet for WordPress ========
 
-Version: 0.0.1
-Last Updated: 15th August 2017 
+Version: 0.1.1
+Last Updated: 22nd March 2018 
 
 BugNet for WordPress is intended for integration with
 plugins and themes. The BugNet library offers various

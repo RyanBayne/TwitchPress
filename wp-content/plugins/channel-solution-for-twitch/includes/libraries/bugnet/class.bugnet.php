@@ -51,6 +51,9 @@ class BugNet {
         
         // Hook into the final WP hook and process traces gathered in WP_Error. 
         add_action( 'shutdown', array( $this, 'automatically_process_traces' ) );
+        
+        // Store $wp_actions in our cache, there is a data view to examine the data.
+        add_action( 'shutdown', array( $this, 'cache_wp_actions' ) );
     }    
     
     /**
@@ -424,6 +427,31 @@ class BugNet {
 
     public static function is_system_logging_on(){
         return get_option( 'bugnet_systemlogging_switch', false );
+    }
+    
+    /**
+    * Cache the $wp_actions global for reviewing what actions ran during a request.
+    * 
+    * @version 1.0
+    */
+    public function cache_wp_actions() { 
+
+        if( 'yes' !== get_option( 'twitchpress_bugnet_cache_action_hooks', 'no' ) ) { return; }
+        
+        global $wp_actions;        
+           
+        $cache = get_transient( 'bugnet_wpaction' );
+    
+        $cache[] = array( 
+            'time'    => time(),
+            'actions' => $wp_actions,
+        );
+        
+        delete_transient( 'bugnet_wpaction' );
+        set_transient( 'bugnet_wpaction', $cache ); 
+        
+        // Cleanup the cache if it's getting too large for purpose. 
+        if( count( $cache ) > 50 ) { delete_transient( 'bugnet_wpaction' );} 
     }
 }
 

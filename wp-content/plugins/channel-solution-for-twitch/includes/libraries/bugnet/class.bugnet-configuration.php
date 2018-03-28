@@ -40,7 +40,52 @@ class BugNet_Configuration extends BugNet {
         $this->is_events_enabled = get_option( 'bugnet_activate_events', false );
         $this->is_logging_enabled = get_option( 'bugnet_activate_log', false );
         $this->is_tracing_enabled = get_option( 'bugnet_activate_tracing', false );
+        
+        add_action( 'admin_enqueue_scripts', array( $this, 'admin_styles' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );        
     } 
+
+    /**
+     * Enqueue styles for the admin side.
+     * 
+     * @version 1.0
+     */
+    public function admin_styles() {
+        // Avoid loading styles when no errors are being displayed - right now there is no CSS other than tidying that up. 
+        if( 'yes' !== get_option( 'twitchpress_displayerrors' ) ) { return; }
+        
+        // Register admin styles
+        wp_register_style( 'bugnet_styles', TwitchPress()->plugin_url() . '/includes/libraries/bugnet/assets/css/bugnet.css', array(), TWITCHPRESS_VERSION );
+ 
+        // Admin styles for WordPress TwitchPress pages only
+        wp_enqueue_style( 'bugnet_styles' );
+        
+    }
+    
+    /**
+     * Enqueue scripts for the admin side.
+     * 
+     * @version 1.0
+     */
+    public function admin_scripts() { 
+        /*                  
+        global $wp_query, $post;
+
+        $screen       = get_current_screen();
+        $screen_id    = $screen ? $screen->id : '';
+        $package_screen_id = sanitize_title( __( 'TwitchPress', 'twitchpress' ) );
+        $suffix       = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+        // Register scripts
+        //wp_register_script( 'twitchpress_admin', TwitchPress()->plugin_url() . '/assets/js/admin/twitchpress_admin' . $suffix . '.js', array( 'jquery', 'jquery-blockui', 'jquery-ui-sortable', 'jquery-ui-widget', 'jquery-ui-core', 'jquery-tiptip' ), TWITCHPRESS_VERSION );
+        //wp_register_script( 'twitchpress_admin_help_faq', TwitchPress()->plugin_url() . '/assets/js/admin/twitchpress-' . $suffix . '.js' );
+
+        if ( in_array( $screen_id, twitchpress_get_screen_ids() ) ) {         
+            //wp_enqueue_script( 'twitchpress_admin_help_faq' );
+        } 
+        */
+                                   
+    }
     
     /**
      * Level strings mapped to integer severity.

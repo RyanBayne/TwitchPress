@@ -28,7 +28,7 @@ class TwitchPress_Systematic_Syncing {
     public function init() {
                         
         // Custom action hooks. 
-        add_action( 'twitchpress_login_inserted_new_user', array( $this, 'twitchpress_sync_currentusers_twitchsub_mainchannel' ), 1 );
+        add_action( 'twitchpress_login_inserted_new_user', array( $this, 'twitchpress_sync_twitchsub_for_mainchannel' ), 1, 1 );
                            
         // WP core action hooks.
         add_action( 'wp_login', array( $this, 'sync_user_on_login' ), 1, 2 );
@@ -58,15 +58,17 @@ class TwitchPress_Systematic_Syncing {
     * 
     * @version 2.0
     */
-    public function twitchpress_sync_currentusers_twitchsub_mainchannel() {    
-        // Hook should only be called within a method that involves a
-        // logged in user but we will make sure. 
-        if( !is_user_logged_in() ) { return; } 
-                                     
+    public function twitchpress_sync_twitchsub_for_mainchannel( $user_id ) {    
+         
+         echo '<pre>';
+         var_dump( __FUNCTION__ );
+         echo '</pre>';
+        
+                            
         // Avoid processing the owner of the main channel (might not be admin with ID 1)
         if( twitchpress_is_current_user_main_channel_owner() ) { return; }
                    
-        $this->sync_user( get_current_user_id(), false, false, 'user' );  
+        $this->sync_user( $user_id, false, false, 'user' );  
     }
     
     /**
@@ -471,7 +473,7 @@ class TwitchPress_Systematic_Syncing {
     */
     public function sync_user( $wp_user_id, $ignore_delay = false, $output_notice = false, $side = 'user' ) {  
         global $bugnet;
-                  
+
         // Ensure the giving user is due a sync.   
         if( false === $ignore_delay ) {                  
             if( !$this->is_users_sync_due( $wp_user_id ) ) { 
@@ -535,7 +537,7 @@ class TwitchPress_Systematic_Syncing {
     */
     public function user_sub_sync( $wp_user_id, $output_notice = false ){       
         global $bugnet;
-
+         
         $kraken = new TWITCHPRESS_Twitch_API_Calls();
 
         $twitch_user_id = twitchpress_get_user_twitchid_by_wpid( $wp_user_id );    

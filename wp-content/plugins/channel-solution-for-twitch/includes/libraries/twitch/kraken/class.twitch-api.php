@@ -101,6 +101,10 @@ class TWITCHPRESS_Twitch_API {
         
         // Set all app credentials for this library to use. 
         $this->set_application_credentials();
+        
+        if( get_option( 'twitchress_sandbox_mode_switch' ) == 'yes' ) { 
+            $this->twitch_sandbox_mode = true; 
+        }
     } 
 
     /**

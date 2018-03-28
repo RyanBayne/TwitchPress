@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                         
 ?>
 <div class="wrap twitchpress">
-
+    <h1>
     <?php            
     // Establish Title
     $title = '';
@@ -20,8 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
         $title = $tabs[ $current_tab ]['toolstabviews'][ $_GET['twitchpressview'] ]['title'];    
     }
     
-    echo '<h1>TwitchPress: ' . esc_html( $title ) . '</h1>'; 
+    echo 'TwitchPress: ' . esc_html( $title ); 
     ?>
+    <?php if( get_option( 'twitchress_sandbox_mode_switch' ) == 'yes' ) { _e( ' - Sandbox Mode Active', 'twitchpress' ); }?>
+    </h1>
     
     <!-- TABS -->
     <nav class="nav-tab-wrapper woo-nav-tab-wrapper">

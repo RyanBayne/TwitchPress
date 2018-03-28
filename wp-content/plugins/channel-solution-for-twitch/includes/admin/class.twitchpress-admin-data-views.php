@@ -125,6 +125,19 @@ class TwitchPress_Admin_Data_Views {
                     'callback'    => array( __CLASS__, 'get_maintabview' )
                 )
             )
+        ); 
+                  
+        // Action Hook History by BugNet 
+        $tabviews['actionhooks_list_tables'] = array(
+            'title'  => __( 'Action Hook History', 'twitchpress' ),
+            'datatabviews' => array(
+                "all_actionhooks" => array(
+                    'title'       => __( 'All Action Hook History', 'twitchpress' ),
+                    'description' => '',
+                    'hide_title'  => true,
+                    'callback'    => array( __CLASS__, 'get_maintabview' )
+                )
+            )
         );
       
         $tabviews = apply_filters( 'twitchpress_admin_mainviews', $tabviews );
