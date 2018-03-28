@@ -43,11 +43,6 @@ class TwitchPress_Admin_Menus {
         add_submenu_page( $this->slug, __('Tools',       $this->slug), __('Tools',       $this->slug), 'manage_options', 'twitchpress_tools', array( $this, 'tools_page' ) );
         add_submenu_page( $this->slug, __('Data',        $this->slug), __('Data',        $this->slug), 'manage_options', 'twitchpress_data', array( $this, 'data_page' ) );
 
-        // Menu items that require extensions.
-        if( defined( 'TWITCHPRESS_MENU_SUBSCRIBERS' ) ) {
-            add_submenu_page( $this->slug, __('Subscribers', $this->slug), __('Subscribers', $this->slug), 'manage_options', 'twitchpress_subscribers', array( $this, 'subscribers_page' ) );        
-        }
-        
         // PayPal, Patreon, Streamtip
         if( defined( 'TWITCHPRESS_MENU_FINANCE' ) ) {
             add_submenu_page( $this->slug, __('Finance', $this->slug), __('Finance', $this->slug), 'manage_options', 'twitchpress_finance', array( $this, 'finance_page' ) );        
@@ -87,11 +82,7 @@ class TwitchPress_Admin_Menus {
     
     public function data_page() {
         TwitchPress_Admin_Data_Views::output();    
-    }    
-    
-    public function subscribers_page() {
-        TwitchPress_Admin_Subscribers_Views::output();    
-    }  
+    }      
 
     public function finance_page() {
         TwitchPress_Admin_Data_Views::output();    

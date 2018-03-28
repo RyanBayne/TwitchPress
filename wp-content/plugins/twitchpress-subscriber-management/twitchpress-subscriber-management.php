@@ -5,7 +5,7 @@ Version: 1.0.0
 Plugin URI: http://twitchpress.wordpress.com
 Description: Manager your Twitch.tv subscribers using this TwitchPress extension.
 Author: Ryan Bayne
-Author URI: http://twitchpress.wordpress.com
+Author URI: http://ryanbayne.wordpress.com
 Text Domain: twitchpress-subscribers
 Domain Path: /languages
 Copyright: © 2018 Ryan Bayne
@@ -94,7 +94,7 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
         protected function __construct() {
             
             $this->define_constants();
-            
+                        
             // Load files and register actions required before TwitchPress core inits.
             add_action( 'before_twitchpress_init', array( $this, 'pre_twitchpress_init' ) );            
         }
@@ -114,7 +114,7 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
             if ( ! defined( 'TWITCHPRESS_SUBSCRIBERS_DIR_PATH' ) ) { define( 'TWITCHPRESS_SUBSCRIBERS_DIR_PATH', plugin_dir_path( __FILE__ ) ); }
             
             // Constants to show hidden views..
-            if ( ! defined( 'TWITCHPRESS_MENU_SUBSCRIBERS' ) )       { define( 'TWITCHPRESS_MENU_SUBSCRIBERS', true ); }
+            if ( ! defined( 'TWITCHPRESS_MENU_SUBSCRIBERS' ) )     { define( 'TWITCHPRESS_MENU_SUBSCRIBERS', true ); }
         }  
                   
         public function pre_twitchpress_init() {
@@ -137,7 +137,7 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
         public function load_dependencies() {
 
             // Include Classes
-            // i.e. require_once( plugin_basename( 'classes/class-wc-connect-logger.php' ) );
+            require_once( plugin_basename( 'includes/views/class.twitchpress-admin-subscribers-views.php' ) );
             
             // Create Class Objects
             // i.e. $logger                = new WC_Connect_Logger( new WC_Logger() );
@@ -170,8 +170,22 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
             
             // Shortcodes
             add_shortcode( apply_filters( "twitchpress_connect_button_filter", 'twitchpress_connect_button' ), array( $this, 'shortcode_connect_button' ) );                        
+            
+            // Plugin Menu 
+            add_action( 'admin_menu', array( $this, 'add_to_menu' ), 50 );        
         }
 
+        public function add_to_menu() {
+            // Menu items that require extensions.
+            if( defined( 'TWITCHPRESS_MENU_SUBSCRIBERS' ) ) {
+                add_submenu_page( 'twitchpress', __('Subscribers', 'twitchpress'), __('Subscribers', 'twitchpress'), 'manage_options', 'twitchpress_subscribers', array( $this, 'subscribers_page' ) );        
+            }   
+        }
+        
+        public function subscribers_page() {
+            TwitchPress_Admin_Subscribers_Views::output();    
+        }
+                    
         public static function install() {
             
         }

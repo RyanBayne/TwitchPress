@@ -1,23 +1,23 @@
-=== TwitchPress Subscribers Extension ===
+=== TwitchPress Subscriber Management ===
 Contributors: Ryan Bayne
 Donate link: https://www.patreon.com/zypherevolved
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, TwitchPress Boilerplate
+Tags: Twitch, TwitchPress, Twitch.tv, TwitchPress Extension, TwitchPress Subscribers, Subscribers, Subscribers Management
 Requires at least: 4.4
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: 1.0.0
 Minimum core version: 1.6.1
 Requires PHP: 5.6
                         
-Create new TwitchPress extensions using this boilerplate.
+Extend the TwitchPress system with Twitch subscriber management features.
                        
 == Description ==
 
-This boilerplate for creating TwitchPress extensions has two important goals. The
-first is to save developers who are new to Twitchpress, a lot of time. The second
-goal is to guide development towards a solid working extension that fits into
-most (if not all) TwitchPress systems. 
+The early versions of TwitchPress Subscriber Management will offer data views
+for monitoring subscription related activity. The long-term goal is to offer tools
+for mass management of Twitch subscribers in relation to the perks and services offered
+in WordPress. 
 
 = Links =                                                                
 *   <a href="https://twitchpress.wordpress.com" title="">Blog</a>
@@ -31,9 +31,10 @@ most (if not all) TwitchPress systems.
 
 = Features List = 
 
-* Coming Soon
+* Table of subscribers
 
 == Installation ==
+Requires the Channel Solution for Twitch plugin to be installed first. 
 
 1. Method 1: Move folder inside the .zip file into the "wp-content/plugins/" directory if your website is stored locally. Then upload the new plugin folder using your FTP program.
 1. Method 2: Use your hosting control panels file manager to upload the plugin folder (not the .zip, only the folder inside it) to the "wp-content/plugins/" directory.
@@ -42,8 +43,7 @@ most (if not all) TwitchPress systems.
 == Frequently Asked Questions ==
 
 = Can I hire you to customize the plugin for me? =
-Yes you can pay the plugin author to improve the plugin to suit your needs. Many improvements will be done free so
-post your requirements on the plugins forum first. 
+Yes you can pay me to change the plugin to suit your needs and my prices are low because I consider you as a backer, helping to improve the project for everybody.
 
 == Screenshots ==
 
@@ -54,13 +54,12 @@ Translator needed to localize our Channel Solution for Twitch: TwitchPress, and 
 
 == Upgrade Notice ==
 
-No special upgrade instructions this time. Just remember to 
-backup your site files and database.
+Always backup your sites files and database before updating an advanced system of plugins like TwitchPress.
 
 == Changelog ==
 
 = 1.0.0 =
-* DEV - Released ???
+* DEV - Released March 2018
 
 == Version Numbers and Updating ==
 

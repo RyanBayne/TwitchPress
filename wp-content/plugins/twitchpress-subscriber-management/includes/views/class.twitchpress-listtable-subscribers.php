@@ -50,24 +50,21 @@ class TwitchPress_ListTable_Subscribers extends WP_List_Table {
     * @version 1.2
     */
     public function default_items() {
+        global $wpdb;
+        
         $entry_counter = 0;// Acts as temporary ID for data that does not have one. 
               
         $meta_key = 'twitchpress_sub_plan_' . twitchpress_get_main_channels_twitchid();
 
-        global $wpdb;
         $users = $wpdb->get_results( 
-            "SELECT {$wpdb->users}.*, {$wpdb->usermeta}.meta_value as roles FROM {$wpdb->users} 
+            "SELECT {$wpdb->users}.*, {$wpdb->usermeta}.meta_value as subplan FROM {$wpdb->users} 
             LEFT JOIN {$wpdb->usermeta} ON {$wpdb->users}.ID = {$wpdb->usermeta}.user_id
             WHERE {$wpdb->usermeta}.meta_key = '{$meta_key}'
             ORDER BY {$wpdb->users}.display_name"
         );
-
-          echo '<pre>';
-          var_dump($users);
-          echo '</pre>';
-
-
-
+ 
+        if( !$users ){ return array(); }
+        
         // Loop on individual trace entries. 
         foreach( $users as $user ) {
 
@@ -81,13 +78,13 @@ class TwitchPress_ListTable_Subscribers extends WP_List_Table {
             $new_key = key( $this->items );
 
             // Add the items data to the array we just created.
-            $this->items[$new_key]['wpuserid']        = $users[0]->data->ID; 
-            $this->items[$new_key]['user_nicename']   = $users[0]->data->user_nicename; 
-            $this->items[$new_key]['user_registered'] = $users[0]->data->user_registered; 
-            $this->items[$new_key]['user_email']      = $users[0]->data->user_email; 
-            $this->items[$new_key]['user_url']        = $users[0]->data->user_url; 
-            $this->items[$new_key]['display_name']    = $users[0]->data->display_name;  
-            $this->items[$new_key]['role']            = $users[0]->roles[0]; 
+            $this->items[$new_key]['wpuserid']        = $users[0]->ID; 
+            $this->items[$new_key]['user_nicename']   = $users[0]->user_nicename;  
+            $this->items[$new_key]['user_email']      = $users[0]->user_email; 
+            $this->items[$new_key]['user_url']        = $users[0]->user_url; 
+            $this->items[$new_key]['user_registered'] = $users[0]->user_registered;            
+            $this->items[$new_key]['display_name']    = $users[0]->display_name;  
+            $this->items[$new_key]['subplan']         = $users[0]->subplan; 
                         
             $this->items = array_reverse( $this->items );       
         }
@@ -162,8 +159,8 @@ class TwitchPress_ListTable_Subscribers extends WP_List_Table {
 
             break;
 
-            case 'role' :
-                echo $item['role'];   
+            case 'subplan' :
+                echo $item['subplan'];   
             break;
 
         }
@@ -182,7 +179,7 @@ class TwitchPress_ListTable_Subscribers extends WP_List_Table {
             'display_name'    => __( 'Username', 'twitchpress' ),
             'user_email'      => __( 'Email Address', 'twitchpress' ),
             'user_registered' => __( 'Registered', 'twitchpress' ),
-            'role'            => __( 'Role', 'twitchpress' ),
+            'subplan'         => __( 'Subscription Plan', 'twitchpress' ),
         );
             
         return $columns;
