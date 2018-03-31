@@ -122,6 +122,8 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DEV  - Deepbot settings removed - extension on hold pending a strictly localhost only phase.
 * DONE - New Sandbox Mode switch in Advanced settings.  
 * DEV  - Incorrect use of TwitchPress_ListTable_Krakencalls in daily logs file change to TwitchPress_ListTable_Daily_Logs
+* DEV  - New class file created for storing and managing changes history, a log specifically for key change. 
+* DEV  - Subscription sync notices swapped as they were in the wrong places. 
 
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.

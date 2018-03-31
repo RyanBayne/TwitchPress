@@ -59,12 +59,7 @@ class TwitchPress_Systematic_Syncing {
     * @version 2.0
     */
     public function twitchpress_sync_twitchsub_for_mainchannel( $user_id ) {    
-         
-         echo '<pre>';
-         var_dump( __FUNCTION__ );
-         echo '</pre>';
-        
-                            
+            
         // Avoid processing the owner of the main channel (might not be admin with ID 1)
         if( twitchpress_is_current_user_main_channel_owner() ) { return; }
                    
@@ -600,6 +595,16 @@ class TwitchPress_Systematic_Syncing {
                 update_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );
                 update_user_meta( $wp_user_id, 'twitchpress_sub_plan_name_' . $twitch_channel_id, $twitch_sub_response['sub_plan_name'] );
                 
+                // Log change in history. 
+                $history_obj = new TwitchPress_History();
+                $history_obj->new_entry( 
+                    $twitch_sub_response['sub_plan'], 
+                    'None', 
+                    'auto', 
+                    __( 'User started a new Twitch subscription to the main channel.', 'twitchpress' ), 
+                    $wp_user_id 
+                );
+                                    
                 if( $output_notice ) 
                 {
                     TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
@@ -613,32 +618,42 @@ class TwitchPress_Systematic_Syncing {
             {  
                 // User is not a newely detected subscriber and has sub history stored in WP, check for sub plan change. 
                 if( $twitch_sub_response['sub_plan'] !== $local_sub_plan )
-                { 
+                {                     
                     // User has changed their subscription plan and are still subscribing.
                     update_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );                        
                     update_user_meta( $wp_user_id, 'twitchpress_sub_plan_name_' . $twitch_channel_id, $twitch_sub_response['sub_plan'] );    
                     
-                    if( $output_notice ) 
-                    {
-                        TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
-                        __( 'Continuing Subscriber', 'twitchpress' ), 
-                        __( 'Your existing subscription has been confirmed as unchanged and your continued support is greatly appreciated.', 'twitchpress' ) );
-                    }                                       
-                }
-                else
-                {          
+                    // Log change in history. 
+                    $history_obj = new TwitchPress_History();
+                    $history_obj->new_entry( 
+                        $twitch_sub_response['sub_plan'], 
+                        $local_sub_plan, 
+                        'auto', 
+                        __( 'Twitch subscription plan changed.', 'twitchpress' ), 
+                        $wp_user_id 
+                    );    
+                     
                     if( $output_notice ) 
                     {
                         TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
                         __( 'Subscription Updated', 'twitchpress' ), 
                         __( 'Your existing subscription has been updated due to a change in your plan. You\'re continued support is greatly appreciated.', 'twitchpress' ) );
-                    }            
+                    }                                                          
+                }
+                else
+                {  
+                    if( $output_notice ) 
+                    {
+                        TwitchPress_Admin_Notices::add_wordpress_notice( 'usersubsyncnosubresponse', 'success', false, 
+                        __( 'Continuing Subscriber', 'twitchpress' ), 
+                        __( 'Your existing subscription has been confirmed as unchanged and your continued support is greatly appreciated.', 'twitchpress' ) );
+                    }
                 }
 
                 return;
             } 
         }     
-        
+
         do_action( 'twitchpress_user_sub_sync_finished', $wp_user_id ); 
     }   
          

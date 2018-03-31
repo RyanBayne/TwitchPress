@@ -51,7 +51,7 @@ class TwitchPress_DataView_Changes_Subscribers extends WP_List_Table {
         
         $entry_counter = 0;// Acts as temporary ID for data that does not have one. 
               
-        $recent_changes = get_option( 'twitchpress_subscription_changes' );
+        $recent_changes = get_option( 'twitchpress_history' );
         
         $recent_changes = array();
         $recent_changes[] = array( 
@@ -59,7 +59,7 @@ class TwitchPress_DataView_Changes_Subscribers extends WP_List_Table {
             'user_nicename' => 'ZypheREvolved',
             'new_plan'      => '3000',
             'old_plan'      => '1000',
-            'change_time'   => ''
+            'change_time'   => time()
         );
   
         if( !$recent_changes ) { return array(); }
@@ -139,7 +139,7 @@ class TwitchPress_DataView_Changes_Subscribers extends WP_List_Table {
             
             case 'change_time' :
                                        
-                $time_passed = human_time_diff(  strtotime( $item['change_time'] ), time() );
+                $time_passed = human_time_diff(  $item['change_time'] , time() );
                 echo sprintf( __( '%s ago', 'twitchpress' ), $time_passed );         
 
             break;

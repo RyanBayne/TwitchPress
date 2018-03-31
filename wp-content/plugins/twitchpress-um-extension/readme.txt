@@ -67,6 +67,7 @@ No special upgrade instructions this time.
 
 = 1.3.0 NOT RELEASED = 
 * FIX - Role set improved in set_twitch_subscribers_um_role() by ensuring WP user ID is set. 
+* DEV - Entry is made in new history data when a users role changes. 
 
 = 1.2.4 = 
 * DEV - Added new action for twitchpress_manualsubsync which sets role after visitor runs manual Twitch sub data sync. 

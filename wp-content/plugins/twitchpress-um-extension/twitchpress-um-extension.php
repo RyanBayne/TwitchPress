@@ -254,8 +254,8 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
         * 
         * @version 2.3
         */
-        public function set_twitch_subscribers_um_role( $user_id ) {
-            global $ultimatemember, $bugnet;
+        public function set_twitch_subscribers_um_role( $wp_user_id ) {
+            global $bugnet;
        
             $return_value = null;
 
@@ -267,14 +267,9 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             if( 'edit_user_profile' == $filter ) 
             {
                 // This hook actually passes a user object. 
-                $user_id = $user_id->data->ID;                
+                $wp_user_id = $wp_user_id->data->ID;                
             }
-                        
-            $bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - set_twitch_subscribers_um_role() called' ), $option_string ), array(), true, false );                    
-            $bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - set_twitch_subscribers_um_role() called by %s' ), $filter ), array(), true, false );                    
-            $bugnet->log( __FUNCTION__, sprintf( __( 'UM Extension - set_twitch_subscribers_um_role() called by %s' ), $action ), array(), true, false );                    
-                             
-            
+                              
             /*  Other filters and actions that call this method. 
                 1. personal_options_update
                 2. edit_user_profile_update
@@ -287,34 +282,34 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             $channel_id = twitchpress_get_main_channels_twitchid();
             
             // Avoid processing the main account or administrators so they are never downgraded. 
-            $user_info = get_userdata( $user_id );
-            if( $user_id === 1 || user_can( $user_id, 'administrator' ) ) { return; }
+            $user_info = get_userdata( $wp_user_id );
+            if( $wp_user_id === 1 || user_can( $wp_user_id, 'administrator' ) ) { return; }
                         
             // Get subscription plan from user meta for the giving channel (based on channel ID). 
-            $sub_plan = get_user_meta( $user_id, 'twitchpress_sub_plan_' . $channel_id, true );
+            $sub_plan = get_user_meta( $wp_user_id, 'twitchpress_sub_plan_' . $channel_id, true );
         
             // Get possible current UM role. 
-            $current_role = get_user_meta( $user_id, 'role', true );
+            $current_role = get_user_meta( $wp_user_id, 'role', true );
             
             // Do nothing if the users UM role is admin (it is not administrator for UM)
             if( $current_role == 'admin' || $current_role == 'administrator' ) { return; }
-            $sub_plan = '1000';
+
             if( !$sub_plan ) 
             { 
                 // User has no Twitch subscription, so apply default (none) role. 
-                $role = get_option( 'twitchpress_um_subtorole_none', false );
+                $next_role = get_option( 'twitchpress_um_subtorole_none', false );
             }
             else
             {
                 $option_string = 'twitchpress_um_subtorole_' . $sub_plan;
                 
                 // Get the UM role paired with the $sub_plan
-                $role = get_option( $option_string, false );
+                $next_role = get_option( $option_string, false );
                                   
-                if( !$role )         
+                if( !$next_role )         
                 {   
                     // UM settings have not been setup or there is somehow a mismatch (that should never happen though).
-                    $role = get_option( 'twitchpress_um_subtorole_none', false );
+                    $next_role = get_option( 'twitchpress_um_subtorole_none', false );
                 }
                 else
                 {
@@ -322,7 +317,13 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
                 }              
             }
  
-            update_user_meta( $user_id, 'role', $role );           
+            // Log any change in history. 
+            if( $current_role !== $next_role ) {
+                $history_obj = new TwitchPress_History();
+                $history_obj->new_entry( $next_role, $current_role, 'auto', __( '', 'twitchpress-um' ), $wp_user_id );    
+            }
+            
+            update_user_meta( $wp_user_id, 'role', $ongoing_role );           
         }
         
         /**

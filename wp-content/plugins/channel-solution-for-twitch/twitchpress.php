@@ -233,6 +233,7 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-feeds.php' );
         include_once( 'includes/functions.twitchpress-shortcodes.php' );
         include_once( 'includes/class.twitchpress-sync.php' );
+        include_once( 'includes/class.twitchpress-history.php' );
         
         // Load classes only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {
@@ -418,4 +419,8 @@ if( !function_exists( 'TwitchPress' ) ) {
 
     // Global for backwards compatibility.
     $GLOBALS['twitchpress'] = TwitchPress();
+    // ["version"]=> string(5) "2.0.0" 
+    // ["min_wp_version"]=> string(3) "4.7" 
+    // ["session"]=> NULL ["bugnet"]=> NULL 
+    // ["available_languages"]=> array(0) { } }  
 }
