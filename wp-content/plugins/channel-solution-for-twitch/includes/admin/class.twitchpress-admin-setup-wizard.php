@@ -842,6 +842,12 @@ class TwitchPress_Admin_Setup_Wizard {
                 'repo-slug'   => 'twitchpress-embed-everything',
                 'source'        => 'remote'
             ),  
+            'twitchpress-subscriber-management' => array(
+                'name'        => __( 'TwitchPress Subscriber Management', 'twitchpress' ),
+                'description' => __( 'Designed for streamers offering a Twitch subscription program on their channel.', 'twitchpress' ),
+                'repo-slug'   => 'twitchpress-subscriber-management',
+                'source'        => 'remote'
+            ),  
             
             /*
             'stripe' => array(

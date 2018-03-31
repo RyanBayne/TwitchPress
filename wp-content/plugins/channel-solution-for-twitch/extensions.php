@@ -11,8 +11,8 @@
 function twitchpress_extensions_array() {
 
     return array(
-        'official'     => twitchpress_extensions_official(),
-        'unofficial'     => twitchpress_extensions_unofficial(),
+        'official'   => twitchpress_extensions_official(),
+        'unofficial' => twitchpress_extensions_unofficial(),
     );   
      
 }

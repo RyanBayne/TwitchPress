@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="wrap twitchpress">
     <h1>
         <?php _e( 'TwitchPress Settings', 'twitchpress' ); ?>
+        <?php if( get_option( 'twitchress_sandbox_mode_switch' ) == 'yes' ) { _e( ' - Sandbox Mode Active', 'twitchpress' ); }?>
     </h1>
     <form method="<?php echo esc_attr( apply_filters( 'twitchpress_settings_form_method_tab_' . $current_tab, 'post' ) ); ?>" id="mainform" action="" enctype="multipart/form-data">
         <nav class="nav-tab-wrapper woo-nav-tab-wrapper">

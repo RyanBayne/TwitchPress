@@ -233,6 +233,7 @@ final class WordPressTwitchPress {
         include_once( 'includes/class.twitchpress-feeds.php' );
         include_once( 'includes/functions.twitchpress-shortcodes.php' );
         include_once( 'includes/class.twitchpress-sync.php' );
+        include_once( 'includes/class.twitchpress-history.php' );
         
         // Load classes only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {
@@ -258,7 +259,9 @@ final class WordPressTwitchPress {
         register_deactivation_hook( __FILE__, array( 'TwitchPress_Deactivate', 'deactivate' ) );
 
         add_action( 'init', array( $this, 'init' ), 0 );
-        add_action( 'init', array( $this, 'output_errors' ), 1 );    
+        add_action( 'init', array( $this, 'output_errors' ), 1 );
+        add_action( 'init', array( $this, 'output_actions' ), 1 );            
+        add_action( 'init', array( $this, 'output_filters' ), 1 );        
     }
     
     public function init() {
@@ -325,17 +328,54 @@ final class WordPressTwitchPress {
         add_action( 'shutdown', array( $this, 'show_errors' ), 1 );
         add_action( 'shutdown', array( $this, 'print_errors' ), 1 );                    
     }
+   
+    public function output_actions() {
+        if( 'yes' !== get_option( 'twitchpress_display_actions') ) { return; }
+                                                                       
+        add_action( 'shutdown', array( $this, 'show_actions' ), 1 );                                                               
+    }
+        
+    public function output_filters() {
+        if( 'yes' !== get_option( 'twitchpress_display_filters') ) { return; }
+                                                                       
+        add_action( 'shutdown', array( $this, 'show_filters' ), 1 );                                                               
+    }
 
     public static function show_errors() {
-        global $wpdb;   
-        _e( '<h1>TwitchPress Error Dump</h1>', 'twitchpress' );
-        $wpdb->show_errors();   
+        global $wpdb, $bugnet;
+        echo '<div id="bugnet-wperror-dump">';       
+            _e( '<h1>BugNet: Possible Errors</h1>', 'twitchpress' );
+            $wpdb->show_errors( true );
+        echo '</div>';   
     }
     
     public static function print_errors() {
         global $wpdb;       
         $wpdb->print_error();    
+    }    
+    
+    public function show_actions() {
+        global $wp_actions;
+
+        echo '<div id="bugnet-wpactions-dump">';
+        _e( '<h1>BugNet: WordPress Actions</h1>', 'twitchpress' );
+        echo '<pre>';
+        print_r( $wp_actions );
+        echo '</pre>';
+        echo '</div>';  
     }
+ 
+    public function show_filters() {
+        global $wp_filter;
+
+        echo '<div id="bugnet-wpfilters-dump">';
+        _e( '<h1>BugNet: WordPress Filters</h1>', 'twitchpress' );
+        echo '<pre>';
+        //print_r( $wp_filter['admin_bar_menu'] );
+        print_r( $wp_filter );
+        echo '</pre>';
+        echo '</div>';   
+    }    
         
     /**
      * Get the plugin url.
@@ -379,4 +419,8 @@ if( !function_exists( 'TwitchPress' ) ) {
 
     // Global for backwards compatibility.
     $GLOBALS['twitchpress'] = TwitchPress();
+    // ["version"]=> string(5) "2.0.0" 
+    // ["min_wp_version"]=> string(3) "4.7" 
+    // ["session"]=> NULL ["bugnet"]=> NULL 
+    // ["available_languages"]=> array(0) { } }  
 }

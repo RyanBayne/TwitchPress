@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class TwitchPress_Logger {
+class TwitchPress_Logger extends WordPressTwitchPress {
 
     /**
      * Stores open file _handles.

@@ -329,7 +329,7 @@ class TWITCHPRESS_All_API_Streamlabs {
     * @version 1.23
     */
     public function update_user_code( $wp_user_id, $code ) {
-        return update_user_meta( $wp_user_id, 'streamlabs_code', $code );        
+        return update_user_meta( $wp_user_id, 'twitchpress_streamlabs_code', $code );        
     }
     
     /**
@@ -342,7 +342,7 @@ class TWITCHPRESS_All_API_Streamlabs {
     * @version 1.23
     */
     public function update_user_token( $wp_user_id, $token ) {
-        return update_user_meta( $wp_user_id, 'streamlabs_token', $token );        
+        return update_user_meta( $wp_user_id, 'twitchpress_streamlabs_token', $token );        
     }    
     
     /**

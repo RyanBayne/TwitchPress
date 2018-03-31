@@ -2,11 +2,11 @@
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /twitchpress/branches/beta/
+RewriteBase /twitchpress/branches/Subscribers/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /twitchpress/branches/beta/index.php [L]
+RewriteRule . /twitchpress/branches/Subscribers/index.php [L]
 </IfModule>
 
 # END WordPress

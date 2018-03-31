@@ -92,6 +92,7 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 == Changelog ==
 
 = 2.0.0 NOT RELEASED = 
+* NEW  - Subscribers extension support added, subscribers extension also in development. 
 * DEV  - Constant TWITCHPRESS_API_NAME replaced with TWITCHPRESS_API_NAME. 
 * DEV  - Twitch API files moved to new "libraries/twitch" directory.
 * DEV  - Twitch API files renamed, "kraken" replaced with "twitch" for easier switching between versions.
@@ -118,8 +119,11 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DEV  - $twitch_wperror removed from the Twitch API library as it is not in use.
 * DEV  - Streamlabs API endpoints added to All-API library.
 * DEV  - Removed $twitch_call_id from Twitch API class as it is not in use.
-* DEV  - Deepbot settings removed - extension on hold pending a strictly localhost only phase. 
-
+* DEV  - Deepbot settings removed - extension on hold pending a strictly localhost only phase.
+* DONE - New Sandbox Mode switch in Advanced settings.  
+* DEV  - Incorrect use of TwitchPress_ListTable_Krakencalls in daily logs file change to TwitchPress_ListTable_Daily_Logs
+* DEV  - New class file created for storing and managing changes history, a log specifically for key change. 
+* DEV  - Subscription sync notices swapped as they were in the wrong places. 
 
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.
