@@ -217,8 +217,11 @@ final class WordPressTwitchPress {
  
         // SPL Autoloader Class
         include_once( 'includes/class.twitchpress-autoloader.php' );
-                
-        // Load core files.
+        
+        // Load functions.         
+        include_once( 'includes/functions.twitchpress-frontend-notices.php' );
+        
+        // Load class and libraries.
         include_once( 'includes/libraries/class.async-request.php' );
         include_once( 'includes/libraries/class.background-process.php' );            
         include_once( 'includes/class.twitchpress-post-types.php' );                
@@ -234,6 +237,12 @@ final class WordPressTwitchPress {
         include_once( 'includes/functions.twitchpress-shortcodes.php' );
         include_once( 'includes/class.twitchpress-sync.php' );
         include_once( 'includes/class.twitchpress-history.php' );
+        
+        // Create Objects 
+        $this->sync = new TwitchPress_Systematic_Syncing();
+        
+        // Initialize services.
+        $this->sync->init();
         
         // Load classes only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {

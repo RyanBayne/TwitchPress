@@ -752,6 +752,11 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
             
             // Get the visitors Twitch details.
             $twitch_user = $kraken->getUserObject_Authd( $token_array['access_token'], $_GET['code'] );
+            if( is_wp_error( $twitch_user ) || $twitch_user == false ) { 
+                $this->loginerror( __( 'Scope Permission Missing: user_read'), 
+                                   __( 'Login by Twitch requires access to your email address using the "user_read" permission. This site is not setup to request it. Please report this problem to the site owner.', 'twitchpress-login' ),
+                                   null ); 
+            }
             
             // ['email] is required. 
             if( !isset( $twitch_user['email'] ) ) {        

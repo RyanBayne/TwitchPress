@@ -73,13 +73,13 @@ class TWITCHPRESS_Twitch_API_Calls extends TWITCHPRESS_Twitch_API {
      * 
      * @return $userObject - [array] Returned object for the query
      * 
-     * @version 5.7
+     * @version 5.8
      */ 
     public function getUserObject_Authd( $token, $code ){
         
         // Ensure required scope is permitted else we return the WP_Error confirm_scope() generates.
         $confirm_scope = $this->confirm_scope( 'user_read', 'channel', __FUNCTION__ );
-        if( is_wp_error( $confirm_scope) ) { return $confirm_scope; }
+        if( is_wp_error( $confirm_scope) || $confirm_scope == false ) { return $confirm_scope; }
          
         $url = 'https://api.twitch.tv/kraken/user';
         $get = array( 'oauth_token' => $token, 'client_id' => $this->twitch_client_id );

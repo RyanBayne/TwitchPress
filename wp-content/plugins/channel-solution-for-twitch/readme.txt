@@ -124,6 +124,11 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DEV  - Incorrect use of TwitchPress_ListTable_Krakencalls in daily logs file change to TwitchPress_ListTable_Daily_Logs
 * DEV  - New class file created for storing and managing changes history, a log specifically for key change. 
 * DEV  - Subscription sync notices swapped as they were in the wrong places. 
+* DEV  - confirm_scope() now returns boolean false instead of the results of error logging. 
+* DEV  - getUserObject_Authd() now checks for boolean false on result from confirm_scope()
+* DONE - Improved the notice that shows when the user_read permission for visitors is not ready and someone attempts to login using TwitchPress Login Extension.  
+* DEV  - Sync class object now being added to the core object.
+* DEV  - Sync class init now done in core plugins main class. 
 
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.

@@ -49,7 +49,7 @@ class TwitchPress_Admin_Notices {
         add_action( 'wp_loaded', array( __CLASS__, 'hide_notices' ) );
         add_action( 'shutdown', array( __CLASS__, 'store_notices' ) );
    
-        // Display administrator (staff) only notices.
+        // When displaying administrator (staff) only notices.
         if ( current_user_can( 'manage_twitchpress' ) ) {
             add_action( 'admin_print_styles', array( __CLASS__, 'add_notices' ) );
         }

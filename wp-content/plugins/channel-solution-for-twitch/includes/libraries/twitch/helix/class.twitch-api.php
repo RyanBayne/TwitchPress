@@ -1846,14 +1846,15 @@ class TWITCHPRESS_Twitch_API {
     * @param mixed $side
     * @param mixed $function
     * 
-    * @version 1.2
+    * @version 1.3
     */
     public function confirm_scope( $scope, $side, $function ) {
         global $bugnet;
         
         // Confirm $scope is a real scope. 
         if( !in_array( $scope, $this->twitch_scopes ) ) {
-            return $bugnet->log_error( 'twitchpressinvalidscope', sprintf( __( 'A Kraken5 call is using an invalid scope. See %s()', 'twitchpress' ), $function ), true );
+            $bugnet->log_error( 'twitchpressinvalidscope', sprintf( __( 'A Kraken5 call is using an invalid scope. See %s()', 'twitchpress' ), $function ), true );
+            return false;
         }    
         
         // Check applicable $side array scope.

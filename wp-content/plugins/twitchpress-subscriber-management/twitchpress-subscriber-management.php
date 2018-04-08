@@ -133,12 +133,15 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
         
         /**
          * Load all plugin dependencies.
+         * 
+         * @version 1.0
          */
         public function load_dependencies() {
 
             // Include Classes
             require_once( plugin_basename( 'includes/views/class.twitchpress-admin-subscribers-views.php' ) );
-            
+            require_once( plugin_basename( 'includes/functions.twitchpress-subman-shortcodes.php' ) );
+
             // Create Class Objects
             // i.e. $logger                = new WC_Connect_Logger( new WC_Logger() );
             

@@ -253,6 +253,8 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
         * @param mixed $api_response
         * 
         * @version 2.3
+        * 
+        * @deprecated use none class function in functions.twitchpress-um-core.php.
         */
         public function set_twitch_subscribers_um_role( $wp_user_id ) {
             global $bugnet;
@@ -282,7 +284,6 @@ if ( ! class_exists( 'TwitchPress_UM' ) ) :
             $channel_id = twitchpress_get_main_channels_twitchid();
             
             // Avoid processing the main account or administrators so they are never downgraded. 
-            $user_info = get_userdata( $wp_user_id );
             if( $wp_user_id === 1 || user_can( $wp_user_id, 'administrator' ) ) { return; }
                         
             // Get subscription plan from user meta for the giving channel (based on channel ID). 

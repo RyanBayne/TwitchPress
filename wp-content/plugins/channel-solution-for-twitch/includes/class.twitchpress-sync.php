@@ -1,5 +1,4 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
@@ -1127,5 +1126,5 @@ class TwitchPress_Systematic_Syncing {
 endif;
 
 // Init hooks when this file is included. 
-$TwitchPress_Systematic_Syncing = new TwitchPress_Systematic_Syncing();
-$TwitchPress_Systematic_Syncing->init();
+//$TwitchPress_Systematic_Syncing = new TwitchPress_Systematic_Syncing();
+//$TwitchPress_Systematic_Syncing->init();
