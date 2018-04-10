@@ -218,9 +218,6 @@ final class WordPressTwitchPress {
         // SPL Autoloader Class
         include_once( 'includes/class.twitchpress-autoloader.php' );
         
-        // Load functions.         
-        include_once( 'includes/functions.twitchpress-frontend-notices.php' );
-        
         // Load class and libraries.
         include_once( 'includes/libraries/class.async-request.php' );
         include_once( 'includes/libraries/class.background-process.php' );            
@@ -234,17 +231,17 @@ final class WordPressTwitchPress {
         include_once( 'includes/toolbars/class.twitchpress-toolbars.php' );        
         include_once( 'includes/class.twitchpress-listener.php' );
         include_once( 'includes/class.twitchpress-feeds.php' );
-        include_once( 'includes/functions.twitchpress-shortcodes.php' );
         include_once( 'includes/class.twitchpress-sync.php' );
         include_once( 'includes/class.twitchpress-history.php' );
         
-        // Create Objects 
-        $this->sync = new TwitchPress_Systematic_Syncing();
-        
+        // Create Objects (new approach April 2018)
+        $this->sync           = new TwitchPress_Systematic_Syncing();
+        $this->public_notices = new TwitchPress_Public_Notices();
+                     
         // Initialize services.
         $this->sync->init();
         
-        // Load classes only required when logged into the administration side.     
+        // Load files only required when logged into the administration side.     
         if ( twitchpress_is_request( 'admin' ) ) {
             include_once( 'includes/admin/class.twitchpress-admin.php' );
             include_once( 'includes/admin/class.twitchpress-admin-deactivate.php' );
@@ -304,7 +301,10 @@ final class WordPressTwitchPress {
      * Include required frontend files.
      */
     public function frontend_includes() {
-        include_once( 'includes/class.twitchpress-frontend-scripts.php' );  
+        include_once( plugin_basename( 'includes/class.twitchpress-frontend-scripts.php' ) );  
+        include_once( plugin_basename( 'includes/functions.twitchpress-frontend.php' ) );
+        include_once( plugin_basename( 'includes/class.twitchpress-public-notices.php' ) );        
+        include_once( plugin_basename( 'shortcodes.php' ) );                
     }
 
     /**

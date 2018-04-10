@@ -58,6 +58,9 @@ Always backup your sites files and database before updating an advanced system o
 
 == Changelog ==
 
+= 1.2.0 NOT RELEASED = 
+* FIX - Removed invalid line "shortcode_connect_button" which was meant to be renamed. Probably cause of connect to Twitch button fault reported in Discord. 
+
 = 1.0.0 =
 * DEV - Released March 2018
 

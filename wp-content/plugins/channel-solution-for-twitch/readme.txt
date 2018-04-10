@@ -129,6 +129,7 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DONE - Improved the notice that shows when the user_read permission for visitors is not ready and someone attempts to login using TwitchPress Login Extension.  
 * DEV  - Sync class object now being added to the core object.
 * DEV  - Sync class init now done in core plugins main class. 
+* DEV  - New message.php offers notice title and sentence/paragraph management.
 
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.

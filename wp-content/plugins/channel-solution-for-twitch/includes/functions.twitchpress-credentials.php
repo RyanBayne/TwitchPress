@@ -10,6 +10,9 @@
 * solution and depreciate it or move it to here. 
 */
 
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
+
 ######################################################################
 #                                                                    #
 #                              USER                                  #

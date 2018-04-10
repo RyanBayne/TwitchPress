@@ -61,8 +61,8 @@ $shortcode_tags = array();
  *                           itself (`$shortcode_tag`), in that order.
  */
 function add_shortcode( $tag, $callback ) {
-	global $shortcode_tags;
-
+	global $shortcode_tags; 
+                                              
 	if ( '' == trim( $tag ) ) {
 		$message = __( 'Invalid shortcode name: Empty name given.' );
 		_doing_it_wrong( __FUNCTION__, $message, '4.4.0' );
@@ -90,7 +90,7 @@ function add_shortcode( $tag, $callback ) {
  */
 function remove_shortcode($tag) {
 	global $shortcode_tags;
-
+                  
 	unset($shortcode_tags[$tag]);
 }
 
@@ -107,7 +107,7 @@ function remove_shortcode($tag) {
  */
 function remove_all_shortcodes() {
 	global $shortcode_tags;
-
+                    
 	$shortcode_tags = array();
 }
 

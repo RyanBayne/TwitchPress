@@ -1,7 +1,7 @@
 <?php 
 /*
 Plugin Name: TwitchPress Subscriber Management
-Version: 1.0.0
+Version: 1.2.0
 Plugin URI: http://twitchpress.wordpress.com
 Description: Manager your Twitch.tv subscribers using this TwitchPress extension.
 Author: Ryan Bayne
@@ -42,7 +42,7 @@ if ( !in_array( 'channel-solution-for-twitch/twitchpress.php', apply_filters( 'a
 /**
  * Required minimums and constants
  */
-define( 'TWITCHPRESS_SUBSCRIBERS_VERSION', '1.0.0' );
+define( 'TWITCHPRESS_SUBSCRIBERS_VERSION', '1.2.0' );
 define( 'TWITCHPRESS_SUBSCRIBERS_MIN_PHP_VER', '5.6.0' );
 define( 'TWITCHPRESS_SUBSCRIBERS_MIN_TP_VER', '1.6.1' );
 define( 'TWITCHPRESS_SUBSCRIBERS_MAIN_FILE', __FILE__ );
@@ -140,7 +140,6 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
 
             // Include Classes
             require_once( plugin_basename( 'includes/views/class.twitchpress-admin-subscribers-views.php' ) );
-            require_once( plugin_basename( 'includes/functions.twitchpress-subman-shortcodes.php' ) );
 
             // Create Class Objects
             // i.e. $logger                = new WC_Connect_Logger( new WC_Logger() );
@@ -168,12 +167,9 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
             add_filter( 'twitchpress_get_settings_users', array( $this, 'settings_add_options_users' ), 50 );
             add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
             add_filter( 'twitchpress_update_system_scopes_status', array( $this, 'update_system_scopes_status' ), 1, 1 );
-                                                   
+                                      
             // Actions
-            
-            // Shortcodes
-            add_shortcode( apply_filters( "twitchpress_connect_button_filter", 'twitchpress_connect_button' ), array( $this, 'shortcode_connect_button' ) );                        
-            
+
             // Plugin Menu 
             add_action( 'admin_menu', array( $this, 'add_to_menu' ), 50 );        
         }
@@ -184,7 +180,7 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
                 add_submenu_page( 'twitchpress', __('Subscribers', 'twitchpress'), __('Subscribers', 'twitchpress'), 'manage_options', 'twitchpress_subscribers', array( $this, 'subscribers_page' ) );        
             }   
         }
-        
+       
         public function subscribers_page() {
             TwitchPress_Admin_Subscribers_Views::output();    
         }
@@ -244,15 +240,6 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
             $scopes['public']['twitchpress-extension-boilerplate']['optional'] = array(); 
                         
             return array_merge_recursive( $filtered_array, $scopes );      
-        }
-                
-        /**
-        * Styles for login page hooked by login_enqueue_scripts
-        * 
-        * @version 1.0
-        */
-        public function twitchpress_login_styles() {
-
         }
         
         /**
