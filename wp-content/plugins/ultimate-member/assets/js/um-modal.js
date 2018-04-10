@@ -30,10 +30,9 @@ jQuery(document).ready(function() {
 		um_modal_responsive();
 		
 		jQuery.ajax({
-			url: um_scripts.ajaxurl,
+			url: um_scripts.remove_file,
 			type: 'post',
 			data: {
-				action: 'ultimatemember_remove_file',
 				src: src
 			}
 		});
@@ -60,10 +59,9 @@ jQuery(document).ready(function() {
 		um_modal_responsive();
 		
 		jQuery.ajax({
-			url: um_scripts.ajaxurl,
+			url: um_scripts.remove_file,
 			type: 'post',
 			data: {
-				action: 'ultimatemember_remove_file',
 				src: src
 			}
 		});
@@ -71,7 +69,7 @@ jQuery(document).ready(function() {
 		return false;
 	});
 	
-	jQuery(document).on('click', '.um-finish-upload.file', function(){
+	jQuery(document).on('click', '.um-finish-upload.file:not(.disabled)', function(){
 		
 		var key = jQuery(this).attr('data-key');
 		var preview = jQuery(this).parents('.um-modal-body').find('.um-single-file-preview').html();
@@ -85,7 +83,7 @@ jQuery(document).ready(function() {
 		jQuery('.um-single-file-preview[data-key='+key+']').parents('.um-field').find('input[type=hidden]').val( jQuery('.um-single-file-preview[data-key='+key+']').parents('.um-field').find('.um-single-fileinfo a').attr('href') );
 	});
 
-	jQuery(document).on('click', '.um-finish-upload.image', function(){
+	jQuery(document).on('click', '.um-finish-upload.image:not(.disabled)', function(){
 		
 		var elem = jQuery(this);
 		var key = jQuery(this).attr('data-key');
@@ -104,10 +102,9 @@ jQuery(document).ready(function() {
 			jQuery(this).html( jQuery(this).attr('data-processing') ).addClass('disabled');
 
 			jQuery.ajax({
-				url: um_scripts.ajaxurl,
+				url: um_scripts.resize_image,
 				type: 'POST',
 				data: {
-					action: 'ultimatemember_resize_image',
 					src : src,
 					coord : coord,
 					user_id : user_id,

@@ -121,12 +121,12 @@ class TwitchPress_UM {
     * @version 1.0
     */
     public function pre_twitchpress_init() {
-        $this->load_dependencies();
+        $this->load_global_dependencies();
         
         /**
             Do things here required before TwitchPress core plugin does init. 
         */
-        
+                
         add_action( 'twitchpress_init', array( $this, 'after_twitchpress_init' ) );
     }
 
@@ -135,7 +135,7 @@ class TwitchPress_UM {
     * 
     * @version 1.0
     */
-    public function after_twitchpress_init() {
+    public function after_twitchpress_init() {   
         $this->attach_hooks();                   
     }
 
@@ -144,7 +144,7 @@ class TwitchPress_UM {
      * 
      * @version 1.0
      */
-    public function load_dependencies() {
+    public function load_global_dependencies() {
 
         include_once( plugin_basename( 'functions.twitchpress-um-core.php' ) );
         require_once( plugin_basename( 'includes/shortcodes/umrole-update-button.php' ) );
@@ -154,7 +154,7 @@ class TwitchPress_UM {
     }
     
     /**
-    * Call by add_action( 'admin_init ) in load_dependencies().
+    * Call by add_action( 'admin_init ) in load_global_dependencies().
     * 
     * @version 1.0
     */
@@ -168,14 +168,14 @@ class TwitchPress_UM {
      * @version 2.0
      */
     private function attach_hooks() {
-
+                               
         // Filters
         add_filter( 'twitchpress_get_sections_users', array( $this, 'settings_add_section_users' ), 50 );
         add_filter( 'twitchpress_get_settings_users', array( $this, 'settings_add_options_users' ), 50 );
         add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) ); 
-        add_filter( 'twitchpress_update_system_scopes_status', array( $this, 'update_system_scopes_status' ), 1, 1 ); 
-        add_filter( 'twitchpress_filter_public_notices_array', array( $this, 'public_notices_array' ), 1, 1 ); 
-            
+        add_filter( 'twitchpress_update_system_scopes_status', array( $this, 'update_system_scopes_status' ), 1, 1 );  
+        add_filter( 'twitchpress_filter_public_notices_array', array( $this, 'public_notices_array' ), 1, 1 );
+           
         // Decide a users role when the sub data has been updated. 
         add_action( 'twitchpress_user_sub_sync_finished', array( $this, 'set_twitch_subscribers_um_role' ), 2, 1 );// Passes user ID.
                                 
@@ -480,25 +480,17 @@ class TwitchPress_UM {
     */
     public function public_notices_array( $notices_pre_filter ) {
         $messages_array = array();
-        
-        /* 0 = success, 1 = warning, 2 = error, 3 = info */
+  
+        // 0 = success, 1 = warning, 2 = error, 3 = info
         $messages_array['umextension'][0] = array( 'type' => 2, 'title' => __( 'No Subscription Plan', 'twitchpress' ), 'info' => __( 'You do not have a subscription plan for this sites main Twitch.tv channel. Your UM role has been set to the default.', 'twitchpress' ) );
         $messages_array['umextension'][1] = array( 'type' => 3, 'title' => __( 'Hello Administrator', 'twitchpress' ), 'info' => __( 'Your request must be rejected because you are an administrator. We cannot risk reducing your access.', 'twitchpress' ) );
         $messages_array['umextension'][2] = array( 'type' => 2, 'title' => __( 'Ultimate Member Role Invalid', 'twitchpress' ), 'info' => __( 'Sorry, the role value for subscription plan [%s] is invalid. This needs to be corrected in TwitchPress settings.', 'twitchpress' ) );
         $messages_array['umextension'][3] = array( 'type' => 0, 'title' => __( 'Ultimate Member Role Updated', 'twitchpress' ), 'info' => __( 'Your community role is now %s because your subscription plan is %s.', 'twitchpress' ) );
-
         
+        $notices_post_filter = array_merge( $notices_pre_filter, $messages_array );
         
-sprintf( __( 'Sorry, the role value for subscription plan [%s] is invalid. This needs to be corrected in TwitchPress settings.', 'twitchpress-subman' ), $sub_plan ) 
-
-
-sprintf( __( 'Your community role is now %s because your subscription plan is %s.', 'twitchpress-subman' ), $next_role, $sub_plan ) 
-
-           
-           
-           
         // Apply filtering by extensions which need to add more messages to the array. 
-        return $messages_array;  
+        return $notices_post_filter;  
     }                                                                 
 }
     

@@ -130,6 +130,7 @@ New setup step added. Please open the Help tab and go to the Installation sectio
 * DEV  - Sync class object now being added to the core object.
 * DEV  - Sync class init now done in core plugins main class. 
 * DEV  - New message.php offers notice title and sentence/paragraph management.
+* DEV  = Renamed load_dependencies() in core and extensions to load_global_dependencies(). 
 
 = 1.7.4 = 
 * DONE - Sync extension has been merged into this plugin.

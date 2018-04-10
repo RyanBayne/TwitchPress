@@ -96,7 +96,7 @@ function twitchpress_subman_um_role_sync() {
             
             update_user_meta( $wp_user_id, 'role', $next_role );
                                 
-            twitchpress_shortcode_procedure_redirect( 2, );
+            twitchpress_shortcode_procedure_redirect( 2, array( $sub_plan ) );
             exit;
         }
 
@@ -112,7 +112,7 @@ function twitchpress_subman_um_role_sync() {
         
         update_user_meta( $wp_user_id, 'role', $next_role );
                             
-        twitchpress_shortcode_procedure_redirect( 3 );
+        twitchpress_shortcode_procedure_redirect( 3, array( $next_role, $sub_plan ) );
         exit;      
     }    
 }
@@ -126,10 +126,11 @@ function twitchpress_subman_um_role_sync() {
 * 
 * @version 1.0
 */
-function twitchpress_shortcode_procedure_redirect( $message_key, $values_array = array(), $message_source = 'umextension' ) {
+function twitchpress_shortcode_procedure_redirect( $message_key, $title_values_array = array(), $info_values_array = array(), $message_source = 'umextension' ) {
     
-    store values array in shortlife transient and use to parse notice text
-    $values_array
+    // Store values array in shortlife transient and use when generating output.
+    set_transient( 'twitchpress_shortcode_' . $message_source . $message_key, 
+        array( 'title_values' => $title_values_array, 'info_values' => $info_values_array ), 120 );
     
     wp_redirect( add_query_arg( array(
         'twitchpress_notice' => time(),

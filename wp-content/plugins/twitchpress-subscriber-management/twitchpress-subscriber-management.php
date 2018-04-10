@@ -118,7 +118,7 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
         }  
                   
         public function pre_twitchpress_init() {
-            $this->load_dependencies();
+            $this->load_global_dependencies();
             
             /**
                 Do things here required before TwitchPress core plugin does init. 
@@ -136,7 +136,7 @@ if ( ! class_exists( 'TwitchPress_Subscribers' ) ) :
          * 
          * @version 1.0
          */
-        public function load_dependencies() {
+        public function load_global_dependencies() {
 
             // Include Classes
             require_once( plugin_basename( 'includes/views/class.twitchpress-admin-subscribers-views.php' ) );

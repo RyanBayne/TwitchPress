@@ -20,7 +20,7 @@ class TwitchPress_Login_Shortcodes {
      */
     public static function init() {
         $shortcodes = array(
-            'twitchpress_loginform'                    => __CLASS__ . '::loginform',
+            'twitchpress_loginform' => __CLASS__ . '::loginform',
         );
 
         foreach ( $shortcodes as $shortcode => $function ) {

@@ -107,7 +107,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
         }
         
         public function pre_twitchpress_init() {
-            $this->load_dependencies();
+            $this->load_global_dependencies();
             
             /**
                 Do things here required before TwitchPress core plugin does init. 
@@ -123,7 +123,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
         /**
          * Load all plugin dependencies.
          */
-        public function load_dependencies() {
+        public function load_global_dependencies() {
 
             // Include Classes
             // i.e. require_once( plugin_basename( 'classes/class-wc-connect-logger.php' ) );
@@ -507,7 +507,7 @@ if ( ! class_exists( 'TwitchPress_Login' ) ) :
         */
         public function shortcode_connect_button( $atts ) {
             global $wp, $wp_query;
-                 
+                       
             if( is_user_logged_in() ) {
                 return;
             }
