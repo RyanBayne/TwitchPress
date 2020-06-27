@@ -1,0 +1,36 @@
+/* Improved "Connect with Twitch" style 2 added July 2019 */
+#twitchpress_connect_button .ui.twitch.button {
+    background-color: #6441A5;
+    color: #FFF;
+    box-shadow: 0 0 0 0 rgba(34, 36, 38, .15) inset
+}
+
+#twitchpress_connect_button .ui.twitch.button:hover {
+    background-color: #3B2064
+}
+
+/* Original "Connect with Twitch" link/button shortcode */
+div.twitchpress-connect-button-one {
+    background: none repeat scroll 0 0 #6441A5;
+    border-color: #0074A2;
+    box-shadow: 0 1px 0 rgba(120, 200, 230, 0.5) inset, 0 1px 0 rgba(0, 0, 0, 0.15);
+    color: #FFFFFF;
+    text-decoration: none;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 3px;
+    padding: 4px;
+    height: 38px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+div.twitchpress-connect-button-one a {
+    color: #FFFFFF;
+    line-height: 27px;
+    font-weight: bold;
+}
+
+div.twitchpress-connect-button-one a:hover {
+    color: #CCCCCC;
+}

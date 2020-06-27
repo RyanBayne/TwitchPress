@@ -1,0 +1,4 @@
+======================= BugNet for WordPress - Changes =========================
+
+=================================== 2.0 BETA====================================
+* BugNet re-built from scratch to make database storage primary and easier use
