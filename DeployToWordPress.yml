@@ -1,2 +1,0 @@
-- name: Deploy WordPress plugin
-  uses: yukihiko-shinoda/action-deploy-wordpress-plugin@v2.1.0
