@@ -39,7 +39,7 @@ class TwitchPress_Admin_Dashboard {
     */
     public function load_dashboard_widgets() {
         if ( current_user_can( 'activate_plugins' ) ) {
-            require( $this->dashboard_directory . 'class.twitchpress-dashboard-mychannel.php' );    
+            include_once( $this->dashboard_directory . 'class.twitchpress-dashboard-mychannel.php' );    
         }
     }
     

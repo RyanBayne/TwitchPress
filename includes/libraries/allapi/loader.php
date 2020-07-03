@@ -4,14 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Include main class...
-require( 'class.all-api.php' );
+include_once( 'class.all-api.php' );
 
 /* Options are currently bypassed pending switches for all services */
 
 // Discord
 if( !get_option( 'twitchpress_discord' ) ) { 
-    require( 'discord/class.api-discord.php' );
-    require( 'discord/class.api-discord-listener.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/allapi/discord/class.api-discord.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/allapi/discord/class.api-discord-listener.php' );
 }
 
 // Patron.com 
@@ -23,8 +23,8 @@ if( !get_option( 'twitchpress_discord' ) ) {
 // Streamlabs
 if( !get_option( 'twitchpress_streamlabs' ) ) {                                                         
     include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/allapi/streamlabs/functions.api-streamlabs.php' );
-    require( 'streamlabs/class.api-streamlabs.php' );
-    require( 'streamlabs/class.api-streamlabs-listener.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/allapi/streamlabs/class.api-streamlabs.php' );
+    include_once( TWITCHPRESS_PLUGIN_DIR_PATH . 'includes/libraries/allapi/streamlabs/class.api-streamlabs-listener.php' );
 }
 
 // Twitch.tv 

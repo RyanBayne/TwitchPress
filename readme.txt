@@ -57,7 +57,30 @@ Translator needed to localize the Channel Solution for Twitch.
 
 
 == Changelog == 
-
+= 3.5.2 Released TBC = 
+* Faults Resolved
+    - None
+* Feature Improvements
+    - None
+* Technical Notes
+    - Replaced "require" with "include_once" in All API loader.php file
+* Configuration Advice
+    - None
+* Database Changes
+    - None= 
+    
+= 3.5.1 Released 3rd July 2020 = 
+* Faults Resolved
+    - Corrected path to Discord API file causing errors in the previous release
+* Feature Improvements
+    - None
+* Technical Notes
+    - Released as a 
+* Configuration Advice
+    - None
+* Database Changes
+    - None= 
+    
 = 3.5.0 Released 24th June 2020 = 
 * Faults Resolved
     - Fixed new bug regarding undefined constant making path to pro edition folder
