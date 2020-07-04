@@ -209,7 +209,6 @@ final class WordPressTwitchPress {
         require_once( 'includes/libraries/class.background-process.php' );                           
         require_once( 'includes/classes/class.twitchpress-extension-installer.php' );
         require_once( 'includes/classes/class.twitchpress-ajax.php' );
-        require_once( 'includes/libraries/allapi/loader.php' );
         require_once( 'includes/libraries/twitch/' . TWITCHPRESS_API_NAME . '/functions.twitch-api-statuses.php' );
         require_once( 'includes/classes/class.twitchpress-extend-wp-http-curl.php' );
                                           
@@ -233,6 +232,23 @@ final class WordPressTwitchPress {
         require_once( 'includes/libraries/twitch/helix/class.twitch-webhooks.php' );
         require_once( plugin_basename( 'includes/classes/class.twitchpress-public-preset-notices.php' ) ); // RFA
         require_once( 'includes/classes/class.twitchpress-custom-login-notices.php' );
+        
+        // Include main class...
+        include_once( 'includes/libraries/allapi/class.all-api.php' );
+
+        /* Options are currently bypassed pending switches for all services */
+
+        // Discord
+        include_once( 'includes/libraries/allapi/discord/class.api-discord.php' );
+        include_once( 'includes/libraries/allapi/discord/class.api-discord-listener.php' );
+        
+        // Streamlabs                                                
+        include_once( 'includes/libraries/allapi/streamlabs/functions.api-streamlabs.php' );
+        include_once( 'includes/libraries/allapi/streamlabs/class.api-streamlabs.php' );
+        include_once( 'includes/libraries/allapi/streamlabs/class.api-streamlabs-listener.php' );
+    
+        // YouTube
+        include_once( 'includes/libraries/allapi/youtube/functions.api-youtube.php' );   
         
         // Administration-only files...     
         include_once( 'includes/admin/class.twitchpress-admin.php' );

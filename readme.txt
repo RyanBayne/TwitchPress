@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 Tags: Twitch, Twitch.tv, Twitch Channel, Twitch Embed, Twitch Stream, Twitch API, TwitchPress
 Requires at least: 5.2
 Tested up to: 5.4
-Stable tag: 3.5.0
+Stable tag: 3.5.2
 Requires PHP: 5.6
                         
 Unofficial Twitch.tv power-up for your WordPress! 
@@ -57,9 +57,9 @@ Translator needed to localize the Channel Solution for Twitch.
 
 
 == Changelog == 
-= 3.5.2 Released TBC = 
+= 3.5.2 Released 4th July 2020 = 
 * Faults Resolved
-    - None
+    - Changed path to Discord API file again to correct error seen on activation
 * Feature Improvements
     - None
 * Technical Notes

@@ -4,7 +4,7 @@
  * Plugin URI: https://twitchpress.wordpress.com/
  * Github URI: https://github.com/RyanBayne/TwitchPress
  * Description: Add the power of Twitch.tv to WordPress 
- * Version: 3.5.1
+ * Version: 3.5.2
  * Author: Ryan Bayne
  * Author URI: https://ryanbayne.wordpress.com/
  * Requires at least: 5.2
@@ -14,7 +14,7 @@
  * Domain Path: /i18n/languages/
  */
  
-const TWITCHPRESS_VERSION = '3.5.1';
+const TWITCHPRESS_VERSION = '3.5.2';
 
 // Exit if accessed directly. 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
