@@ -50,8 +50,9 @@ Permissions of this strong copyleft license are conditioned on making available 
 * Warranty
 
 ## Project Links
+* Support: https://discord.gg/NaRB3wE
 * Core Plugin GitHub: https://github.com/RyanBayne/TwitchPress-Core-WordPress-Plugin
 * Project Blog: http://twitchpress.wordpress.com
 * Twitter Updates: http://www.twitter.com/twitchpress
-* Patreon Donations:  https://www.patreon.com/zypherevolved
+* Patreon Donations:  https://www.patreon.com/twitchpress
 * Discord Chat: https://discord.gg/NaRB3wE
