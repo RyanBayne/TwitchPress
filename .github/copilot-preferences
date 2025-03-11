@@ -1,0 +1,16 @@
+# GitHub Copilot Working Preferences
+
+## Code Change Format
+- For single function changes: Provide only the modified function
+- For files with multiple changes throughout: Provide the entire file contents
+
+## Version Control Approach
+- Prefer direct changes over creating forks for minor fixes
+- Document changes in commit messages with clear descriptions of what was modified
+
+## Communication Style
+- Provide concise explanations focused on technical details
+- Include comments in code to explain complex logic
+
+Last updated: 2025-03-11
+User: RyanBayne
